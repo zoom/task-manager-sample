@@ -1,0 +1,104 @@
+{
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Prepare Monthly Financial Report",
+        "image": "financial_report.jpg",
+        "time": 120,
+        "priority": "low",
+        "date": "2024-02-08T17:55:34.353Z",
+        "stage": "todo",
+        "description": "Compile and analyze the financial data for the monthly report, including income, expenses, and projections.",
+        "completed": false
+      },
+      {
+        "id": "2",
+        "title": "Team Meeting on Project Alpha",
+        "image": "team_meeting.jpg",
+        "time": 60,
+        "date": "2024-02-07T00:00:00.000Z",
+        "stage": "in-progress",
+        "priority": "low",
+        "description": "Hold a virtual meeting with the project team to discuss the current status of Project Alpha and next steps.",
+        "completed": true
+      },
+      {
+        "id": "3",
+        "title": "Client Proposal Review",
+        "image": "proposal_review.jpg",
+        "time": 45,
+        "date": "2024-02-08T00:00:00.000Z",
+        "stage": "todo",
+        "priority": "high",
+        "description": "Review the proposal for the new client to ensure it aligns with company standards and client expectations.",
+        "completed": false
+      },
+      {
+        "id": "4",
+        "title": "System Security Audit",
+        "image": "security_audit.jpg",
+        "time": 90,
+        "date": "2024-02-09T00:00:00.000Z",
+        "stage": "completed",
+        "priority": "high",
+        "description": "Conduct an internal audit of the IT systems to check for any security vulnerabilities or outdated software.",
+        "completed": false
+      },
+      {
+        "id": "5",
+        "title": "Draft Employee Handbook",
+        "image": "employee_handbook.jpg",
+        "time": 180,
+        "date": "2024-02-09T00:00:00.000Z",
+        "stage": "completed",
+        "priority": "high",
+        "description": "Write and organize the content for the new employee handbook covering company policies, code of conduct, and benefits.",
+        "completed": true
+      },
+      {
+        "id": "6",
+        "title": "Marketing Strategy Review",
+        "image": "marketing_strategy.jpg",
+        "time": 60,
+        "date": "2024-02-08T18:13:14.717Z",
+        "stage": "in progress",
+        "priority": "medium",
+        "description": "Analyze the current marketing strategy for the product launch and propose adjustments based on recent performance metrics.",
+        "completed": true
+      },
+      {
+        "id": "7",
+        "title": "Update Website Content",
+        "image": "website_update.jpg",
+        "time": 45,
+        "date": "2024-02-09T00:00:00.000Z",
+        "stage": "to-do",
+        "priority": "low",
+        "description": "Revise outdated content on the company website, including product descriptions and team information.",
+        "completed": true
+      },
+      {
+        "id": "8",
+        "title": "Prepare Presentation for Quarterly Meeting",
+        "image": "presentation_prep.jpg",
+        "time": 90,
+        "date": "2024-02-07T00:00:00.000Z",
+        "stage": "in progress",
+        "priority": "high",
+        "description": "Create a slide deck summarizing key achievements, ongoing projects, and goals for the upcoming quarter.",
+        "completed": true
+      },
+      {
+        "id": "9",
+        "title": "Conduct Employee Training Session",
+        "image": "employee_training.jpg",
+        "time": 120,
+        "date": "2024-02-08T18:13:14.717Z",
+        "stage": "todo",
+        "priority": "high",
+        "description": "Lead a training session for new employees on company software tools and best practices.",
+        "completed": false
+      }
+    ]
+  }
+  
