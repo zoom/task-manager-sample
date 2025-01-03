@@ -1,18 +1,16 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface Tab {
-  title: string;
-  icon: React.ReactNode;
-}
-
-interface TaskTabsProps {
-  tabs: Tab[];
-  selected: string; 
-  setSelected: (value: string) => void; 
-  children?: React.ReactNode; 
-}
-
-const TaskTabs: React.FC<TaskTabsProps> = ({ tabs, selected, setSelected, children }) => {
+const TaskTabs = ({
+  tabs,
+  selected,
+  setSelected,
+  children,
+}: {
+  tabs: { title: string; icon: any }[];
+  selected: string;
+  setSelected: (value: string) => void;
+  children?: React.ReactNode;
+}) => {
   return (
     <div className="w-full px-1 sm:px-0">
       <Tabs value={selected} className="w-[800px]">
@@ -21,7 +19,7 @@ const TaskTabs: React.FC<TaskTabsProps> = ({ tabs, selected, setSelected, childr
             <TabsTrigger
               key={tab.title}
               value={tab.title}
-              onClick={() => setSelected(tab.title)} 
+              onClick={() => setSelected(tab.title)}
               className="w-fit flex items-center outline-none gap-2 px-3 py-2.5 text-base font-medium leading-5 bg-white"
             >
               {tab.icon}

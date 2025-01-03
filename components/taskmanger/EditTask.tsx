@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 
-interface Task {
+type Task = {
   title: string;
   image: string;
   time: number;
@@ -25,31 +25,38 @@ interface Task {
   assets?: any[];
   subTasks?: any[];
   date: string;
-}
+};
 
-interface EditTaskProps {
+const EditTask = ({
+  open,
+  setOpen,
+  task,
+}: {
   open: boolean;
   setOpen: (open: boolean) => void;
-  task: Task; // Pass the task data to the EditTask component
-}
-
-const EditTask: React.FC<EditTaskProps> = ({ open, setOpen, task }) => {
+  task: Task;
+}) => {
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm<{ title: string; date: string }>();
   const [stage, setStage] = useState<string>(task?.stage);
   const [priority, setPriority] = useState<string>(task?.priority);
-  
+
   useEffect(() => {
-    setValue("title", task?.title); // Pre-fill the task title
-    setValue("date", task?.date); // Pre-fill the task date
+    setValue("title", task?.title);
+    setValue("date", task?.date);
   }, [task, setValue]);
 
-  const submitHandler = (data: any) => {
+  const submitHandler = (data: { title: string; date: string }) => {
     // Handle form submission
+    console.log({
+      ...data,
+      stage,
+      priority,
+    });
   };
 
   return (
@@ -58,12 +65,11 @@ const EditTask: React.FC<EditTaskProps> = ({ open, setOpen, task }) => {
         <form onSubmit={handleSubmit(submitHandler)}>
           <DialogHeader>
             <DialogTitle>Edit Task</DialogTitle>
-            <DialogDescription>
-              Update the details of the task.
-            </DialogDescription>
+            <DialogDescription>Update the details of the task.</DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 mt-4">
+            {/* Task Title */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700">
                 Task Title
@@ -73,9 +79,12 @@ const EditTask: React.FC<EditTaskProps> = ({ open, setOpen, task }) => {
                 placeholder="Enter task title"
                 {...register("title", { required: "Title is required" })}
               />
-              {errors.title && <p className="text-red-500 text-sm">{String(errors.title.message)}</p>}
+              {errors.title && (
+                <p className="text-red-500 text-sm">{errors.title.message}</p>
+              )}
             </div>
 
+            {/* Task Stage and Date */}
             <div className="flex gap-4">
               <div className="w-full">
                 <label htmlFor="stage" className="block text-sm font-medium text-gray-700">
@@ -86,8 +95,8 @@ const EditTask: React.FC<EditTaskProps> = ({ open, setOpen, task }) => {
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
                   <SelectContent>
-                    {["TODO", "IN PROGRESS", "COMPLETED"].map((list, index) => (
-                      <SelectItem key={index} value={list}>
+                    {["TODO", "IN PROGRESS", "COMPLETED"].map((list) => (
+                      <SelectItem key={list} value={list}>
                         {list}
                       </SelectItem>
                     ))}
@@ -99,11 +108,18 @@ const EditTask: React.FC<EditTaskProps> = ({ open, setOpen, task }) => {
                 <label htmlFor="date" className="block text-sm font-medium text-gray-700">
                   Task Date
                 </label>
-                <Input type="date" id="date" {...register("date")} />
-                {errors.date && <p className="text-red-500 text-sm">{String(errors.date.message)}</p>}
+                <Input
+                  type="date"
+                  id="date"
+                  {...register("date", { required: "Date is required" })}
+                />
+                {errors.date && (
+                  <p className="text-red-500 text-sm">{errors.date.message}</p>
+                )}
               </div>
             </div>
 
+            {/* Priority */}
             <div className="flex gap-4">
               <div className="w-full">
                 <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
@@ -114,8 +130,8 @@ const EditTask: React.FC<EditTaskProps> = ({ open, setOpen, task }) => {
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
-                    {["HIGH", "MEDIUM", "NORMAL", "LOW"].map((level, index) => (
-                      <SelectItem key={index} value={level}>
+                    {["HIGH", "MEDIUM", "NORMAL", "LOW"].map((level) => (
+                      <SelectItem key={level} value={level}>
                         {level}
                       </SelectItem>
                     ))}
@@ -124,8 +140,12 @@ const EditTask: React.FC<EditTaskProps> = ({ open, setOpen, task }) => {
               </div>
             </div>
 
+            {/* Submit and Cancel Buttons */}
             <div className="flex justify-end gap-4 mt-4">
-              <Button type="submit" className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700">
+              <Button
+                type="submit"
+                className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700"
+              >
                 Submit
               </Button>
               <Button

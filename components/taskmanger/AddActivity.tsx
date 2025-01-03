@@ -12,31 +12,31 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { MessageSquareQuote } from 'lucide-react';
-
-
 import { useState } from "react";
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
 const PRIORITIES = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
 
-interface AddActivityProps {
+const AddActivity = ({
+  open,
+  setOpen,
+}: {
   open: boolean;
   setOpen: (open: boolean) => void;
-}
-
-const AddActivity: React.FC<AddActivityProps> = ({ open, setOpen }) => {
+}) => {
   const {
-   
+    register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-  const [stage, setStage] = useState<string>(LISTS[0]);
-  const [priority, setPriority] = useState<string>(PRIORITIES[2]);
+  } = useForm<{ title: string; date: string }>();
+  const [stage, setStage] = useState(LISTS[0]);
+  const [priority, setPriority] = useState(PRIORITIES[2]);
   const [assets, setAssets] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
 
-  const submitHandler = (data: any) => {
+  const submitHandler = (data: { title: string; date: string }) => {
     // Handle form submission
+    console.log({ ...data, stage, priority, assets });
   };
 
   const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +50,7 @@ const AddActivity: React.FC<AddActivityProps> = ({ open, setOpen }) => {
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(submitHandler)}>
           <DialogHeader>
-            <DialogTitle>{/* Conditionally render title */}Add Task</DialogTitle>
+            <DialogTitle>Add Task</DialogTitle>
             <DialogDescription>
               Fill in the details to create a new task.
             </DialogDescription>
@@ -65,9 +65,11 @@ const AddActivity: React.FC<AddActivityProps> = ({ open, setOpen }) => {
               <Input
                 id="title"
                 placeholder="Enter task title"
-               
+                {...register("title", { required: "Task title is required" })}
               />
-              {errors.title && <p className="text-red-500 text-sm">{String(errors.title.message)}</p>}
+              {errors.title && (
+                <p className="text-red-500 text-sm">{errors.title.message}</p>
+              )}
             </div>
 
             {/* Task Stage and Date */}
@@ -81,8 +83,8 @@ const AddActivity: React.FC<AddActivityProps> = ({ open, setOpen }) => {
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
                   <SelectContent>
-                    {LISTS.map((list, index) => (
-                      <SelectItem key={index} value={list}>
+                    {LISTS.map((list) => (
+                      <SelectItem key={list} value={list}>
                         {list}
                       </SelectItem>
                     ))}
@@ -97,9 +99,11 @@ const AddActivity: React.FC<AddActivityProps> = ({ open, setOpen }) => {
                 <Input
                   type="date"
                   id="date"
-                 
+                  {...register("date", { required: "Task date is required" })}
                 />
-                {errors.date && <p className="text-red-500 text-sm">{String(errors.date.message)}</p>}
+                {errors.date && (
+                  <p className="text-red-500 text-sm">{errors.date.message}</p>
+                )}
               </div>
             </div>
 
@@ -114,8 +118,8 @@ const AddActivity: React.FC<AddActivityProps> = ({ open, setOpen }) => {
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
-                    {PRIORITIES.map((level, index) => (
-                      <SelectItem key={index} value={level}>
+                    {PRIORITIES.map((level) => (
+                      <SelectItem key={level} value={level}>
                         {level}
                       </SelectItem>
                     ))}
@@ -136,7 +140,7 @@ const AddActivity: React.FC<AddActivityProps> = ({ open, setOpen }) => {
                     accept=".jpg, .png, .jpeg"
                     multiple
                   />
-                  <MessageSquareQuote  />
+                  <MessageSquareQuote />
                   <span>Add Assets</span>
                 </label>
               </div>

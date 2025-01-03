@@ -31,7 +31,7 @@ export default function TaskCard({ task, onEditClick }: { task: Task, onEditClic
     const router = useRouter();
 
     const handleTaskClick = (taskId: string) => {
-        router.push(`/tasks/${taskId}`); 
+        router.push(`/dashboard/tasks/${taskId}`); 
     };
 
 

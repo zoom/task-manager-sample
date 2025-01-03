@@ -37,7 +37,7 @@ export default function ListView({ tasks , onEditClick}: { tasks: Task[], onEdit
   const router = useRouter();
 
     const handleTaskClick = (taskId: string) => {
-      router.push(`/tasks/${taskId}`); 
+      router.push(`/dashboard/tasks/${taskId}`); 
     };
 
   const TableHeader = () => (

@@ -18,7 +18,7 @@ interface Task {
 }
 
 export default function BoardView({ tasks , onEditClick }: { tasks: Task[], onEditClick: any }) {
-  const pathname = usePathname(); // Get the current pathname
+  const pathname = usePathname(); 
 
   return (
     <> 
