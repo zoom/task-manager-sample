@@ -1,23 +1,10 @@
-"use client";
 
 import TaskCard from "./TaskCard";
 import { usePathname } from "next/navigation";
+import {Tables} from "@/lib/types"
 
-interface Task {
-  title: string;
-  image: string;
-  time: number;
-  description: string;
-  completed: boolean;
-  id: string;
-  priority: "high" | "medium" | "low";
-  activities?: any[];
-  assets?: any[];
-  subTasks?: any[];
-  date: string;
-}
 
-export default function BoardView({ tasks , onEditClick }: { tasks: Task[], onEditClick: any }) {
+export default function BoardView({ tasks , onEditClick }: { tasks: Tables<'Tasks'>[], onEditClick: any }) {
   const pathname = usePathname(); 
 
   return (

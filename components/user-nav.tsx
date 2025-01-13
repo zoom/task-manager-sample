@@ -12,12 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import {createClient} from "@/utils/supabase/server.ts";
+import {createClient} from "@/utils/supabase/server";
 import Link from "next/link";
 
-import {signOutAction} from "@/app/actions.ts";
+import {signOutAction} from "@/app/actions";
 
-const getInitials = (n) =>
+const getInitials = (n: string) =>
     n.split(" ")
       .map(word => word.charAt(0).toUpperCase())
       .join('');

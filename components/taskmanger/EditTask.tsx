@@ -12,20 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import {Tables} from "@/lib/types"
 
-type Task = {
-  title: string;
-  image: string;
-  time: number;
-  description: string;
-  completed: boolean;
-  id: string;
-  priority: string;
-  stage: string;
-  assets?: any[];
-  subTasks?: any[];
-  date: string;
-};
 
 const EditTask = ({
   open,
@@ -42,19 +30,19 @@ const EditTask = ({
     setValue,
     formState: { errors },
   } = useForm<{ title: string; date: string }>();
-  const [stage, setStage] = useState<string>(task?.stage);
   const [priority, setPriority] = useState<string>(task?.priority);
 
   useEffect(() => {
     setValue("title", task?.title);
-    setValue("date", task?.date);
   }, [task, setValue]);
 
   const submitHandler = (data: { title: string; date: string }) => {
     // Handle form submission
-    console.log({
+    console.log({/*
+    setValue("date", task?.date);
+*/
+
       ...data,
-      stage,
       priority,
     });
   };
@@ -90,7 +78,7 @@ const EditTask = ({
                 <label htmlFor="stage" className="block text-sm font-medium text-gray-700">
                   Task Stage
                 </label>
-                <Select onValueChange={setStage} defaultValue={stage}>
+{/*                <Select onValueChange={setStage} defaultValue={stage}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
@@ -101,7 +89,7 @@ const EditTask = ({
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select>
+                </Select>*/}
               </div>
 
               <div className="w-full">

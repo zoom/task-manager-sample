@@ -9,21 +9,10 @@ import ListView from "./ListView";
 import AddActivity from "./AddActivity";
 import EditTask from "./EditTask";
 import TaskTitle from "./TaskTitle";
+import {Tables} from "@/lib/types"
 
-interface Task {
-  title: string;
-  image: string;
-  time: number;
-  description: string;
-  completed: boolean;
-  id: string;
-  priority: "high" | "medium" | "low";
-  activities?: any[];
-  assets?: any[];
-  subTasks?: any[];
-  date: string;
-  stage: string;
-}
+
+
 
 const TABS = [
   { title: "Board View", icon: <Grid2X2 /> },
@@ -36,14 +25,14 @@ const TASK_TYPE = {
   completed: "bg-green-600",
 };
 
-export default function Tasks({ tasks }: { tasks: Task[] }) {
+export default function Tasks({ tasks }: { tasks: Tables<'Tasks'>[] }) {
   const [selected, setSelected] = useState(TABS[0].title); 
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null); 
+  const [selectedTask, setSelectedTask] = useState<Tables<'Tasks'> | null>(null);
 
   // Function to handle edit task click
-  const handleEditClick = (task: Task) => {
+  const handleEditClick = (task: Tables<'Tasks'>) => {
     setSelectedTask(task); 
     setOpenEdit(true); 
   };

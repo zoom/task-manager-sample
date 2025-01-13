@@ -2,7 +2,7 @@
 # https://supabase.com/docs/guides/local-development/cli/config
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
-project_id = "zoom-auth-test"
+project_id = "zoom-task-manager"
 
 [api]
 enabled = true
@@ -98,7 +98,7 @@ enabled = true
 # in emails.
 site_url = "env(SITE_URL)"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["env(ZOOM_REDIRECT_URL)"]
+additional_redirect_urls = ["env(NEXT_PUBLIC_SUPABASE_URL)/auth/v1/callback"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # If disabled, the refresh token will never expire.
@@ -214,7 +214,7 @@ client_id = "env(ZOOM_CLIENT_ID)"
 # DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
 secret = "env(ZOOM_CLIENT_SECRET)"
 # Overrides the default auth redirectUrl.
-redirect_uri = "env(ZOOM_REDIRECT_URL)"
+redirect_uri = "env(NEXT_PUBLIC_SUPABASE_URL)/auth/v1/callback"
 
 
 # Use Firebase Auth as a third-party provider alongside Supabase Auth.

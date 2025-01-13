@@ -3,21 +3,8 @@ import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { ChevronsUp, ChevronDown, ChevronUp, MessageSquareQuote, Trash2, Plus, Pencil } from 'lucide-react';
 import { BGS, PRIORITYSTYLES, TASK_TYPE, formatDate } from "@/utils/utils";
+import {Tables} from "@/lib/types"
 
-interface Task {
-    title: string;
-    image: string;
-    time: number;
-    description: string;
-    completed: boolean;
-    id: string;
-    priority: "high" | "medium" | "low";
-    activities?: any[];
-    assets?: any[];
-    subTasks?: any[];
-    stage?: keyof typeof TASK_TYPE;
-    date: string;
-}
 
 const ICONS = {
     high: <ChevronsUp />,
@@ -25,12 +12,12 @@ const ICONS = {
     low: <ChevronDown />,
 };
 
-export default function TaskCard({ task, onEditClick }: { task: Task, onEditClick: any }) {
+export default function TaskCard({ task, onEditClick }: { task: Tables<'Tasks'>, onEditClick: any }) {
     const [open, setOpen] = useState(false);
 
     const router = useRouter();
 
-    const handleTaskClick = (taskId: string) => {
+    const handleTaskClick = (taskId: number) => {
         router.push(`/dashboard/tasks/${taskId}`); 
     };
 
@@ -40,30 +27,36 @@ export default function TaskCard({ task, onEditClick }: { task: Task, onEditClic
         <div className="w-full bg-white shadow-md p-4 rounded-lg space-y-4">
             {/* Task Priority */}
             <div className="w-full flex justify-between">
-                <div className={clsx("flex flex-1 gap-1 items-center text-sm font-medium", PRIORITYSTYLES[task.priority])}>
+{/*                <div className={clsx("flex flex-1 gap-1 items-center text-sm font-medium", PRIORITYSTYLES[task.priority])}>
                     <span className="text-lg">{ICONS[task.priority]}</span>
                     <span className="uppercase">{task.priority} Priority</span>
-                </div>
+                </div>*/}
             </div>
 
             {/* Task Stage and Title */}
             <div className="flex items-center gap-2">
+{/*
                 <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[task.stage || "todo"])} />
+*/}
                 <h4 className="line-clamp-1 text-black">{task.title}</h4>
             </div>
 
             {/* Task Date */}
-            <span className="text-sm text-gray-600">{formatDate(new Date(task.date))}</span>
 
             {/* Divider */}
             <div className="w-full border-t border-gray-200 my-2" />
 
             {/* Task Details */}
             <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3">{/*
+            <span className="text-sm text-gray-600">{formatDate(new Date(task.date))}</span>
+*/}
+
                     <div className="flex gap-1 items-center text-sm text-gray-600">
                         <MessageSquareQuote />
+{/*
                         <span>{task.activities?.length || 0}</span>
+*/}
                     </div>
 
                 </div>

@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Dialog,
   DialogContent,
@@ -13,9 +11,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { MessageSquareQuote } from 'lucide-react';
 import { useState } from "react";
+import {createClient} from "@supabase/supabase-js";
+import {Tables} from "@/lib/types";
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
-const PRIORITIES = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
+const PRIORITIES = ["HIGH", "MEDIUM", "LOW"];
 
 const AddActivity = ({
   open,
@@ -29,20 +29,36 @@ const AddActivity = ({
     handleSubmit,
     formState: { errors },
   } = useForm<{ title: string; date: string }>();
-  const [stage, setStage] = useState(LISTS[0]);
-  const [priority, setPriority] = useState(PRIORITIES[2]);
-  const [assets, setAssets] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [priority, setPriority] = useState(PRIORITIES[1]);
 
-  const submitHandler = (data: { title: string; date: string }) => {
-    // Handle form submission
-    console.log({ ...data, stage, priority, assets });
+
+  const submitHandler = async  (data: { title: string; date: string }) => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+
+    const supabase = createClient(url, key);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    console.log("user", user);
+
+    const { error } = await supabase
+        .from('Tasks')
+        .insert({
+          title: data.title,
+          description: "description",
+          completed: true,
+          task_list: "Test",
+          user: user?.id || "",
+          due_date: data.date,
+          priority,
+        })
   };
 
   const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
+/*    if (e.target.files) {
       setAssets(Array.from(e.target.files));
-    }
+    }*/
   };
 
   return (
@@ -78,7 +94,7 @@ const AddActivity = ({
                 <label htmlFor="stage" className="block text-sm font-medium text-gray-700">
                   Task Stage
                 </label>
-                <Select onValueChange={setStage} defaultValue={stage}>
+ {/*               <Select onValueChange={setStage} defaultValue={stage}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
@@ -89,7 +105,7 @@ const AddActivity = ({
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select>
+                </Select>*/}
               </div>
 
               <div className="w-full">
@@ -148,13 +164,9 @@ const AddActivity = ({
 
             {/* Submit and Cancel Buttons */}
             <div className="flex justify-end gap-4 mt-4">
-              {uploading ? (
-                <span className="text-sm py-2 text-red-500">Uploading assets...</span>
-              ) : (
                 <Button type="submit" className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700">
                   Submit
                 </Button>
-              )}
               <Button
                 type="button"
                 variant="secondary"
