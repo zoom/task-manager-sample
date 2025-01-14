@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { MessageSquareQuote } from 'lucide-react';
 import { useState } from "react";
-import {createClient} from "@supabase/supabase-js";
+import {createClient} from "@/utils/supabase/client"
 import {Tables} from "@/lib/types";
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
@@ -37,7 +37,7 @@ const AddActivity = ({
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 
-    const supabase = createClient(url, key);
+    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     console.log("user", user);
