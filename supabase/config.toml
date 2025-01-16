@@ -98,7 +98,7 @@ enabled = true
 # in emails.
 site_url = "env(SITE_URL)"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["env(NEXT_PUBLIC_SUPABASE_URL)/auth/v1/callback"]
+additional_redirect_urls = ["env(ZOOM_REDIRECT_URL)"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # If disabled, the refresh token will never expire.
@@ -214,7 +214,7 @@ client_id = "env(ZOOM_CLIENT_ID)"
 # DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
 secret = "env(ZOOM_CLIENT_SECRET)"
 # Overrides the default auth redirectUrl.
-redirect_uri = "env(NEXT_PUBLIC_SUPABASE_URL)/auth/v1/callback"
+redirect_uri = "env(ZOOM_REDIRECT_URL)"
 
 
 # Use Firebase Auth as a third-party provider alongside Supabase Auth.

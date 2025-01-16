@@ -33,26 +33,27 @@ const AddActivity = ({
 
 
   const submitHandler = async  (data: { title: string; date: string }) => {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     console.log("user", user);
 
+    const task = {
+      title: "test title",
+      completed: true,
+      task_list_id: 1,
+      user_id: user?.id,
+      due_date: new Date(),
+      priority,
+    };
+
+    console.log("task", task);
+
     const { error } = await supabase
         .from('Tasks')
-        .insert({
-          title: data.title,
-          description: "description",
-          completed: true,
-          task_list: "Test",
-          user: user?.id || "",
-          due_date: data.date,
-          priority,
-        })
+        .insert(task);
+
+    console.log("error", error);
   };
 
   const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {

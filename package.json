@@ -36,9 +36,13 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@snaplet/copycat": "^6.0.0",
+    "@snaplet/seed": "^0.98.0",
     "@types/node": "22.9.0",
+    "@types/pg": "^8.11.10",
     "@types/react": "^18.3.12",
     "@types/react-dom": "18.3.1",
+    "pg": "^8.13.1",
     "postcss": "8.4.49",
     "supabase": "^2.0.0",
     "tailwind-merge": "^2.5.2",
