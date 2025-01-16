@@ -1,10 +1,12 @@
 import {createClient} from "@/utils/supabase/server";
-import Tasks from "@/components/taskmanger/Tasks";
-import {Tables} from "@/lib/types"
+import Tasks from "@/components/taskmanger/tasks";
 
-async function getTasks(): Promise<Tables<'Tasks'>[]> {
+import type { Tables } from '@/lib/types'
+type Task = Tables<'Tasks'>
+
+async function getTasks(): Promise<Task[]> {
 const supabase = await createClient();
-  const { data: tasks } = await supabase.from("Tasks").select().returns<Tables<'Tasks'>[]>();
+  const { data: tasks } = await supabase.from("Tasks").select().returns<Task[]>();
 
   console.log("tasks", tasks);
 

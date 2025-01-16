@@ -1,12 +1,12 @@
-import TaskDetails from '@/components/taskmanger/TaskDetails';
-import {Tables} from "@/lib/types"
+import TaskDetails from '@/components/taskmanger/task-details';
 
+import type { Tables } from '@/lib/types'
+type Task = Tables<'Tasks'>
 
-
-async function getTaskDetails(taskId: string): Promise<Tables<'Tasks'>> {
+async function getTaskDetails(taskId: string): Promise<Task> {
   //const result = await fetch(`http://localhost:4000/tasks/${taskId}`);
   //return result.json();
-  let task: Tables<'Tasks'> = {
+  let task: Task = {
     id: 123453,
     created_at: new Date().toDateString(),
     due_date: new Date().toDateString(),

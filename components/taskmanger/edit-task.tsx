@@ -12,8 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import {Tables} from "@/lib/types"
 
+import type { Tables } from '@/lib/types'
+type Task = Tables<'Tasks'>
 
 const EditTask = ({
   open,

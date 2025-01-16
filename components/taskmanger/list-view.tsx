@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { PRIORITYSTYLES, TASK_TYPE, formatDate } from "@/utils/utils";
-import {Tables} from "@/lib/types"
 
+import type { Tables } from '@/lib/types'
+type Task = Tables<'Tasks'>
 
 const ICONS = {
   high: <ChevronsUp />,

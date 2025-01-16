@@ -3,16 +3,15 @@
 import { AlignJustify, Grid2X2, Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import TaskTabs from "./Tabs";
-import BoardView from "./BoardView";
-import ListView from "./ListView";
-import AddActivity from "./AddActivity";
-import EditTask from "./EditTask";
-import TaskTitle from "./TaskTitle";
-import {Tables} from "@/lib/types"
+import TaskTabs from "./tabs";
+import BoardView from "./board-view";
+import ListView from "./list-view";
+import AddActivity from "./add-activity";
+import EditTask from "./edit-task";
+import TaskTitle from "./task-title";
 
-
-
+import type { Tables } from '@/lib/types'
+type Task = Tables<'Tasks'>
 
 const TABS = [
   { title: "Board View", icon: <Grid2X2 /> },
@@ -25,7 +24,7 @@ const TASK_TYPE = {
   completed: "bg-green-600",
 };
 
-export default function Tasks({ tasks }: { tasks: Tables<'Tasks'>[] }) {
+export default function Tasks({ tasks }: { tasks: Task[] }) {
   const [selected, setSelected] = useState(TABS[0].title); 
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);

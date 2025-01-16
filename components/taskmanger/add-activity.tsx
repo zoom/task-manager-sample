@@ -12,7 +12,9 @@ import { useForm } from "react-hook-form";
 import { MessageSquareQuote } from 'lucide-react';
 import { useState } from "react";
 import {createClient} from "@/utils/supabase/client"
-import {Tables} from "@/lib/types";
+
+import type { Tables } from '@/lib/types'
+type Task = Tables<'Tasks'>
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
 const PRIORITIES = ["HIGH", "MEDIUM", "LOW"];

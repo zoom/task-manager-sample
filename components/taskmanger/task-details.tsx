@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { ChevronsUp, ChevronDown, ChevronUp, Paperclip } from 'lucide-react';
-import Loading from '@/components/taskmanger/Loading';
+import Loading from '@/components/taskmanger/loading';
 import { PRIORITYSTYLES, TASK_TYPE } from "@/utils/utils";
 import clsx from "clsx";
-import {Tables} from "@/lib/types"
+
+import type { Tables } from '@/lib/types'
+type Task = Tables<'Tasks'>
 
 const ICONS = {
   high: <ChevronsUp />,

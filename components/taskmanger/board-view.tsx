@@ -1,10 +1,11 @@
 
-import TaskCard from "./TaskCard";
+import TaskCard from "./task-card";
 import { usePathname } from "next/navigation";
-import {Tables} from "@/lib/types"
 
+import type { Tables } from '@/lib/types'
+type Task = Tables<'Tasks'>
 
-export default function BoardView({ tasks , onEditClick }: { tasks: Tables<'Tasks'>[], onEditClick: any }) {
+export default function BoardView({ tasks , onEditClick }: { tasks: Task[], onEditClick: any }) {
   const pathname = usePathname(); 
 
   return (
