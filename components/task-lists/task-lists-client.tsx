@@ -92,26 +92,28 @@ export function TaskListsClient({taskLists}: TaskListsClientProps) {
     }
 
     return (
-        <Card className="w-full">
-            <CardHeader>
-                <CardTitle>Task Lists</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <ul className="space-y-2">
-                    {taskLists.map((list) => (
-                        <li key={list.id}>
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-between text-left"
-                                onClick={() => handleListClick(list)}
-                            >
-                                <span className="truncate">{list.name}</span>
-                                <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                            </Button>
-                        </li>
-                    ))}
-                </ul>
-            </CardContent>
-        </Card>
-    )
-}
+        <div className="w-full max-w-full px-4 md:px-6">
+            <Card className="w-full">
+                <CardHeader>
+                    <CardTitle>Task Lists</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ul className="space-y-2">
+                        {taskLists.map((list) => (
+                            <li key={list.id}>
+                                <Button
+                                    variant="ghost"
+                                    className="flex items-center justify-between p-2 hover:bg-accent rounded-md cursor-pointer"
+                                    onClick={() => handleListClick(list)}
+                                >
+                                    <span className="truncate">{list.name}</span>
+                                    <ChevronRight className="h-4 w-4 flex-shrink-0"/>
+                                </Button>
+                            </li>
+                        ))}
+                    </ul>
+                </CardContent>
+            </Card>
+        </div>
+            )
+            }
