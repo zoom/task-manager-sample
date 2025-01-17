@@ -11,7 +11,7 @@ import EditTask from "./edit-task";
 import TaskTitle from "./task-title";
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'Tasks'>
+type Task = Tables<'tasks'>
 
 const TABS = [
   { title: "Board View", icon: <Grid2X2 /> },
@@ -28,10 +28,10 @@ export default function Tasks({ tasks }: { tasks: Task[] }) {
   const [selected, setSelected] = useState(TABS[0].title); 
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Tables<'Tasks'> | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Tables<'tasks'> | null>(null);
 
   // Function to handle edit task click
-  const handleEditClick = (task: Tables<'Tasks'>) => {
+  const handleEditClick = (task: Tables<'tasks'>) => {
     setSelectedTask(task); 
     setOpenEdit(true); 
   };

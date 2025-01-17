@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'Tasks'>
+type Task = Tables<'tasks'>
 
 const EditTask = ({
   open,

@@ -3,7 +3,7 @@ import TaskCard from "./task-card";
 import { usePathname } from "next/navigation";
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'Tasks'>
+type Task = Tables<'tasks'>
 
 export default function BoardView({ tasks , onEditClick }: { tasks: Task[], onEditClick: any }) {
   const pathname = usePathname(); 

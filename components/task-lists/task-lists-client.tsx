@@ -1,20 +1,25 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { ChevronRight, ChevronLeft } from 'lucide-react'
+import {useState} from 'react'
+import {Card, CardHeader, CardTitle, CardContent} from '@/components/ui/card'
+import {Button} from '@/components/ui/button'
+import {ChevronRight, ChevronLeft} from 'lucide-react'
 
 
-import type { Tables } from '@/lib/types'
-type TaskList = Tables<'TaskLists'>
+import type {Tables} from '@/lib/types'
+import {createClient} from "@/utils/supabase/client";
+
+type TaskList = Tables<'task_lists'>
+type Task = Tables<'tasks'>
 
 interface TaskListsClientProps {
-    taskLists: TaskList
+    taskLists: TaskList[]
 }
 
-export function TaskListsClient({ taskLists }: TaskListsClientProps) {
+export function TaskListsClient({taskLists}: TaskListsClientProps) {
     const [selectedList, setSelectedList] = useState<TaskList | null>(null)
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+
 
     const handleListClick = (list: TaskList) => {
         setSelectedList(list)
@@ -24,9 +29,35 @@ export function TaskListsClient({ taskLists }: TaskListsClientProps) {
         setSelectedList(null)
     }
 
+
+    const handleTaskClick = async (taskId: string, completed: boolean) => {
+        const supabase = createClient();
+        const { error } = await supabase
+            .from('tasks')
+            .update({ completed: !completed })
+            .eq('id', taskId)
+
+        if (error) {
+            console.error('Error updating task:', error)
+            return
+        }
+
+        // Update the local state
+        setSelectedList(prevList => {
+            if (!prevList) return null
+            return {
+                ...prevList,
+                tasks: prevList.tasks.map(task =>
+                    task.id === taskId ? { ...task, completed: !completed } : task
+                )
+            }
+        })
+    }
+
+
     if (selectedList) {
         return (
-            <Card>
+            <Card className="w-full">
                 <CardHeader>
                     <CardTitle className="flex items-center">
                         <Button variant="ghost" size="sm" onClick={handleBackClick}>
@@ -40,8 +71,18 @@ export function TaskListsClient({ taskLists }: TaskListsClientProps) {
                     <ul className="space-y-2">
                         {selectedList.tasks.map((task) => (
                             <li key={task.id} className="flex items-center">
-                                <span className="mr-2">{task.completed ? '✅' : '⬜'}</span>
-                                {task.title}
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="mr-2 flex-shrink-0"
+                                    onClick={() => handleTaskClick(task.id, task.completed)}
+                                    aria-label={`Mark task ${task.title} as ${task.completed ? 'incomplete' : 'complete'}`}
+                                >
+                                    {task.completed ? '✅' : '⬜'}
+                                </Button>
+                                <span className={`truncate ${task.completed ? 'line-through text-gray-500' : ''}`}>
+                  {task.title}
+                </span>
                             </li>
                         ))}
                     </ul>
@@ -51,7 +92,7 @@ export function TaskListsClient({ taskLists }: TaskListsClientProps) {
     }
 
     return (
-        <Card>
+        <Card className="w-full">
             <CardHeader>
                 <CardTitle>Task Lists</CardTitle>
             </CardHeader>
@@ -61,11 +102,11 @@ export function TaskListsClient({ taskLists }: TaskListsClientProps) {
                         <li key={list.id}>
                             <Button
                                 variant="ghost"
-                                className="w-full justify-between"
+                                className="w-full justify-between text-left"
                                 onClick={() => handleListClick(list)}
                             >
-                                {list.name}
-                                <ChevronRight className="h-4 w-4" />
+                                <span className="truncate">{list.name}</span>
+                                <ChevronRight className="h-4 w-4 flex-shrink-0" />
                             </Button>
                         </li>
                     ))}

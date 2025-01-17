@@ -7,23 +7,18 @@
 import { createSeedClient } from "@snaplet/seed";
 import {copycat} from "@snaplet/copycat";
 
-// Define a method to generate a value
-const generateValue = (seed) => {
-  return copycat.int(seed, { max:  250});
-};
-// Create a store to track unique values
-const store = new Set();
-
 const main = async () => {
   const seed = await createSeedClient({ dryRun: true });
 
   // Truncate all tables in the database
   await seed.$resetDatabase();
 
-  await seed.users(x => x(5, ({
-    TaskLists: x => x(5),
-    Tasks: x => x(5)
-  })))
+  await seed.users(x => x(5, {
+    task_lists: x => x(5, {
+      tasks: x => x(5)
+    }),
+
+  }))
 
   console.log("Database seeded successfully!");
 

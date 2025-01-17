@@ -5,7 +5,7 @@ import { ChevronsUp, ChevronDown, ChevronUp, MessageSquareQuote, Trash2, Plus, P
 import { BGS, PRIORITYSTYLES, TASK_TYPE, formatDate } from "@/utils/utils";
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'Tasks'>
+type Task = Tables<'tasks'>
 
 
 
@@ -15,7 +15,7 @@ const ICONS = {
     low: <ChevronDown />,
 };
 
-export default function TaskCard({ task, onEditClick }: { task: Tables<'Tasks'>, onEditClick: any }) {
+export default function TaskCard({ task, onEditClick }: { task: Tables<'tasks'>, onEditClick: any }) {
     const [open, setOpen] = useState(false);
 
     const router = useRouter();

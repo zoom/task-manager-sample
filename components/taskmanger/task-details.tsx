@@ -7,7 +7,7 @@ import { PRIORITYSTYLES, TASK_TYPE } from "@/utils/utils";
 import clsx from "clsx";
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'Tasks'>
+type Task = Tables<'tasks'>
 
 const ICONS = {
   high: <ChevronsUp />,
@@ -31,7 +31,7 @@ const act_types = [
 ];
 
 type TaskDetailsProps = {
-  task: Tables<'Tasks'>;
+  task: Tables<'tasks'>;
 };
 
 const TaskDetails = ({ task }: TaskDetailsProps) => {

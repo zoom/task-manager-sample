@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { PRIORITYSTYLES, TASK_TYPE, formatDate } from "@/utils/utils";
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'Tasks'>
+type Task = Tables<'tasks'>
 
 const ICONS = {
   high: <ChevronsUp />,

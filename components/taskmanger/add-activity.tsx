@@ -14,7 +14,7 @@ import { useState } from "react";
 import {createClient} from "@/utils/supabase/client"
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'Tasks'>
+type Task = Tables<'tasks'>
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
 const PRIORITIES = ["HIGH", "MEDIUM", "LOW"];

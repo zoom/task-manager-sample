@@ -7,30 +7,55 @@ export type Json =
   | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string
+          query?: string
+          variables?: Json
+          extensions?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
-      TaskLists: {
+      task_lists: {
         Row: {
           created_at: string
           id: number
           name: string
-          user: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: number
           name: string
-          user?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: number
           name?: string
-          user?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
-      Tasks: {
+      tasks: {
         Row: {
           completed: boolean
           created_at: string
@@ -38,9 +63,9 @@ export type Database = {
           due_date: string | null
           id: number
           priority: string
-          task_list: string | null
+          task_list_id: number
           title: string
-          user: string
+          user_id: string
         }
         Insert: {
           completed?: boolean
@@ -49,9 +74,9 @@ export type Database = {
           due_date?: string | null
           id?: number
           priority?: string
-          task_list?: string | null
+          task_list_id: number
           title: string
-          user: string
+          user_id: string
         }
         Update: {
           completed?: boolean
@@ -60,17 +85,17 @@ export type Database = {
           due_date?: string | null
           id?: number
           priority?: string
-          task_list?: string | null
+          task_list_id?: number
           title?: string
-          user?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "Tasks_task_list_fkey"
-            columns: ["task_list"]
+            foreignKeyName: "tasks_task_list_id_fkey"
+            columns: ["task_list_id"]
             isOneToOne: false
-            referencedRelation: "TaskLists"
-            referencedColumns: ["name"]
+            referencedRelation: "task_lists"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -186,3 +211,4 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+

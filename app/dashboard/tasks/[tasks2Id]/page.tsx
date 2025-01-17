@@ -1,7 +1,7 @@
 import TaskDetails from '@/components/taskmanger/task-details';
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'Tasks'>
+type Task = Tables<'tasks'>
 
 async function getTaskDetails(taskId: string): Promise<Task> {
   //const result = await fetch(`http://localhost:4000/tasks/${taskId}`);
