@@ -5,22 +5,8 @@ import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { PRIORITYSTYLES, TASK_TYPE, formatDate } from "@/utils/utils";
 
-
-interface Task {
-  title: string;
-  image: string;
-  time: number;
-  description: string;
-  completed: boolean;
-  id: string; 
-  priority: "high" | "medium" | "low"; 
-  stage: string; 
-  date?: string; 
-  activities?: any[]; 
-  assets?: any[];
-  subTasks?: any[];
-  team?: any[]; 
-}
+import type { Tables } from '@/lib/types'
+type Task = Tables<'tasks'>
 
 const ICONS = {
   high: <ChevronsUp />,
@@ -61,10 +47,10 @@ export default function ListView({ tasks , onEditClick}: { tasks: Task[], onEdit
   const TableRow = ({ task }: { task: Task }) => (
     <tr className='border-b border-gray-200 text-gray-600 hover:bg-gray-300/10'>
       <td className='py-2'>
-        <div className='flex items-center gap-2'>
+  {/*      <div className='flex items-center gap-2'>
           <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[task.stage as keyof typeof TASK_TYPE])} />
           <p onClick={() => handleTaskClick(task.id)} className='w-full line-clamp-2 text-base text-black hover:text-blue-500'>{task.title}</p>
-        </div>
+        </div>*/}
       </td>
 
       <td className='py-2'>
@@ -77,7 +63,9 @@ export default function ListView({ tasks , onEditClick}: { tasks: Task[], onEdit
       </td>
 
       <td className='py-2 gap-2'>
+{/*
         <span className='text-sm  text-gray-600'>{task.date ? formatDate(new Date(task.date)) : "N/A"}</span>
+*/}
       </td>
     
       <td className='py-2 '>
@@ -85,7 +73,9 @@ export default function ListView({ tasks , onEditClick}: { tasks: Task[], onEdit
         
           <div className='flex py-1 gap-2 items-center text-sm text-gray-600' >
           <MessageSquareQuote />
+{/*
             <span>{task.activities?.length || 0}</span>
+*/}
           </div>
           
         </div>

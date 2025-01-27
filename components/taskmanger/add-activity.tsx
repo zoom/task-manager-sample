@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Dialog,
   DialogContent,
@@ -11,52 +9,59 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { MessageSquareQuote } from 'lucide-react';
+import { useState } from "react";
+import {createClient} from "@/utils/supabase/client"
 
-type Task = {
-  title: string;
-  image: string;
-  time: number;
-  description: string;
-  completed: boolean;
-  id: string;
-  priority: string;
-  stage: string;
-  assets?: any[];
-  subTasks?: any[];
-  date: string;
-};
+import type { Tables } from '@/lib/types'
+type Task = Tables<'tasks'>
 
-const EditTask = ({
+const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
+const PRIORITIES = ["HIGH", "MEDIUM", "LOW"];
+
+const AddActivity = ({
   open,
   setOpen,
-  task,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
-  task: Task;
 }) => {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<{ title: string; date: string }>();
-  const [stage, setStage] = useState<string>(task?.stage);
-  const [priority, setPriority] = useState<string>(task?.priority);
+  const [priority, setPriority] = useState(PRIORITIES[1]);
 
-  useEffect(() => {
-    setValue("title", task?.title);
-    setValue("date", task?.date);
-  }, [task, setValue]);
 
-  const submitHandler = (data: { title: string; date: string }) => {
-    // Handle form submission
-    console.log({
-      ...data,
-      stage,
+  const submitHandler = async  (data: { title: string; date: string }) => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    console.log("user", user);
+
+    const task = {
+      title: "test title",
+      completed: true,
+      task_list_id: 1,
+      user_id: user?.id,
+      due_date: new Date(),
       priority,
-    });
+    };
+
+    console.log("task", task);
+
+    const { error } = await supabase
+        .from('Tasks')
+        .insert(task);
+
+    console.log("error", error);
+  };
+
+  const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+/*    if (e.target.files) {
+      setAssets(Array.from(e.target.files));
+    }*/
   };
 
   return (
@@ -64,8 +69,10 @@ const EditTask = ({
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(submitHandler)}>
           <DialogHeader>
-            <DialogTitle>Edit Task</DialogTitle>
-            <DialogDescription>Update the details of the task.</DialogDescription>
+            <DialogTitle>Add Task</DialogTitle>
+            <DialogDescription>
+              Fill in the details to create a new task.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 mt-4">
@@ -77,7 +84,7 @@ const EditTask = ({
               <Input
                 id="title"
                 placeholder="Enter task title"
-                {...register("title", { required: "Title is required" })}
+                {...register("title", { required: "Task title is required" })}
               />
               {errors.title && (
                 <p className="text-red-500 text-sm">{errors.title.message}</p>
@@ -90,18 +97,18 @@ const EditTask = ({
                 <label htmlFor="stage" className="block text-sm font-medium text-gray-700">
                   Task Stage
                 </label>
-                <Select onValueChange={setStage} defaultValue={stage}>
+ {/*               <Select onValueChange={setStage} defaultValue={stage}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
                   <SelectContent>
-                    {["TODO", "IN PROGRESS", "COMPLETED"].map((list) => (
+                    {LISTS.map((list) => (
                       <SelectItem key={list} value={list}>
                         {list}
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select>
+                </Select>*/}
               </div>
 
               <div className="w-full">
@@ -111,7 +118,7 @@ const EditTask = ({
                 <Input
                   type="date"
                   id="date"
-                  {...register("date", { required: "Date is required" })}
+                  {...register("date", { required: "Task date is required" })}
                 />
                 {errors.date && (
                   <p className="text-red-500 text-sm">{errors.date.message}</p>
@@ -119,7 +126,7 @@ const EditTask = ({
               </div>
             </div>
 
-            {/* Priority */}
+            {/* Priority and File Upload */}
             <div className="flex gap-4">
               <div className="w-full">
                 <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
@@ -130,7 +137,7 @@ const EditTask = ({
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
-                    {["HIGH", "MEDIUM", "NORMAL", "LOW"].map((level) => (
+                    {PRIORITIES.map((level) => (
                       <SelectItem key={level} value={level}>
                         {level}
                       </SelectItem>
@@ -138,16 +145,31 @@ const EditTask = ({
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="w-full flex items-center justify-center">
+                <label
+                  className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer my-4"
+                  htmlFor="imgUpload"
+                >
+                  <input
+                    type="file"
+                    className="hidden"
+                    id="imgUpload"
+                    onChange={handleSelectFiles}
+                    accept=".jpg, .png, .jpeg"
+                    multiple
+                  />
+                  <MessageSquareQuote />
+                  <span>Add Assets</span>
+                </label>
+              </div>
             </div>
 
             {/* Submit and Cancel Buttons */}
             <div className="flex justify-end gap-4 mt-4">
-              <Button
-                type="submit"
-                className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700"
-              >
-                Submit
-              </Button>
+                <Button type="submit" className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700">
+                  Submit
+                </Button>
               <Button
                 type="button"
                 variant="secondary"
@@ -164,4 +186,4 @@ const EditTask = ({
   );
 };
 
-export default EditTask;
+export default AddActivity;

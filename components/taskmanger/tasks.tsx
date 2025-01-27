@@ -3,27 +3,15 @@
 import { AlignJustify, Grid2X2, Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import TaskTabs from "./Tabs";
-import BoardView from "./BoardView";
-import ListView from "./ListView";
-import AddActivity from "./AddActivity";
-import EditTask from "./EditTask";
-import TaskTitle from "./TaskTitle";
+import TaskTabs from "./tabs";
+import BoardView from "./board-view";
+import ListView from "./list-view";
+import AddActivity from "./add-activity";
+import EditTask from "./edit-task";
+import TaskTitle from "./task-title";
 
-interface Task {
-  title: string;
-  image: string;
-  time: number;
-  description: string;
-  completed: boolean;
-  id: string;
-  priority: "high" | "medium" | "low";
-  activities?: any[];
-  assets?: any[];
-  subTasks?: any[];
-  date: string;
-  stage: string;
-}
+import type { Tables } from '@/lib/types'
+type Task = Tables<'tasks'>
 
 const TABS = [
   { title: "Board View", icon: <Grid2X2 /> },
@@ -40,10 +28,10 @@ export default function Tasks({ tasks }: { tasks: Task[] }) {
   const [selected, setSelected] = useState(TABS[0].title); 
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null); 
+  const [selectedTask, setSelectedTask] = useState<Tables<'tasks'> | null>(null);
 
   // Function to handle edit task click
-  const handleEditClick = (task: Task) => {
+  const handleEditClick = (task: Tables<'tasks'>) => {
     setSelectedTask(task); 
     setOpenEdit(true); 
   };

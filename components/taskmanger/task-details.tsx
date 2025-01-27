@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { ChevronsUp, ChevronDown, ChevronUp, Paperclip } from 'lucide-react';
-import Loading from '@/components/taskmanger/Loading';
+import Loading from '@/components/taskmanger/loading';
 import { PRIORITYSTYLES, TASK_TYPE } from "@/utils/utils";
 import clsx from "clsx";
+
+import type { Tables } from '@/lib/types'
+type Task = Tables<'tasks'>
 
 const ICONS = {
   high: <ChevronsUp />,
@@ -27,23 +30,8 @@ const act_types = [
   "Assigned",
 ];
 
-type Task = {
-  stage: keyof typeof TASK_TYPE;
-  title: string;
-  image: string;
-  time: number;
-  description: string;
-  completed: boolean;
-  id: string;
-  priority: 'high' | 'medium' | 'low';
-  activities?: { date: string; tag: string; title: string }[];
-  assets?: { url: string }[];
-  subTasks?: { date: string; tag: string; title: string }[];
-  date: string;
-};
-
 type TaskDetailsProps = {
-  task: Task;
+  task: Tables<'tasks'>;
 };
 
 const TaskDetails = ({ task }: TaskDetailsProps) => {
@@ -64,11 +52,13 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
           <div
             className={clsx(
               "flex gap-1 items-center text-base font-semibold px-3 py-1 rounded-full",
-              PRIORITYSTYLES[task.priority],
-              bgColor[task.priority]
+/*              PRIORITYSTYLES[task.priority],
+              bgColor[task.priority]*/
             )}
           >
+{/*
             <span className='text-lg'>{ICONS[task.priority]}</span>
+*/}
             <span className='uppercase'>{task.priority} Priority</span>
           </div>
 
@@ -76,21 +66,27 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
             <div
               className={clsx(
                 "w-4 h-4 rounded-full",
+/*
                 TASK_TYPE[task.stage]
+*/
               )}
             />
+{/*
             <span className='text-black uppercase'>{task.stage}</span>
+*/}
           </div>
         </div>
 
+{/*
         <p className='text-gray-500'>Created At: {new Date(task.date).toDateString()}</p>
+*/}
         <div className="w-full border-t border-gray-200 my-2" />
 
         {/* Task-Details */}
         <div className='space-y-4 py-6'>
           <p className='text-gray-500 font-semibold text-sm'>Task-Details</p>
           <div className='space-y-8'>
-            {task.subTasks?.map((subTask, index) => (
+    {/*        {task.subTasks?.map((subTask, index) => (
               <div key={index} className='flex gap-3'>
                 <div className='w-10 h-10 flex items-center justify-center rounded-full bg-violet-200'>
                   <Paperclip className='text-violet-600' size={26} />
@@ -107,7 +103,7 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
                   <p className='text-gray-700'>{subTask.title}</p>
                 </div>
               </div>
-            ))}
+            ))}*/}
 
             <h1>Title: {task.title}</h1>
             <div className="w-full border-t border-gray-200 my-2" />

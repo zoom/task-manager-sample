@@ -1,29 +1,17 @@
-import Tasks from '@/components/taskmanger/Tasks'
+import {createClient} from "@/utils/supabase/server";
+import Tasks from "@/components/taskmanger/tasks";
 
-
-interface Task {
-  title: string;
-  image: string;
-  time: number;
-  description: string;
-  completed: boolean;
-  id: string;
-  priority: "high" | "medium" | "low";
-  activities?: any[];
-  assets?: any[];
-  subTasks?: any[];
-  date: string;
-  stage: string;
-}
-
+import type { Tables } from '@/lib/types'
+type Task = Tables<'tasks'>
 
 async function getTasks(): Promise<Task[]> {
-  const result = await fetch('http://localhost:4000/tasks')
+const supabase = await createClient();
+  const { data: tasks } = await supabase.from("tasks").select().returns<Task[]>();
 
-  return result.json()
+  console.log("tasks", tasks);
+
+  return tasks;
 }
-
-
 
 export default async function page({
   params,
@@ -33,9 +21,10 @@ export default async function page({
    
   };
 }) {
-  console.log("Params: ", params); 
-
+  //const tasks = await getTasks()
   const tasks = await getTasks()
+
+
 
   return (<Tasks tasks={tasks}/>);
 }
