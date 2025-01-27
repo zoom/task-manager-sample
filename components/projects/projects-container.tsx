@@ -1,21 +1,21 @@
 import {createClient} from "@/utils/supabase/server";
-import {TaskListsClient} from "@/components/task-lists/task-lists-client";
+import {ProjectsClient} from "@/components/projects/projects-client";
 
 import type { Tables } from '@/lib/types'
-type TaskList = Tables<'task_lists'>
+type Project = Tables<'projects'>
 
 
-export default async function TaskListsContainer() {
+export default async function ProjectsContainer() {
     const supabase = await createClient();
 
-   const { data: taskLists, error } = await supabase
-        .from('task_lists')
+   const { data: projects, error } = await supabase
+        .from('projects')
         .select(`
-      id,
-      name,
-      tasks(*)
-    `)
-        .returns<TaskList[]>()
+          id,
+          name,
+          tasks(*)
+        `)
+        .returns<Project[]>()
 
 
     if (error) {
@@ -30,5 +30,5 @@ export default async function TaskListsContainer() {
     }
 
 
-    return <TaskListsClient taskLists={taskLists || []} />
+    return <ProjectsClient projects={projects || []} />
 }

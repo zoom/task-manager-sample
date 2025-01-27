@@ -9,19 +9,19 @@ import {ChevronRight, ChevronLeft} from 'lucide-react'
 import type {Tables} from '@/lib/types'
 import {createClient} from "@/utils/supabase/client";
 
-type TaskList = Tables<'task_lists'>
+type Project = Tables<'projects'>
 type Task = Tables<'tasks'>
 
-interface TaskListsClientProps {
-    taskLists: TaskList[]
+interface ProjectsClientProps {
+    projects: Project[]
 }
 
-export function TaskListsClient({taskLists}: TaskListsClientProps) {
-    const [selectedList, setSelectedList] = useState<TaskList | null>(null)
+export function ProjectsClient({projects}: ProjectsClientProps) {
+    const [selectedList, setSelectedList] = useState<Project | null>(null)
     const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
 
-    const handleListClick = (list: TaskList) => {
+    const handleListClick = (list: Project) => {
         setSelectedList(list)
     }
 
@@ -99,7 +99,7 @@ export function TaskListsClient({taskLists}: TaskListsClientProps) {
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-2">
-                        {taskLists.map((list) => (
+                        {projects.map((list) => (
                             <li key={list.id}>
                                 <Button
                                     variant="ghost"

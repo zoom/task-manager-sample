@@ -14,7 +14,7 @@ const main = async () => {
   await seed.$resetDatabase();
 
   await seed.users(x => x(5, {
-    task_lists: x => x(5, {
+    projects: x => x(5, {
       tasks: x => x(5)
     }),
 

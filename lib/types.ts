@@ -34,7 +34,7 @@ export type Database = {
   }
   public: {
     Tables: {
-      task_lists: {
+      projects: {
         Row: {
           created_at: string
           id: number
@@ -63,7 +63,8 @@ export type Database = {
           due_date: string | null
           id: number
           priority: string
-          task_list_id: number
+          project_id: number
+          stage: string
           title: string
           user_id: string
         }
@@ -74,7 +75,8 @@ export type Database = {
           due_date?: string | null
           id?: number
           priority?: string
-          task_list_id: number
+          project_id: number
+          stage?: string
           title: string
           user_id: string
         }
@@ -85,16 +87,17 @@ export type Database = {
           due_date?: string | null
           id?: number
           priority?: string
-          task_list_id?: number
+          project_id?: number
+          stage?: string
           title?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "tasks_task_list_id_fkey"
-            columns: ["task_list_id"]
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "task_lists"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
