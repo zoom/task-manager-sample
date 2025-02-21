@@ -7,7 +7,7 @@ async function getTaskDetails(taskId: string): Promise<Task> {
   //const result = await fetch(`http://localhost:4000/tasks/${taskId}`);
   //return result.json();
   let task: Task = {
-    id: 123453,
+    id: 1,
     created_at: new Date().toDateString(),
     due_date: new Date().toDateString(),
     title: "test",
@@ -20,8 +20,9 @@ async function getTaskDetails(taskId: string): Promise<Task> {
   return task;
 }
 
-export default async function Page({ params }: { params: { tasks2Id: string } }) {
-  const task = await getTaskDetails( params.tasks2Id);
+export default async function Page({ params }: { params: { projectId:string , tasksId: string } }) {
+  const { projectId, tasksId } = await params;
+  const task = await getTaskDetails(tasksId);
 
   console.log('Task: ', task);
 

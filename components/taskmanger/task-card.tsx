@@ -20,9 +20,14 @@ export default function TaskCard({task, onEditClick}: { task: Tables<'tasks'>, o
 
     const router = useRouter();
 
-    const handleTaskClick = (taskId: number) => {
-        router.push(`/dashboard/tasks/${taskId}`);
+    const handleTaskClick = (taskId: number, projectId: number) => {
+        if (!projectId) {
+            console.error("Error: Project ID is undefined for task", taskId);
+            return;
+        }
+        router.push(`/dashboard/projects/${projectId}/tasks/${taskId}`);
     };
+    
 
 
     return (
@@ -85,7 +90,7 @@ export default function TaskCard({task, onEditClick}: { task: Tables<'tasks'>, o
             {/* Add  Activity Button */}
             <div className="py-4">
                 <button
-                    onClick={() => handleTaskClick(task.id)}
+                    onClick={() => handleTaskClick(task.id, task.project_id)}
                     className="w-full flex gap-4 items-center text-sm text-gray-500 font-semibold hover:bg-blue-500 hover:text-white transition-colors duration-300 rounded-md p-2"
                 >
                     <Plus className="text-lg"/>
