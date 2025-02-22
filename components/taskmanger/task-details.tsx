@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from "react";
+import { useRouter, useParams } from "next/navigation"; // Import useParams
 import { ChevronsUp, ChevronDown, ChevronUp, Paperclip } from 'lucide-react';
 import Loading from '@/components/taskmanger/loading';
 import { PRIORITYSTYLES, TASK_TYPE } from "@/utils/utils";
 import clsx from "clsx";
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'tasks'>
+type Task = Tables<'tasks'>;
 
 const ICONS = {
   high: <ChevronsUp />,
@@ -38,10 +39,18 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   const [selected, setSelected] = useState<string>(act_types[0]);
   const [text, setText] = useState<string>("");
   const isLoading = false;
+  const router = useRouter();
+  const params = useParams(); 
+
+  const projectId = params.projectId as string; // Extract projectId from URL params
 
   const handleSubmit = async () => {
-    // Handle form submission logic
-    console.log("Submitted:", { selected, text });
+    console.log("Task Details:", { selected, text });
+    router.push(`/dashboard/projects/${projectId}/tasks`);
+  };
+
+  const handleCancel = () => {
+    router.push(`/dashboard/projects/${projectId}/tasks`);
   };
 
   return (
@@ -86,6 +95,7 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
         <div className='space-y-4 py-6'>
           <p className='text-gray-500 font-semibold text-sm'>Task-Details</p>
           <div className='space-y-8'>
+   
     {/*        {task.subTasks?.map((subTask, index) => (
               <div key={index} className='flex gap-3'>
                 <div className='w-10 h-10 flex items-center justify-center rounded-full bg-violet-200'>
@@ -139,7 +149,15 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
         ></textarea>
 
         {/* Submit Button */}
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-4">
+          <button
+            type='button'
+            onClick={handleCancel}
+            className='bg-gray-400 text-white rounded py-2 px-6'
+          >
+            Cancel
+          </button>
+
           {isLoading ? (
             <Loading />
           ) : (

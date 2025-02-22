@@ -26,13 +26,14 @@ const AddActivity = ({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) => {
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<{ title: string; date: string }>();
-  const [priority, setPriority] = useState(PRIORITIES[1]);
 
+  const [priority, setPriority] = useState(PRIORITIES[1]);
 
   const submitHandler = async  (data: { title: string; date: string }) => {
     const supabase = createClient();
@@ -49,13 +50,13 @@ const AddActivity = ({
       priority,
     };
 
-    console.log("task", task);
-
     const { error } = await supabase
         .from('Tasks')
         .insert(task);
+    
+    console.log("Task Added", task);
 
-    console.log("error", error);
+    console.log("Error Message:", error);
   };
 
   const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {

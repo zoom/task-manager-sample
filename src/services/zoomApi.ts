@@ -15,7 +15,6 @@ export interface ZoomMeeting {
  */
 export async function createZoomMeeting(accessToken: string, meetingData: ZoomMeeting) {
 
-    console.log("Creating Zoom meeting with data:", meetingData);
 
   const response = await fetch(`${ZOOM_API_BASE_URL}/users/me/meetings`, {
     method: 'POST',
@@ -71,3 +70,60 @@ export async function getuserChannels(accessToken: string) {
   
     return response.json();
   }
+
+// Remove to cache retrieved access token
+  export async function getTeamChatBot() {
+    console.log("Getting Team Chat Bot Token");
+
+    const response = await fetch(`https://zoom.us/oauth/token?grant_type=client_credentials`, {
+      method: 'POST',
+      headers: {
+        "Authorization": `Basic ${Buffer.from(`${process.env.ZOOM_CLIENT_ID}:${process.env.ZOOM_CLIENT_SECRET}`).toString('base64')}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+ 
+    });
+  
+    if (!response.ok) {
+      throw new Error(`Failed to fetch OAuth token: ${response.status} - ${await response.text()}`);
+    }
+  
+    return response.json();
+  }
+
+  export async function sendTeamChatBotMessage(accessToken: string) {
+    console.log("Sending Team Chat Bot Message...");
+  
+    const messagePayload = {
+      robot_jid: "v1e1l0-tgeqagn236xhwrepg@xmpp.zoom.us",
+      to_jid: "tlma8otuqx-ujuoin1k0qq@xmpp.zoom.us",
+      user_jid: "tlma8otuqx-ujuoin1k0qq@xmpp.zoom.us",
+      account_id: "-RtWUD64T9KwsSAhmHAjaQ",
+      content: {
+        body: [
+          {
+            type: "message",
+            text: "Hello From ChatBot Test",
+          },
+        ],
+      },
+    };
+  
+    const response = await fetch(`https://api.zoom.us/v2/im/chat/messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(messagePayload),
+    });
+  
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Failed to send message: ${response.status} - ${errorMessage}`);
+    }
+  
+    return response.json();
+  }
+
+  

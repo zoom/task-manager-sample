@@ -9,7 +9,7 @@ const ZoomComponent = () => {
   const handleCreateMeeting = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/zoom', {
+      const response = await fetch('/api/zoom/meeting', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

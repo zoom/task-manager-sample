@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createZoomMeeting } from "@/src/services/zoomApi";
+import { getTeamChatBot, sendTeamChatBotMessage } from "@/src/services/zoomApi";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
@@ -24,14 +24,13 @@ export async function POST(req: Request) {
     //  Fetch the Supabase session securely
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-    console.log("Session Data:", sessionData);
-
     if (sessionError || !sessionData?.session) {
       console.error("Session error:", sessionError);
       return NextResponse.json({ error: "Unauthorized: No valid session" }, { status: 401 });
     }
 
     const accessToken = sessionData.session.provider_token; // Zoom OAuth token
+    console.log("Team Chat Bot Token");
 
     if (!accessToken) {
       return NextResponse.json({ error: "Unauthorized: No Zoom Access Token" }, { status: 401 });
@@ -39,9 +38,12 @@ export async function POST(req: Request) {
 
     // Call Zoom API with the access token
     const meetingData = { topic, type, start_time, duration, timezone };
-    const meeting = await createZoomMeeting(accessToken, meetingData);
-
-    return NextResponse.json(meeting, { status: 200 });
+    const getTeamChatBotToken = await getTeamChatBot();
+    
+    // send chatbot message to zoom
+    const sendChatBotMessage = await sendTeamChatBotMessage(getTeamChatBotToken.access_token);
+   
+    return NextResponse.json(sendChatBotMessage, { status: 200 });
   } catch (error) {
     console.error("Error creating Zoom meeting:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

@@ -32,7 +32,7 @@ const nextConfig = {
                     },
                     {
                         key: "Content-Security-Policy",
-                        value: `default-src 'self' 'unsafe-inline' 'unsafe-eval' ${supabaseURL};`
+                        value: `default-src 'self' 'unsafe-inline' 'unsafe-eval' ${supabaseURL};connect-src *;`
                     },
                     {
                         key: "Referrer-Policy",
