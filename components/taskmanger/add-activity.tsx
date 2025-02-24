@@ -66,8 +66,9 @@ const AddActivity = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
+    <div className="w-full bg-white dark:bg-background text-black dark:text-white shadow-md p-4 rounded-lg space-y-4 border border-gray-300 dark:border-border">
+    <Dialog open={open} onOpenChange={setOpen} >
+      <DialogContent className="sm:max-w-md ">
         <form onSubmit={handleSubmit(submitHandler)}>
           <DialogHeader>
             <DialogTitle>Add Task</DialogTitle>
@@ -184,6 +185,7 @@ const AddActivity = ({
         </form>
       </DialogContent>
     </Dialog>
+    </div>
   );
 };
 

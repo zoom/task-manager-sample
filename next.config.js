@@ -32,7 +32,7 @@ const nextConfig = {
                     },
                     {
                         key: "Content-Security-Policy",
-                        value: `default-src 'self' 'unsafe-inline' 'unsafe-eval' ${supabaseURL};connect-src *;`
+                        value: `default-src 'self' 'unsafe-inline' 'unsafe-eval' ${supabaseURL};connect-src https://donte-backend.ngrok.io;`
                     },
                     {
                         key: "Referrer-Policy",

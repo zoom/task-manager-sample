@@ -11,7 +11,7 @@ async function getProjectTasks(projectId: string): Promise<Task[]> {
         .select('*')
         .eq('project_id', projectId); 
 
-        console.log('Supabase Tasks:', tasks);
+        // console.log('Supabase Tasks:', tasks);
 
     if (error) {
         console.error('Error fetching tasks:', error);
@@ -30,7 +30,7 @@ export default async function Page({
     const { projectId } = awaitedParams;
     const tasks = await getProjectTasks(projectId);
 
-    console.log('Tasks:', tasks);
+    // console.log('Tasks:', tasks);
 
     return tasks.length > 0 ? (
         <Tasks tasks={tasks} />

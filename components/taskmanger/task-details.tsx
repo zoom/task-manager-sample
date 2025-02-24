@@ -42,7 +42,7 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   const router = useRouter();
   const params = useParams(); 
 
-  const projectId = params.projectId as string; // Extract projectId from URL params
+  const projectId = params.projectId as string; 
 
   const handleSubmit = async () => {
     console.log("Task Details:", { selected, text });
@@ -54,87 +54,58 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   };
 
   return (
-    <div className='w-[750px] flex flex-col md:flex-row gap-5 2xl:gap-8 bg-white shadow-md p-8 overflow-y-auto'>
+    <div className="w-[750px] flex flex-col bg-white dark:bg-background  md:flex-row gap-5 2xl:gap-8 shadow-md p-8 overflow-y-auto">
       {/* LEFT */}
-      <div className='w-full md:w-1/2 space-y-8'>
-        <div className='flex items-center gap-5'>
+      <div className="w-full md:w-1/2 space-y-8">
+        <div className="flex items-center gap-5">
           <div
             className={clsx(
-              "flex gap-1 items-center text-base font-semibold px-3 py-1 rounded-full",
-/*              PRIORITYSTYLES[task.priority],
-              bgColor[task.priority]*/
+              "flex gap-1 items-center text-base font-semibold px-3 py-1 rounded-full"
+              // PRIORITYSTYLES[task.priority],
+              // bgColor[task.priority]
             )}
           >
-{/*
-            <span className='text-lg'>{ICONS[task.priority]}</span>
-*/}
-            <span className='uppercase'>{task.priority} Priority</span>
+            {/* <span className='text-lg'>{ICONS[task.priority]}</span> */}
+            <span className="uppercase">{task.priority} Priority</span>
           </div>
 
-          <div className={clsx("flex items-center gap-2")}>
+          <div className="flex items-center gap-2">
             <div
               className={clsx(
-                "w-4 h-4 rounded-full",
-/*
-                TASK_TYPE[task.stage]
-*/
+                "w-4 h-4 rounded-full"
+                // TASK_TYPE[task.stage]
               )}
             />
-{/*
-            <span className='text-black uppercase'>{task.stage}</span>
-*/}
+            {/* <span className='text-black uppercase'>{task.stage}</span> */}
           </div>
         </div>
 
-{/*
-        <p className='text-gray-500'>Created At: {new Date(task.date).toDateString()}</p>
-*/}
-        <div className="w-full border-t border-gray-200 my-2" />
+        <div className="w-full border-t border-gray-200 dark:border-gray-700 my-2" />
 
         {/* Task-Details */}
-        <div className='space-y-4 py-6'>
-          <p className='text-gray-500 font-semibold text-sm'>Task-Details</p>
-          <div className='space-y-8'>
-   
-    {/*        {task.subTasks?.map((subTask, index) => (
-              <div key={index} className='flex gap-3'>
-                <div className='w-10 h-10 flex items-center justify-center rounded-full bg-violet-200'>
-                  <Paperclip className='text-violet-600' size={26} />
-                </div>
-                <div className='space-y-1'>
-                  <div className='flex gap-2 items-center'>
-                    <span className='text-sm text-gray-500'>
-                      {new Date(subTask.date).toDateString()}
-                    </span>
-                    <span className='px-2 py-0.5 text-center text-sm rounded-full bg-violet-100 text-violet-700 font-semibold'>
-                      {subTask.tag}
-                    </span>
-                  </div>
-                  <p className='text-gray-700'>{subTask.title}</p>
-                </div>
-              </div>
-            ))}*/}
-
-            <h1>Title: {task.title}</h1>
-            <div className="w-full border-t border-gray-200 my-2" />
-            <p>Description: {task.description}</p>
+        <div className="space-y-4 py-6">
+          <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">Task-Details</p>
+          <div className="space-y-8">
+            <h1 className="text-gray-900 dark:text-gray-100">Title: {task.title}</h1>
+            <div className="w-full border-t border-gray-200 dark:border-gray-700 my-2" />
+            <p className="text-gray-700 dark:text-gray-300">Description: {task.description}</p>
           </div>
         </div>
       </div>
 
       {/* RIGHT */}
-      <div className='w-full md:w-1/2 space-y-8'>
-        <p className='text-lg font-semibold'>Add Activity</p>
-        <div className='w-full grid grid-cols-2 gap-4'>
+      <div className="w-full md:w-1/2 space-y-8">
+        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Activity</p>
+        <div className="w-full grid grid-cols-2 gap-4">
           {act_types.map((item) => (
-            <div key={item} className='flex gap-2 items-center'>
+            <div key={item} className="flex gap-2 items-center">
               <input
-                type='checkbox'
-                className='w-4 h-4'
+                type="checkbox"
+                className="w-4 h-4"
                 checked={selected === item}
                 onChange={() => setSelected(item)}
               />
-              <p>{item}</p>
+              <p className="text-gray-900 dark:text-gray-100">{item}</p>
             </div>
           ))}
         </div>
@@ -144,16 +115,16 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
           rows={10}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder='Type ......'
-          className='bg-white w-full border border-gray-300 outline-none p-4 rounded-md focus:ring-2 ring-blue-500'
+          placeholder="Type ......"
+          className="bg-white dark:bg-background w-full border border-gray-300 dark:border-gray-600 outline-none p-4 rounded-md focus:ring-2 ring-blue-500 text-gray-900 dark:text-gray-100"
         ></textarea>
 
         {/* Submit Button */}
         <div className="flex justify-end gap-4">
           <button
-            type='button'
+            type="button"
             onClick={handleCancel}
-            className='bg-gray-400 text-white rounded py-2 px-6'
+            className="bg-gray-400 text-white rounded py-2 px-6"
           >
             Cancel
           </button>
@@ -162,9 +133,9 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
             <Loading />
           ) : (
             <button
-              type='button'
+              type="button"
               onClick={handleSubmit}
-              className='bg-blue-600 text-white rounded py-2 px-6'
+              className="bg-blue-600 text-white rounded py-2 px-6"
             >
               Submit
             </button>
