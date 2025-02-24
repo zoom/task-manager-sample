@@ -104,7 +104,38 @@ export async function getuserChannels(accessToken: string) {
           {
             type: "message",
             text: "Hello From ChatBot Test",
-          },
+          },{
+            type: 'actions',
+            limit: 3,
+            items: [
+              {
+                text: 'Open Zoom App Webview 1',
+                value: 'button1',
+                style: 'Default',
+                action: 'dialog',
+                dialog: {
+                  size: 'S',
+                  title: {
+                    text: 'Create a ticket',
+                  },
+                },
+              },
+              {
+                text: 'Open Zoom App Webview 2',
+                value: 'button2',
+                style: 'Default',
+                action: 'dialog',
+                dialog: {
+                  size: 'S',
+                  link: 'https://donte.ngrok.io/zoom', // THIS SHOULD NOT BE USED IN PRODUCTION
+                  title: {
+                    text: 'Share a ticket',
+                  },
+                },
+              },
+            ],
+          }
+          
         ],
       },
     };
@@ -125,5 +156,8 @@ export async function getuserChannels(accessToken: string) {
   
     return response.json();
   }
+
+  
+
 
   

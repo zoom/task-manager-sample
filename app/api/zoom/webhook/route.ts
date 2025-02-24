@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
       case "bot_notification":
         console.log("📢 Bot Notification:", body.payload);
-        return NextResponse.json({ message: "Notification received." }, { status: 200 });
+        return NextResponse.json({ message: "Notification received." }, { status: 200 });  
 
       default:
         console.warn("⚠️ Unknown event:", body.event);
