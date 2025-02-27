@@ -42,16 +42,18 @@ const AddActivity = ({
     console.log("user", user);
 
     const task = {
-      title: "test title",
+      title: "My Test Tiltle",
       completed: true,
-      task_list_id: 1,
+      project_id: 1, // Changed from task_list_id
       user_id: user?.id,
-      due_date: new Date(),
+      due_date: new Date().toISOString(), // Convert date to ISO string
       priority,
+      description: "test description", 
+      stage: "TODO", 
     };
 
     const { error } = await supabase
-        .from('Tasks')
+        .from('tasks')
         .insert(task);
     
     console.log("Task Added", task);
