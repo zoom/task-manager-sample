@@ -30,19 +30,16 @@ const EditTask = ({
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<{ title: string; date: string }>();
+  } = useForm<{ title: string; date: string; additionalTask: string }>();
   const [priority, setPriority] = useState<string>(task?.priority);
 
   useEffect(() => {
     setValue("title", task?.title);
   }, [task, setValue]);
 
-  const submitHandler = (data: { title: string; date: string }) => {
+  const submitHandler = (data: { title: string; date: string; additionalTask: string }) => {
     // Handle form submission
-    console.log({/*
-    setValue("date", task?.date);
-*/
-
+    console.log({
       ...data,
       priority,
     });
@@ -73,13 +70,29 @@ const EditTask = ({
               )}
             </div>
 
+            {/* Additional Task */}
+            <div>
+              <label htmlFor="additionalTask" className="block text-sm font-medium text-gray-700">
+                Additional Task
+              </label>
+              <Input
+                id="additionalTask"
+                placeholder="Enter additional task"
+                {...register("additionalTask")}
+              />
+              {errors.additionalTask && (
+                <p className="text-red-500 text-sm">{errors.additionalTask.message}</p>
+              )}
+            </div>
+
             {/* Task Stage and Date */}
             <div className="flex gap-4">
               <div className="w-full">
                 <label htmlFor="stage" className="block text-sm font-medium text-gray-700">
                   Task Stage
                 </label>
-{/*                <Select onValueChange={setStage} defaultValue={stage}>
+                {/*
+                <Select onValueChange={setStage} defaultValue={stage}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
@@ -90,7 +103,8 @@ const EditTask = ({
                       </SelectItem>
                     ))}
                   </SelectContent>
-                </Select>*/}
+                </Select>
+                */}
               </div>
 
               <div className="w-full">
