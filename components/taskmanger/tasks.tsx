@@ -39,7 +39,7 @@ export default function Tasks({ tasks }: { tasks: Task[] }) {
   const status = "";
 
   return (
-    <div className="flex-1 w-[750px] mx-auto flex flex-col gap-6">
+    <div className="flex-1 w-full max-w-full mx-auto flex flex-col gap-6">
       {/* Header Section */}
       <div className="w-full flex justify-between items-center mb-4">
         <h2 className="font-bold text-2xl">Tasks</h2>
@@ -56,7 +56,7 @@ export default function Tasks({ tasks }: { tasks: Task[] }) {
       </div>
 
       {/* Task Tabs Section */}
-      <div className="w-full">
+      <div className="w-full max-w-full">
         <TaskTabs tabs={TABS} selected={selected} setSelected={setSelected}>
           {!status && (
             <div className='w-full flex justify-between gap-4 md:gap-x-12 py-4'>

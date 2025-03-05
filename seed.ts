@@ -13,9 +13,11 @@ const main = async () => {
   // Truncate all tables in the database
   await seed.$resetDatabase();
 
-  await seed.users(x => x(5, {
+  await seed.users(x => x(5,{
     projects: x => x(5, {
-      tasks: x => x(5)
+      tasks: x => x(5, {
+        sub_tasks: x => x(5), 
+      }), 
     }),
 
   }))

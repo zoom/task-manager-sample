@@ -28,7 +28,8 @@ export default function ListView({ tasks , onEditClick}: { tasks: Task[], onEdit
 
   const TableHeader = () => (
     <thead className='w-full border-b border-gray-300 my-2 '>
-      <tr className='w-full text-black text-left space-y-4'>
+      <tr className=' w-full bg-white dark:bg-background
+        text-black dark:text-white text-left space-y-4'>
         <th className='py-2'>Task Title</th>
         <th className='py-2'>Priority</th>
         <th className='py-2 md:gap-6'>Created At</th>
@@ -105,7 +106,7 @@ export default function ListView({ tasks , onEditClick}: { tasks: Task[], onEdit
     <>
       <div className='bg-white px-2 md:px-4 pt-4 pb-9 shadow-md rounded'>
         <div className='overflow-x-auto'>
-          <table className='w-full'>
+          <table className='w-full bg-white dark:bg-background text-black '>
             <TableHeader />
             <tbody>
               {tasks?.map((task, index) => (

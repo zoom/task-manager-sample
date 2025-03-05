@@ -20,7 +20,7 @@ const TaskTabs = ({
               key={tab.title}
               value={tab.title}
               onClick={() => setSelected(tab.title)}
-              className="w-fit flex items-center outline-none gap-2 px-3 py-2.5 text-base font-medium leading-5 bg-white"
+              className="w-fit flex items-center outline-none gap-2 px-3 py-2.5 text-base font-medium leading-5 text-gray-600 dark:text-white hover:bg-gray-700 transition-colors duration-300"
             >
               {tab.icon}
               {tab.title}
