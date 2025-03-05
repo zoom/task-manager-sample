@@ -1,22 +1,18 @@
 "use client";
 
-import { AlignJustify, Grid2X2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import TaskTabs from "./tabs";
 import BoardView from "./board-view";
-import ListView from "./list-view";
 import AddActivity from "./add-activity";
 import EditTask from "./edit-task";
 import TaskTitle from "./task-title";
 
 import type { Tables } from '@/lib/types'
-type Task = Tables<'tasks'>
 
-const TABS = [
-  { title: "Board View", icon: <Grid2X2 /> },
-  { title: "List View", icon: <AlignJustify /> },
-];
+type Priority = 'high' | 'medium' | 'low';
+type Task = Tables<'tasks'> & { priority: Priority; activities?: any[] };
+
 
 const TASK_TYPE = {
   todo: "bg-blue-600",
@@ -24,16 +20,18 @@ const TASK_TYPE = {
   completed: "bg-green-600",
 };
 
-export default function Tasks({ tasks }: { tasks: Task[] }) {
-  const [selected, setSelected] = useState(TABS[0].title); 
+export default function Tasks({ tasks }: {
+  tasks: Task[]
+}) {
+
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Tables<'tasks'> | null>(null);
 
   // Function to handle edit task click
   const handleEditClick = (task: Tables<'tasks'>) => {
-    setSelectedTask(task); 
-    setOpenEdit(true); 
+    setSelectedTask(task);
+    setOpenEdit(true);
   };
 
   const status = "";
@@ -57,21 +55,18 @@ export default function Tasks({ tasks }: { tasks: Task[] }) {
 
       {/* Task Tabs Section */}
       <div className="w-full max-w-full">
-        <TaskTabs tabs={TABS} selected={selected} setSelected={setSelected}>
-          {!status && (
-            <div className='w-full flex justify-between gap-4 md:gap-x-12 py-4'>
-              <TaskTitle label='To Do' className={TASK_TYPE.todo} />
-              <TaskTitle label='In Progress' className={TASK_TYPE["in progress"]} />
-              <TaskTitle label='Completed' className={TASK_TYPE.completed} />
-            </div>
-          )}
-          {/* Render content dynamically based on selected tab */}
-          {selected === "Board View" ? (
-            <BoardView tasks={tasks} onEditClick={handleEditClick} />
-          ) : (
-            <ListView tasks={tasks} onEditClick={handleEditClick} /> 
-          )}
-        </TaskTabs>
+
+        {!status && (
+          <div className='w-full flex justify-between gap-4 md:gap-x-12 py-4'>
+            <TaskTitle label='To Do' className={TASK_TYPE.todo} />
+            <TaskTitle label='In Progress' className={TASK_TYPE["in progress"]} />
+            <TaskTitle label='Completed' className={TASK_TYPE.completed} />
+          </div>
+        )}
+
+        <BoardView tasks={tasks} onEditClick={handleEditClick} />
+
+
       </div>
 
       <AddActivity open={open} setOpen={setOpen} />
@@ -81,7 +76,7 @@ export default function Tasks({ tasks }: { tasks: Task[] }) {
         <EditTask
           open={openEdit}
           setOpen={setOpenEdit}
-          task={selectedTask} 
+          task={selectedTask}
           key={selectedTask.id}
         />
       )}

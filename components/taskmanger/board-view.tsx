@@ -19,11 +19,11 @@ export default function BoardView({
       <h1 >
         You are on this route: {pathname}
       </h1>
-      
+
       <div className="w-full px-0 md:px-0">
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {tasks?.map((task) => (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:grid-cols-3">
+          {tasks?.map((task) => (
             <TaskCard
               key={task.id}
               task={task}
