@@ -150,6 +150,8 @@ const AddActivity = ({
                 </Select>
               </div>
 
+
+                {/* Remove this */}
               <div className="w-full flex items-center justify-center">
                 <label
                   className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer my-4"

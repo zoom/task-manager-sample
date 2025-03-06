@@ -1,18 +1,11 @@
 import { NextResponse } from "next/server";
-import { createZoomMeeting, getTeamChatBot,sendTeamChatBotMessage } from "@/src/services/zoomApi";
+import { createZoomMeeting } from "@/src/services/zoomApi";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
     const { topic, type, start_time, duration, timezone } = await req.json();
-
-     // Send a message to the Zoom Team Chat Bot
-     const getTeamChatBotToken = await getTeamChatBot();
-     const sendChatBotMessage = await sendTeamChatBotMessage(getTeamChatBotToken.access_token);
-     console.log("Chat Bot Message", sendChatBotMessage);
-
-    // Test Calls--------------------
     
     //  Await cookies() before passing to Supabase
     const cookieStore = await cookies();

@@ -85,10 +85,7 @@ export default function TaskCard({
             <span className="text-sm text-gray-600 dark:text-white">
               {task.due_date ? formatDate(new Date(task.due_date)) : "No due date"}
             </span>
-            <div className="flex gap-1 items-center text-sm text-gray-600 dark:text-white">
-              <MessageSquareQuote />
-              <span>{task.activities?.length || 0}</span>
-            </div>
+            
           </div>
 
           {/* Action Buttons */}
@@ -113,8 +110,6 @@ export default function TaskCard({
       <div className="px-4">
         <div className="w-full border-t border-gray-300 my-2" />
       </div>
-
-
 
       <CardFooter className="p-4">
         <Button

@@ -67,6 +67,7 @@ export type Database = {
           stage: string
           title: string
           user_id: string
+          sub_tasks: []
         }
         Insert: {
           completed?: boolean

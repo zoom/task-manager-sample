@@ -91,8 +91,12 @@ export async function getuserChannels(accessToken: string) {
     return response.json();
   }
 
-  export async function sendTeamChatBotMessage(accessToken: string) {
-    console.log("Sending Team Chat Bot Message...");
+  export async function sendTeamChatBotMessage() {
+    const {access_token}= await getTeamChatBot();
+
+    
+
+    console.log("Sending Team Chat Bot Message...", access_token);
   
     const messagePayload = {
       robot_jid: "v1e1l0-tgeqagn236xhwrepg@xmpp.zoom.us",
@@ -143,7 +147,7 @@ export async function getuserChannels(accessToken: string) {
     const response = await fetch(`https://api.zoom.us/v2/im/chat/messages`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${access_token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(messagePayload),

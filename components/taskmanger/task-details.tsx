@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation"; // Import useParams
-import { ChevronsUp, ChevronDown, ChevronUp, Paperclip } from 'lucide-react';
+import { ChevronsUp, ChevronDown, ChevronUp, Paperclip } from "lucide-react";
 import Loading from '@/components/taskmanger/loading';
+import { sendTeamChatBotMessage } from "@/src/services/zoomApi";
 import { PRIORITYSTYLES, TASK_TYPE } from "@/utils/utils";
 import clsx from "clsx";
 
@@ -14,12 +15,6 @@ const ICONS = {
   high: <ChevronsUp />,
   medium: <ChevronUp />,
   low: <ChevronDown />,
-};
-
-const bgColor = {
-  high: "bg-red-200",
-  medium: "bg-yellow-200",
-  low: "bg-blue-200",
 };
 
 const act_types = [
@@ -45,7 +40,18 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   const projectId = params.projectId as string; 
 
   const handleSubmit = async () => {
-    console.log("Task Details:", { selected, text });
+    console.log("Task Details Data:", { selected, text });
+    try {
+      const response = await fetch('/api/zoom/teamchatbot', {
+        method: 'POST',
+      });
+      if (!response.ok) {
+        throw new Error("Failed to send chatbot message");
+      }
+      // Optionally, handle the response
+    } catch (error) {
+      console.error(error);
+    }
     router.push(`/dashboard/projects/${projectId}/tasks`);
   };
 
@@ -54,48 +60,89 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   };
 
   return (
-    <div className="w-[750px] flex flex-col bg-white dark:bg-background  md:flex-row gap-5 2xl:gap-8 shadow-md p-8 overflow-y-auto">
+    <div className="w-[850px] flex flex-col bg-white dark:bg-background md:flex-row gap-5 2xl:gap-8 shadow-md p-8 overflow-y-auto">
       {/* LEFT */}
-      <div className="w-full md:w-1/2 space-y-8">
+      <div className="w-full md:w-1/2 space-y-4">
+      <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">
+              Title:
+            </p>
+        <h3 className="text-gray-900 font-semibold dark:text-gray-100">
+          {task.title}
+        </h3>
+
+        <div className="mt-2 w-full border-t border-gray-200 dark:border-gray-700" />
+        <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">
+        Priority:
+            </p>
+
         <div className="flex items-center gap-5">
+          
           <div
             className={clsx(
               "flex gap-1 items-center text-base font-semibold px-3 py-1 rounded-full"
-              // PRIORITYSTYLES[task.priority],
-              // bgColor[task.priority]
+              // Optionally add PRIORITYSTYLES and bgColor here if needed
             )}
           >
-            {/* <span className='text-lg'>{ICONS[task.priority]}</span> */}
             <span className="uppercase">{task.priority} Priority</span>
           </div>
-
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <div
               className={clsx(
                 "w-4 h-4 rounded-full"
-                // TASK_TYPE[task.stage]
+                // Optionally add TASK_TYPE styling here if needed
               )}
             />
-            {/* <span className='text-black uppercase'>{task.stage}</span> */}
           </div>
         </div>
 
         <div className="w-full border-t border-gray-200 dark:border-gray-700 my-2" />
 
-        {/* Task-Details */}
-        <div className="space-y-4 py-6">
-          <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">Task-Details</p>
-          <div className="space-y-8">
-            <h1 className="text-gray-900 dark:text-gray-100">Title: {task.title}</h1>
+        {/* Task Details Section */}
+        <div className="space-y-4 py-2">
+          <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">
+            Task-Details
+          </p>
+          <div className="space-y-4">
+            <p className="text-gray-700 dark:text-gray-300">{task.description}</p>
             <div className="w-full border-t border-gray-200 dark:border-gray-700 my-2" />
-            <p className="text-gray-700 dark:text-gray-300">Description: {task.description}</p>
+
+            {/* Subtasks Section */}
+            <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">
+              SubTasks:
+            </p>
+            <div className="space-y-2">
+              {task.sub_tasks && task.sub_tasks.length > 0 ? (
+                task.sub_tasks.map((subtask: any) => (
+                  <div key={subtask.id} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4"
+                      checked={subtask.completed}
+                      onChange={() => {
+                        // Handle subtask completion toggle
+                        // This could update state or make an API call
+                      }}
+                    />
+                    <span className="text-gray-700 dark:text-gray-300">
+                      {subtask.title}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 dark:text-gray-300">
+                  No subtasks available
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* RIGHT */}
       <div className="w-full md:w-1/2 space-y-8">
-        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Activity</p>
+        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Add Activity
+        </p>
         <div className="w-full grid grid-cols-2 gap-4">
           {act_types.map((item) => (
             <div key={item} className="flex gap-2 items-center">
@@ -128,7 +175,6 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
           >
             Cancel
           </button>
-
           {isLoading ? (
             <Loading />
           ) : (
