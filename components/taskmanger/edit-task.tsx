@@ -9,12 +9,23 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter, useParams } from "next/navigation";
 
-import type { Tables } from '@/lib/types'
-type Task = Tables<'tasks'>
+import type { Tables } from "@/lib/types";
+type Task = Tables<'tasks'>;
+
+const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
+const PRIORITIES = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
 
 const EditTask = ({
   open,
@@ -25,24 +36,70 @@ const EditTask = ({
   setOpen: (open: boolean) => void;
   task: Task;
 }) => {
+  // Extend form to include description along with title, date, and additionalTask.
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<{ title: string; date: string; additionalTask: string }>();
+  } = useForm<{ title: string; date: string; description: string; additionalTask: string }>();
+
+  // Track priority and stage in state
   const [priority, setPriority] = useState<string>(task?.priority);
+  const [stage, setStage] = useState<string>(task?.stage);
+
+  const router = useRouter();
+  const params = useParams();
+  const projectId = Number(params.projectId); // Assuming projectId is in the URL
 
   useEffect(() => {
     setValue("title", task?.title);
+    setValue("description", task?.description || "");
+    // If due_date is ISO string, we extract the date portion (YYYY-MM-DD)
+    setValue("date", task?.due_date ? task.due_date.substring(0, 10) : "");
+    setValue("additionalTask", "");
   }, [task, setValue]);
 
-  const submitHandler = (data: { title: string; date: string; additionalTask: string }) => {
-    // Handle form submission
-    console.log({
-      ...data,
-      priority,
-    });
+  const submitHandler = async (data: { title: string; date: string; description: string; additionalTask: string }) => {
+    const supabase = createClient();
+
+    // Update the main task record.
+    const { error: updateError } = await supabase
+      .from("tasks")
+      .update({
+        title: data.title,
+        due_date: new Date(data.date).toISOString(),
+        description: data.description,
+        priority: priority,
+        stage: stage,
+      })
+      .eq("id", task.id);
+
+    if (updateError) {
+      console.error("Error updating task:", updateError);
+    } else {
+      console.log("Task updated", { ...data, priority, stage });
+    }
+
+    // If additionalTask has been provided, insert it as a new subtask.
+    if (data.additionalTask) {
+      const subtask = {
+        task_id: task.id,
+        title: data.additionalTask,
+        // Optionally add more fields (like date or tag) if needed.
+      };
+
+      const { error: subtaskError } = await supabase.from("sub_tasks").insert(subtask);
+      if (subtaskError) {
+        console.error("Error inserting subtask:", subtaskError);
+      } else {
+        console.log("Subtask added", subtask);
+      }
+    }
+
+    // Close the dialog and refresh the page to show the updated data.
+    setOpen(false);
+    router.refresh();
   };
 
   return (
@@ -70,7 +127,23 @@ const EditTask = ({
               )}
             </div>
 
-            {/* Additional Task */}
+            {/* Task Description */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                Task Description
+              </label>
+              <textarea
+                id="description"
+                placeholder="Enter task description"
+                {...register("description", { required: "Description is required" })}
+                className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md outline-none focus:ring-2 ring-blue-500 text-gray-900 dark:text-gray-100"
+              ></textarea>
+              {errors.description && (
+                <p className="text-red-500 text-sm">{errors.description.message}</p>
+              )}
+            </div>
+
+            {/* Additional Task (for Subtask insertion) */}
             <div>
               <label htmlFor="additionalTask" className="block text-sm font-medium text-gray-700">
                 Additional Task
@@ -91,20 +164,18 @@ const EditTask = ({
                 <label htmlFor="stage" className="block text-sm font-medium text-gray-700">
                   Task Stage
                 </label>
-                {/*
                 <Select onValueChange={setStage} defaultValue={stage}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
                   <SelectContent>
-                    {["TODO", "IN PROGRESS", "COMPLETED"].map((list) => (
+                    {LISTS.map((list) => (
                       <SelectItem key={list} value={list}>
                         {list}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                */}
               </div>
 
               <div className="w-full">
@@ -133,7 +204,7 @@ const EditTask = ({
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
-                    {["HIGH", "MEDIUM", "NORMAL", "LOW"].map((level) => (
+                    {PRIORITIES.map((level) => (
                       <SelectItem key={level} value={level}>
                         {level}
                       </SelectItem>
