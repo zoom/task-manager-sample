@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createZoomMeeting } from "@/src/services/zoomApi";
+import { addMeetingApp, createZoomMeeting } from "@/src/services/zoomApi";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
@@ -36,6 +36,7 @@ export async function POST(req: Request) {
     // Call Zoom API with the access token
     const meetingData = { topic, type, start_time, duration, timezone };
     const meeting = await createZoomMeeting(accessToken, meetingData);
+    await addMeetingApp( meeting.id, accessToken);
 
     return NextResponse.json(meeting, { status: 200 });
   } catch (error) {

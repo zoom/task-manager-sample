@@ -41,7 +41,7 @@ async function getTaskDetails(projectId: string, taskId: string): Promise<Task |
 export default async function Page({ params }: { params: { projectId: string; tasksId: string } }) {
   const { projectId, tasksId } = await params;
   const task = await getTaskDetails(projectId, tasksId);
-  console.log("Task Details:", task);
+ 
 
   if (!task) {
     return <div>Task not found</div>;

@@ -5,6 +5,10 @@ import { sendTeamChatBotMessage } from "@/src/services/zoomApi";
 export async function POST(req: Request) {
   try {
 
+    const { selected, text, selectedSubtaskDetails } = await req.json();
+
+    console.log("ChatBot Payload Data:", { selected, text, selectedSubtaskDetails });
+
     // Note: sendTeamChatBotMessage internally fetches the bot token, so we don't need to pass any token here.
     const sendChatBotMessage = await sendTeamChatBotMessage();
 

@@ -92,11 +92,7 @@ export async function getuserChannels(accessToken: string) {
   }
 
   export async function sendTeamChatBotMessage() {
-    const {access_token}= await getTeamChatBot();
-
-    
-
-    console.log("Sending Team Chat Bot Message...", access_token);
+    const { access_token } = await getTeamChatBot();
   
     const messagePayload = {
       robot_jid: "v1e1l0-tgeqagn236xhwrepg@xmpp.zoom.us",
@@ -108,7 +104,8 @@ export async function getuserChannels(accessToken: string) {
           {
             type: "message",
             text: "Hello From ChatBot Test",
-          },{
+          },
+          {
             type: 'actions',
             limit: 3,
             items: [
@@ -139,29 +136,64 @@ export async function getuserChannels(accessToken: string) {
               },
             ],
           }
-          
         ],
       },
     };
   
-    const response = await fetch(`https://api.zoom.us/v2/im/chat/messages`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(messagePayload),
-    });
+    try {
+      const response = await fetch('https://api.zoom.us/v2/im/chat/messages', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(messagePayload),
+      });
   
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Failed to send message: ${response.status} - ${errorMessage}`);
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`Failed to send message: ${response.status} - ${errorData}`);
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error('Error sending Zoom chatbot message:', error);
+      throw error;
     }
-  
-    return response.json();
   }
-
   
+
+  /**
+ * Adds an app to a Zoom meeting
+ * @param meetingId - The unique identifier of the Zoom meeting
+ * @param accessToken - OAuth access token for API authorization
+ * @returns The API response data
+ * @throws Error if the API request fails
+ * @scopes meeting:write:open_app
+ * @enableWebPortalSetting Zoom Apps Quick Launch Button
+ * @webPortalSetting  https://www.zoom.us/profile/setting?&tab=zoomapps
+ */
+export async function addMeetingApp(meetingId: string, accessToken: string) {
+  try {
+    const response = await fetch(`${ZOOM_API_BASE_URL}/meetings/${meetingId}/open_apps`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(`Failed to add meeting app: ${response.status} - ${errorData}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error adding app to meeting ${meetingId}:`, error);
+    throw error;
+  }
+}
 
 
   

@@ -15,7 +15,7 @@ const ZoomComponent = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          topic: 'My Next.js Zoom Meeting',
+          topic: 'Test Add A Meeting App',
           type: 2, // 1: Instant, 2: Scheduled
           start_time: new Date().toISOString(),
           duration: 30,

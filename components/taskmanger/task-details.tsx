@@ -8,7 +8,7 @@ import { sendTeamChatBotMessage } from "@/src/services/zoomApi";
 import { PRIORITYSTYLES, TASK_TYPE } from "@/utils/utils";
 import clsx from "clsx";
 
-import type { Tables } from '@/lib/types'
+import type { Tables } from '@/lib/types';
 type Task = Tables<'tasks'>;
 
 const ICONS = {
@@ -33,6 +33,8 @@ type TaskDetailsProps = {
 const TaskDetails = ({ task }: TaskDetailsProps) => {
   const [selected, setSelected] = useState<string>(act_types[0]);
   const [text, setText] = useState<string>("");
+  // New state for tracking selected subtask IDs
+  const [selectedSubtasks, setSelectedSubtasks] = useState<number[]>([]);
   const isLoading = false;
   const router = useRouter();
   const params = useParams(); 
@@ -40,21 +42,31 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   const projectId = params.projectId as string; 
 
   const handleSubmit = async () => {
-    console.log("Task Details Data:", { selected, text });
+    // Derive the full details of selected subtasks
+    const selectedSubtaskDetails = task.sub_tasks
+      ? task.sub_tasks.filter((subtask: any) => selectedSubtasks.includes(subtask.id)): [];
+  
+    console.log("Task Details Data:", { selected, text, selectedSubtaskDetails });
+    
     try {
       const response = await fetch('/api/zoom/teamchatbot', {
         method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ selected, text, selectedSubtaskDetails }),
       });
       if (!response.ok) {
         throw new Error("Failed to send chatbot message");
       }
-      // Optionally, handle the response
+      
+      const data = await response.json();
+      console.log("Chatbot Response:", data);
     } catch (error) {
       console.error(error);
     }
     router.push(`/dashboard/projects/${projectId}/tasks`);
   };
-
   const handleCancel = () => {
     router.push(`/dashboard/projects/${projectId}/tasks`);
   };
@@ -63,20 +75,19 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
     <div className="w-[850px] flex flex-col bg-white dark:bg-background md:flex-row gap-5 2xl:gap-8 shadow-md p-8 overflow-y-auto">
       {/* LEFT */}
       <div className="w-full md:w-1/2 space-y-4">
-      <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">
-              Title:
-            </p>
+        <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">
+          Title:
+        </p>
         <h3 className="text-gray-900 font-semibold dark:text-gray-100">
           {task.title}
         </h3>
 
         <div className="mt-2 w-full border-t border-gray-200 dark:border-gray-700" />
         <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">
-        Priority:
-            </p>
+          Priority:
+        </p>
 
         <div className="flex items-center gap-5">
-          
           <div
             className={clsx(
               "flex gap-1 items-center text-base font-semibold px-3 py-1 rounded-full"
@@ -103,7 +114,9 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
             Task-Details
           </p>
           <div className="space-y-4">
-            <p className="text-gray-700 dark:text-gray-300">{task.description}</p>
+            <p className="text-gray-700 dark:text-gray-300">
+              {task.description}
+            </p>
             <div className="w-full border-t border-gray-200 dark:border-gray-700 my-2" />
 
             {/* Subtasks Section */}
@@ -117,10 +130,16 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
                     <input
                       type="checkbox"
                       className="w-4 h-4"
-                      checked={subtask.completed}
+                      // Use the state variable to determine if the checkbox is checked
+                      checked={selectedSubtasks.includes(subtask.id)}
                       onChange={() => {
-                        // Handle subtask completion toggle
-                        // This could update state or make an API call
+                        setSelectedSubtasks(prev => {
+                          if (prev.includes(subtask.id)) {
+                            return prev.filter(id => id !== subtask.id);
+                          } else {
+                            return [...prev, subtask.id];
+                          }
+                        });
                       }}
                     />
                     <span className="text-gray-700 dark:text-gray-300">
