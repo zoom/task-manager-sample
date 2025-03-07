@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation"; // Import useParams
 import { ChevronsUp, ChevronDown, ChevronUp, Paperclip } from "lucide-react";
 import Loading from '@/components/taskmanger/loading';
-import { sendTeamChatBotMessage } from "@/src/services/zoomApi";
 import { PRIORITYSTYLES, TASK_TYPE } from "@/utils/utils";
 import clsx from "clsx";
 
@@ -33,7 +32,6 @@ type TaskDetailsProps = {
 const TaskDetails = ({ task }: TaskDetailsProps) => {
   const [selected, setSelected] = useState<string>(act_types[0]);
   const [text, setText] = useState<string>("");
-  // New state for tracking selected subtask IDs
   const [selectedSubtasks, setSelectedSubtasks] = useState<number[]>([]);
   const isLoading = false;
   const router = useRouter();
@@ -42,19 +40,37 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   const projectId = params.projectId as string; 
 
   const handleSubmit = async () => {
-    // Derive the full details of selected subtasks
+   
     const selectedSubtaskDetails = task.sub_tasks
-      ? task.sub_tasks.filter((subtask: any) => selectedSubtasks.includes(subtask.id)): [];
+      ? task.sub_tasks.filter((subtask: any) =>
+          selectedSubtasks.includes(subtask.id)
+        )
+      : [];
+    const location = window.location.href;
   
-    console.log("Task Details Data:", { selected, text, selectedSubtaskDetails });
-    
+    const messageLines = [
+      `Activity: ${selected}`,
+      `Message: ${text}`,
+      `Subtasks: ${
+        selectedSubtaskDetails.length > 0
+          ? selectedSubtaskDetails.map((s: any) => s.title).join(", ")
+          : "None"
+      }`,
+      `Ticket: ${location}`,
+    ];
+    const messageText = messageLines.join("\n");
+  
     try {
       const response = await fetch('/api/zoom/teamchatbot', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ selected, text, selectedSubtaskDetails }),
+        
+        body: JSON.stringify({
+          message: { text: messageText },
+          location,
+        }),
       });
       if (!response.ok) {
         throw new Error("Failed to send chatbot message");
@@ -67,6 +83,8 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
     }
     router.push(`/dashboard/projects/${projectId}/tasks`);
   };
+  
+  
   const handleCancel = () => {
     router.push(`/dashboard/projects/${projectId}/tasks`);
   };
@@ -130,7 +148,6 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
                     <input
                       type="checkbox"
                       className="w-4 h-4"
-                      // Use the state variable to determine if the checkbox is checked
                       checked={selectedSubtasks.includes(subtask.id)}
                       onChange={() => {
                         setSelectedSubtasks(prev => {

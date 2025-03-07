@@ -1,17 +1,23 @@
 import { NextResponse } from "next/server";
 import { sendTeamChatBotMessage } from "@/src/services/zoomApi";
 
-
 export async function POST(req: Request) {
   try {
+   
+    const { message } = await req.json();
 
-    const { selected, text, selectedSubtaskDetails } = await req.json();
-
-    console.log("ChatBot Payload Data:", { selected, text, selectedSubtaskDetails });
-
-    // Note: sendTeamChatBotMessage internally fetches the bot token, so we don't need to pass any token here.
-    const sendChatBotMessage = await sendTeamChatBotMessage();
-
+    // Get the referer from the request headers.
+    const location = req.headers.get("referer") || "";
+    console.log("\n-----------------------------------------\n");
+    console.log("ChatBot Payload Data:" ,{ message, location });
+    console.log("\n-----------------------------------------\n");
+   
+    const sendChatBotMessage = await sendTeamChatBotMessage(message.text, location);
+    console.log("\n-----------------------------------------\n");
+    console.log("ChatBot Response Message ID:", sendChatBotMessage);
+    console.log("\n-----------------------------------------\n");
+    console.log("Add Chat Bot Threading functionality here");
+    
     return NextResponse.json(sendChatBotMessage, { status: 200 });
   } catch (error) {
     console.error("Error sending chatbot message:", error);

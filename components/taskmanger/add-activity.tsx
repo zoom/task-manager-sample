@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
-import { MessageSquareQuote } from 'lucide-react';
 import { useState } from "react";
 import {createClient} from "@/utils/supabase/client"
 
@@ -59,12 +58,6 @@ const AddActivity = ({
     console.log("Task Added", task);
 
     console.log("Error Message:", error);
-  };
-
-  const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-/*    if (e.target.files) {
-      setAssets(Array.from(e.target.files));
-    }*/
   };
 
   return (
@@ -150,25 +143,6 @@ const AddActivity = ({
                 </Select>
               </div>
 
-
-                {/* Remove this */}
-              <div className="w-full flex items-center justify-center">
-                <label
-                  className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer my-4"
-                  htmlFor="imgUpload"
-                >
-                  <input
-                    type="file"
-                    className="hidden"
-                    id="imgUpload"
-                    onChange={handleSelectFiles}
-                    accept=".jpg, .png, .jpeg"
-                    multiple
-                  />
-                  <MessageSquareQuote />
-                  <span>Add Assets</span>
-                </label>
-              </div>
             </div>
 
             {/* Submit and Cancel Buttons */}
