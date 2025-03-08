@@ -15,7 +15,7 @@ export interface ZoomMeeting {
  */
 export async function createZoomMeeting(accessToken: string, meetingData: ZoomMeeting) {
 
-
+  console.log('Creating Zoom meeting with data:', meetingData);
   const response = await fetch(`${ZOOM_API_BASE_URL}/users/me/meetings`, {
     method: 'POST',
     headers: {

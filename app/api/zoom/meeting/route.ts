@@ -3,6 +3,16 @@ import { addMeetingApp, createZoomMeeting } from "@/src/services/zoom/meetings";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+export interface ZoomMeeting {
+  topic: string;
+  type: number;
+  start_time: string;
+  duration: number;
+  timezone: string;
+  agenda?: string;
+  settings?: Record<string, any>;
+}
+
 export async function POST(req: Request) {
   try {
     const { topic, type, start_time, duration, timezone } = await req.json();
@@ -34,7 +44,21 @@ export async function POST(req: Request) {
     }
 
     // Call Zoom API with the access token
-    const meetingData = { topic, type, start_time, duration, timezone };
+    // const meetingData = { topic, type, start_time, duration, timezone };
+    const meetingData: ZoomMeeting = {
+      topic,
+      type,
+      start_time,
+      duration,
+      timezone,
+      settings: {
+        continuous_meeting_chat: {
+          enable: true,
+          auto_add_invited_external_users: true,
+          auto_add_meeting_participants: true
+        },
+      },
+    };
     const meeting = await createZoomMeeting(accessToken, meetingData);
     await addMeetingApp( meeting.id, accessToken);
 
