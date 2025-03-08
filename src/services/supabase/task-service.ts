@@ -1,4 +1,4 @@
-// /src/services/taskService.ts
+// /src/services/task-service.ts
 import { createClient } from "@/utils/supabase/client";
 
 export async function deleteTask(taskId: number) {

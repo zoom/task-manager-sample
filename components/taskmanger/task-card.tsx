@@ -10,12 +10,14 @@ import {
   Pencil,
 } from "lucide-react";
 import { PRIORITYSTYLES, TASK_TYPE, formatDate } from "@/utils/utils";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 import type { Tables } from "@/lib/types";
 
 type Task = Tables<'tasks'>;
+
+// Type issue
 type Priority = 'high' | 'medium' | 'low';
 
 const ICONS = {
@@ -29,10 +31,12 @@ export default function TaskCard({
   onEditClick,
   onDeleteClick,
 }: {
-  task: Tables<'tasks'> & { priority: Priority; activities?: any[] };
   onEditClick: (task: Task) => void;
   onDeleteClick: (task: Task) => void;
+  task: Tables<'tasks'> & { priority: Priority; activities?: any[] };
+  
 }) {
+
   if (!task || !task.title) return null;
   const router = useRouter();
   const priority = task.priority as Priority;
@@ -46,8 +50,8 @@ export default function TaskCard({
   };
 
   return (
-    <Card className="w-full shadow-md hover:shadow-lg transition-shadow cursor-pointer border dark:border-border">
-      <CardHeader className="p-4">
+<Card className="w-full shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 dark:border-white">
+<CardHeader className="p-4">
         <div className="flex justify-between">
           <div className={clsx("flex flex-1 items-center gap-1 text-sm font-medium", PRIORITYSTYLES[priority], "dark:text-white")}>
             <span className="text-lg">{ICONS[priority]}</span>

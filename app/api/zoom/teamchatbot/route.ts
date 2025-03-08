@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendTeamChatBotMessage } from "@/src/services/zoomApi";
+import { sendTeamChatBotMessage } from "@/src/services/zoom/chatbot";
 
 export async function POST(req: Request) {
   try {

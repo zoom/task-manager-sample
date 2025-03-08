@@ -1,9 +1,10 @@
 import { useRouter, usePathname } from "next/navigation";
 import TaskCard from "./task-card";
 import type { Tables } from "@/lib/types";
-import { deleteTask } from "@/src/services/taskService";
+import { deleteTask } from "@/src/services/supabase/task-service";
 
 type Priority = 'high' | 'medium' | 'low';
+
 type Task = {
   completed: boolean;
   created_at: string;
@@ -17,6 +18,7 @@ type Task = {
   user_id: string;
   sub_tasks: [];
   activities?: any[];
+ 
 };
 
 export default function BoardView({

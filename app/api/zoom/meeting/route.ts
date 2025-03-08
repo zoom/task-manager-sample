@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addMeetingApp, createZoomMeeting } from "@/src/services/zoomApi";
+import { addMeetingApp, createZoomMeeting } from "@/src/services/zoom/meetings";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
