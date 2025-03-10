@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     }
 
     // Call Zoom API with the access token
-    // const meetingData = { topic, type, start_time, duration, timezone };
+
     const meetingData: ZoomMeeting = {
       topic,
       type,
