@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       duration,
       timezone,
       settings: {
-        continuous_meeting_chat: {
+        continuous_meeting_chat: { // Enable continuous meeting chat
           enable: true,
           auto_add_invited_external_users: true,
           auto_add_meeting_participants: true
@@ -60,6 +60,8 @@ export async function POST(req: Request) {
       },
     };
     const meeting = await createZoomMeeting(accessToken, meetingData);
+    
+    // Add a Zoom App to a meeting
     await addMeetingApp( meeting.id, accessToken);
 
     return NextResponse.json(meeting, { status: 200 });

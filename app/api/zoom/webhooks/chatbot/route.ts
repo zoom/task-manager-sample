@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import {handleGetRecordings, handleAISummary } from "@/src/services/zoom/chatbot";
 import crypto from "crypto";
 
 const ZOOM_SECRET_TOKEN = process.env.ZOOM_SECRET_TOKEN || "";
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
     if (authHeader !== ZOOM_VERIFICATION_TOKEN) {
       return NextResponse.json({ error: "Unauthorized request" }, { status: 401 });
     }
+    
 
     // Process Webhook Events
     switch (body.event) {

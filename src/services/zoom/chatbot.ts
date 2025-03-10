@@ -92,3 +92,43 @@ const ZOOM_API_BASE_URL = 'https://api.zoom.us/v2';
       throw error;
     }
   }
+
+  /**
+ * Get Recordings for the current user
+ */
+export async function handleGetRecordings(accessToken: string) {
+  const response = await fetch(`${ZOOM_API_BASE_URL}/users/me/recordings`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch recordings: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get AI Summary for a meeting
+ * Note: Replace the endpoint and method with the correct ones per Zoom's API documentation.
+ */
+export async function handleAISummary(accessToken: string, meetingId: string) {
+  const response = await fetch(`${ZOOM_API_BASE_URL}/meetings/${meetingId}/ai_summary`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    // If needed, you can include a body with extra parameters here
+    body: JSON.stringify({}),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get AI summary: ${response.statusText}`);
+  }
+  return response.json();
+}
+
