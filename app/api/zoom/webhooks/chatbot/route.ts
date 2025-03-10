@@ -45,8 +45,6 @@ export async function POST(req: NextRequest) {
         console.log("🤖 Unfurlable Link Shared", body.payload);
         return NextResponse.json({ message: "Bot installed successfully." }, { status: 200 });
 
-
-
       default:
         console.warn("⚠️ Unknown event:", body.event);
         return NextResponse.json({ error: "Unknown event type" }, { status: 400 });
