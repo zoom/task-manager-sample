@@ -35,8 +35,10 @@ export async function POST(req: NextRequest) {
     switch (body.event) {
   
       case "team_chat.channel_message_posted":
-        console.log("📢 Team Chat Notification:", body.payload);
-        return NextResponse.json({ message: "Notification received." }, { status: 200 });  
+        console.log("📢 Team Chat Channel Posted Notification:", body.payload);
+        return NextResponse.json({ message: "Notification received." }, { status: 200 });
+      case "team_chat.chatbot_added":
+        console.log("📢 Team Chat Channel Bot Added Notification:", body.payload);  
 
       default:
         console.warn("⚠️ Unknown event:", body.event);

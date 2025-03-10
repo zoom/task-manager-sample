@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     if (!body) {
       return NextResponse.json({ error: "No Request Body" }, { status: 400 });
     }
-    
+
     // Handle Zoom Webhook URL validation
     if (body.event === "endpoint.url_validation") {
       const hashForValidation = crypto
@@ -39,7 +39,13 @@ export async function POST(req: NextRequest) {
 
       case "bot_notification":
         console.log("📢 Bot Notification:", body.payload);
-        return NextResponse.json({ message: "Notification received." }, { status: 200 });  
+        return NextResponse.json({ message: "Notification received." }, { status: 200 });
+
+      case 'team_chat.link_shared':
+        console.log("🤖 Unfurlable Link Shared", body.payload);
+        return NextResponse.json({ message: "Bot installed successfully." }, { status: 200 });
+
+
 
       default:
         console.warn("⚠️ Unknown event:", body.event);
