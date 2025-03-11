@@ -115,7 +115,7 @@ const ZOOM_API_BASE_URL = 'https://api.zoom.us/v2';
   
 /**
  * Get AI Summary for a meeting
- * Note: Replace the endpoint 
+ * Note: This API is only available for paid accounts
  */
 export async function handleAISummary(meetingId: string, accessToken: string) {
   const response = await fetch(`${ZOOM_API_BASE_URL}/meetings/${meetingId}/meeting_summary`, {
