@@ -38,6 +38,7 @@ export async function POST(req: Request) {
     }
 
     const accessToken = sessionData.session.provider_token; // Zoom OAuth token
+    console.log("Access Token:", accessToken);
 
     if (!accessToken) {
       return NextResponse.json({ error: "Unauthorized: No Zoom Access Token" }, { status: 401 });

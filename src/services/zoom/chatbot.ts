@@ -96,28 +96,30 @@ const ZOOM_API_BASE_URL = 'https://api.zoom.us/v2';
   /**
  * Get Recordings for the current user
  */
-export async function handleGetRecordings(accessToken: string) {
-  const response = await fetch(`${ZOOM_API_BASE_URL}/users/me/recordings`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch recordings: ${response.statusText}`);
+  export async function handleGetRecordings(accessToken: string) {
+    const response = await fetch(`${ZOOM_API_BASE_URL}/users/me/recordings`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  
+    if (!response.ok) {
+      throw new Error(`Failed to fetch recordings: ${response.statusText}`);
+    }
+    
+    const recordingsData = await response.json();
+    console.log("Recordings:", recordingsData);
+    return recordingsData;
   }
-
-  return response.json();
-}
-
+  
 /**
  * Get AI Summary for a meeting
- * Note: Replace the endpoint and method with the correct ones per Zoom's API documentation.
+ * Note: Replace the endpoint 
  */
-export async function handleAISummary(accessToken: string, meetingId: string) {
-  const response = await fetch(`${ZOOM_API_BASE_URL}/meetings/${meetingId}/ai_summary`, {
-    method: 'POST',
+export async function handleAISummary(meetingId: string, accessToken: string) {
+  const response = await fetch(`${ZOOM_API_BASE_URL}/meetings/${meetingId}/meeting_summary`, {
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
