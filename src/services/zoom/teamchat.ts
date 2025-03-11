@@ -1,7 +1,7 @@
 const ZOOM_API_BASE_URL = 'https://api.zoom.us/v2';
 
 /**
- * List Get user's chontacts
+ * List Get user's contacts
  */
 
 export async function getuserContacts(accessToken: string) {
@@ -22,23 +22,27 @@ export async function getuserContacts(accessToken: string) {
 
 /**
  * List Chat Channels
+ * Note: Not Used in this example, yet
  */
 
 export async function getuserChannels(accessToken: string) {
-    const response = await fetch(`${ZOOM_API_BASE_URL}/chat/users/me/channels`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-  
-    if (!response.ok) {
-      console.error('Error fetching Zoom meetings:', response.statusText);
-      throw new Error(`Failed to fetch meetings: ${response.statusText}`);
-    }
-  
-    return response.json();
+  const response = await fetch(`${ZOOM_API_BASE_URL}/chat/users/me/channels`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.error('Error fetching Zoom channels:', response.statusText);
+    throw new Error(`Failed to fetch channels: ${response.statusText}`);
   }
+
+  const data = await response.json();
+  console.log("Channels Data:", data);
+  return data.channels; // Return the channels array directly
+}
+
 
 
     /**
@@ -48,6 +52,7 @@ export async function getuserChannels(accessToken: string) {
    * @returns The API response data
    * @throws Error if the API request fails 
    * @scopes chat_channel:read
+   * Note: Not Used in this example yet
    */ 
   
     export async function getChatChannelMessages(channelId: string, accessToken: string) {
