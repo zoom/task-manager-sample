@@ -1,5 +1,24 @@
 const ZOOM_API_BASE_URL = 'https://api.zoom.us/v2';
 
+/**
+ * List Get user's chontacts
+ */
+
+export async function getuserContacts(accessToken: string) {
+  const response = await fetch(`${ZOOM_API_BASE_URL}/chat/users/me/contacts?type=company`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    console.error('Error fetching User Contacts:', response.statusText);
+    throw new Error(`Failed to fetch User Contacts: ${response.statusText}`);
+  }
+
+  return response.json();
+}
 
 /**
  * List Chat Channels
