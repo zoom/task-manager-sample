@@ -68,6 +68,7 @@ export type Database = {
           title: string
           user_id: string
           sub_tasks: []
+          assigned_users?: any[]
         }
         Insert: {
           completed?: boolean

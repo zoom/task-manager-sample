@@ -10,8 +10,10 @@ import {
   Pencil,
 } from "lucide-react";
 import { PRIORITYSTYLES, TASK_TYPE, formatDate } from "@/utils/utils";
+import { OverlappingAvatars } from "./overlapping-avatars";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { getZoomUsersByIds } from "@/src/services/supabase/zoom-users";
 
 import type { Tables } from "@/lib/types";
 
@@ -31,15 +33,19 @@ export default function TaskCard({
   onEditClick,
   onDeleteClick,
 }: {
+  task: Tables<'tasks'> & { priority: Priority; activities?: any[] };
   onEditClick: (task: Task) => void;
   onDeleteClick: (task: Task) => void;
-  task: Tables<'tasks'> & { priority: Priority; activities?: any[] };
-  
 }) {
 
   if (!task || !task.title) return null;
   const router = useRouter();
   const priority = task.priority as Priority;
+
+  // // Since this is a server component, we can await the helper function directly.
+  // const assignedUserDetails = task.assigned_users && task.assigned_users.length > 0
+  //   ?  getZoomUsersByIds(task.assigned_users)
+  //   : [];
 
   const handleTaskClick = (taskId: number, projectId: number) => {
     if (!projectId) {
@@ -63,17 +69,24 @@ export default function TaskCard({
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center gap-2">
           <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[task.stage as keyof typeof TASK_TYPE || "completed"])} />
+       
+       
+          
+          <div>
           <h4 className="line-clamp-1 text-black dark:text-white">{task.title}</h4>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-600 dark:text-white">
+              {task.due_date ? formatDate(new Date(task.due_date)) : "No due date"}
+            </span>
+           </div>
+        </div>
+        
         </div>
 
         <div className="w-full border-t border-gray-300 my-2" />
 
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600 dark:text-white">
-              {task.due_date ? formatDate(new Date(task.due_date)) : "No due date"}
-            </span>
-          </div>
+          
 
           <div className="flex flex-row-reverse gap-1">
             <Button
@@ -90,7 +103,11 @@ export default function TaskCard({
             >
               <Pencil />
             </Button>
-          </div>
+          </div> 
+          <div className="flex">
+            {/* <OverlappingAvatars assignedUsers={assignedUserDetails} /> */}
+            <OverlappingAvatars assignedUsers={task.assigned_users || []} />  
+            </div>
         </div>
       </CardContent>
 

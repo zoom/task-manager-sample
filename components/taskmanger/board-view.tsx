@@ -5,6 +5,8 @@ import { deleteTask } from "@/src/services/supabase/task-service";
 
 type Priority = 'high' | 'medium' | 'low';
 
+
+// Replace this with the correct type
 type Task = {
   completed: boolean;
   created_at: string;
@@ -18,6 +20,7 @@ type Task = {
   user_id: string;
   sub_tasks: [];
   activities?: any[];
+  assigned_users?: any[];
  
 };
 

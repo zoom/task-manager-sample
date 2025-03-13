@@ -14,16 +14,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter, useParams } from "next/navigation";
+
+import { useForm, Controller } from "react-hook-form";
+import {AssigneeSelector} from "@/components/taskmanger/assignee-selector"; 
 
 import type { Tables } from "@/lib/types";
 type Task = Tables<'tasks'>;
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
 const PRIORITIES = ["HIGH", "MEDIUM", "LOW"];
+
+type ZoomUser = {
+  id: string;
+  first_name: string;
+  last_name: string;
+};
 
 const AddActivity = ({
   open,
@@ -35,37 +43,71 @@ const AddActivity = ({
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<{ title: string; date: string; description: string }>();
+  } = useForm<{
+    title: string;
+    date: string;
+    description: string;
+    assigned_users: { value: string; label: string }[];
+  }>();
 
-  
-  const [priority, setPriority] = useState(PRIORITIES[1]); 
-  const [stage, setStage] = useState(LISTS[0]); 
+  const [priority, setPriority] = useState(PRIORITIES[1]);
+  const [stage, setStage] = useState(LISTS[0]);
+  const [availableUsers, setAvailableUsers] = useState<ZoomUser[]>([]);
 
   const router = useRouter();
   const params = useParams();
-  const projectId = Number(params.projectId); 
+  const projectId = Number(params.projectId);
 
-  const submitHandler = async (data: { title: string; date: string; description: string }) => {
+  // Fetch available users from zoom_users table on mount.
+  useEffect(() => {
+    async function fetchAvailableUsers() {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("zoom_users")
+        .select("id, first_name, last_name");
+      if (error) {
+        console.error("Error fetching zoom users:", error);
+      } else if (data) {
+        setAvailableUsers(data);
+      }
+    }
+    fetchAvailableUsers();
+  }, []);
+
+  const submitHandler = async (data: {
+    title: string;
+    date: string;
+    description: string;
+    assigned_users: { value: string; label: string }[];
+  }) => {
     const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    // Build task object using actual values from the form and state
+    // Map selected assignee options to an array of user objects
+    const selectedUsers = availableUsers.filter((u) =>
+      data.assigned_users.some((option) => option.value === u.id)
+    );
+
+    // Build task object using actual values from the form and state.
     const task: Partial<Task> = {
       title: data.title,
       completed: false,
       project_id: projectId,
       user_id: user?.id,
-      due_date: new Date(data.date).toISOString(), // Convert date to ISO string
-      priority, // from state (e.g., "MEDIUM")
-      stage, // from state (e.g., "TODO")
-      description: data.description, // now using the description field from form
+      due_date: new Date(data.date).toISOString(),
+      priority,
+      stage,
+      description: data.description,
+      // Here, you can store selectedUsers in a JSON column or handle it as needed.
+      // For example, if your tasks table has an "assigned_users" column as JSON:
+      assigned_users: selectedUsers,
     };
 
     const { error } = await supabase.from("tasks").insert(task);
-    
     if (error) {
       console.error("Error adding task:", error);
     } else {
@@ -120,6 +162,31 @@ const AddActivity = ({
                   <p className="text-red-500 text-sm">{errors.description.message}</p>
                 )}
               </div>
+
+              {/* Assignee Selection */}
+              <div>
+              <label htmlFor="assigned_users" className="block text-sm font-medium text-gray-700">
+                Assign Task (Select one or more)
+              </label>
+              <Controller
+                control={control}
+                name="assigned_users"
+                rules={{ required: "Please assign at least one user" }}
+                render={({ field: { onChange, value } }) => (
+                  <AssigneeSelector
+                    options={availableUsers.map((u) => ({
+                      value: u.id,
+                      label: `${u.first_name} ${u.last_name}`,
+                    }))}
+                    value={value || []}
+                    onChange={onChange}
+                  />
+                )}
+              />
+              {errors.assigned_users && (
+                <p className="text-red-500 text-sm">{errors.assigned_users.message}</p>
+              )}
+            </div>
 
               {/* Task Stage and Date */}
               <div className="flex gap-4">

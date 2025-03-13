@@ -4,12 +4,13 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 type User = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-};
+    id: string;         // Changed to string
+    member_id: string;  // Add member_id
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+  };
 
 type Channels = {
   id: number;
@@ -46,12 +47,26 @@ export default async function UsersServer() {
   // Get the users list
   const response = await getuserContacts(accessToken);
   const users: User[] = response.contacts;
-  console.log("User Contacts List:", users);
+  console.log("Users:", users);
+  
+
+   /// Upsert the Zoom user data into the zoom_users table
+const { error: upsertError } = await supabase
+.from("zoom_users")
+.upsert(
+  users.map((user) => ({
+    id: user.id,                // Use string type
+    member_id: user.member_id,  // Now included from the API response
+    email: user.email,
+    first_name: user.first_name,
+    last_name: user.last_name,
+  }))
+);
 
   // Get the channels list
   const channelResponse = await getuserChannels(accessToken);
   const channels: Channels[] = channelResponse;
-  console.log("Channel List:", channels);
+
 
   return (
     <div className="flex">
@@ -87,7 +102,7 @@ export default async function UsersServer() {
               key={channel.id}
               className="p-4 bg-white shadow-md rounded-lg text-gray-700"
             >
-              <div className="font-bold">{channel.name}</div>
+              <div className="font-bold">Name: {channel.name}</div>
               <div className="text-sm">
                 <div>Type: {channel.type}</div>
               </div>

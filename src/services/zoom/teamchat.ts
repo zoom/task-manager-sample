@@ -39,7 +39,7 @@ export async function getuserChannels(accessToken: string) {
   }
 
   const data = await response.json();
-  console.log("Channels Data:", data);
+ 
   return data.channels; // Return the channels array directly
 }
 
