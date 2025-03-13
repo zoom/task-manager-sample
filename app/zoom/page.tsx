@@ -28,9 +28,9 @@ export default function ZoomPage() {
 
   return (
     <main className="flex flex-col items-center min-h-screen h-screen">
-      <div className="flex flex-col items-center justify-center w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-4 text-center">Zoom Meetings</h1>
-
+      <div className="flex flex-col items-center  justify-center w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
+        
+        <h1 className="text-2xl font-bold mb-4 text-center dark:text-black">Zoom Meetings</h1>
         <ZoomComponent />
       </div>
     </main>
