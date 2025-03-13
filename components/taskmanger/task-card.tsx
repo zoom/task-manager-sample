@@ -42,11 +42,6 @@ export default function TaskCard({
   const router = useRouter();
   const priority = task.priority as Priority;
 
-  // // Since this is a server component, we can await the helper function directly.
-  // const assignedUserDetails = task.assigned_users && task.assigned_users.length > 0
-  //   ?  getZoomUsersByIds(task.assigned_users)
-  //   : [];
-
   const handleTaskClick = (taskId: number, projectId: number) => {
     if (!projectId) {
       console.error("Error: Project ID is undefined for task", taskId);
@@ -70,8 +65,6 @@ export default function TaskCard({
         <div className="flex items-center gap-2">
           <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[task.stage as keyof typeof TASK_TYPE || "completed"])} />
        
-       
-          
           <div>
           <h4 className="line-clamp-1 text-black dark:text-white">{task.title}</h4>
           <div className="flex items-center gap-3">

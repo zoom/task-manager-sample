@@ -92,7 +92,6 @@ const AddActivity = ({
       data.assigned_users.some((option) => option.value === u.id)
     );
 
-    // Build task object using actual values from the form and state.
     const task: Partial<Task> = {
       title: data.title,
       completed: false,
@@ -102,8 +101,6 @@ const AddActivity = ({
       priority,
       stage,
       description: data.description,
-      // Here, you can store selectedUsers in a JSON column or handle it as needed.
-      // For example, if your tasks table has an "assigned_users" column as JSON:
       assigned_users: selectedUsers,
     };
 
@@ -114,7 +111,6 @@ const AddActivity = ({
       console.log("Task Added", task);
     }
 
-    // Close the dialog and refresh the route so the new task card shows.
     setOpen(false);
     router.refresh();
   };
