@@ -35,7 +35,7 @@ export default function TaskCard({
   onEditClick,
   onDeleteClick,
 }: {
-  task: Tables<'tasks'> & { priority: Priority; activities?: any[] };
+  task: Tables<'tasks'> | null;
   onEditClick: (task: Task) => void;
   onDeleteClick: (task: Task) => void;
 }) {

@@ -3,26 +3,7 @@ import TaskCard from "./task-card";
 import type { Tables } from "@/lib/types";
 import { deleteTask } from "@/src/services/supabase/task-service";
 
-type Priority = 'high' | 'medium' | 'low';
-
-
-// Replace this with the correct type
-type Task = {
-  completed: boolean;
-  created_at: string;
-  description: string | null;
-  due_date: string | null;
-  id: number;
-  priority: Priority;
-  project_id: number;
-  stage: string;
-  title: string;
-  user_id: string;
-  sub_tasks: [];
-  activities?: any[];
-  assigned_users?: any[];
- 
-};
+type Task = Tables<'tasks'>;
 
 export default function BoardView({
   tasks,
