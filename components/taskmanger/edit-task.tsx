@@ -16,16 +16,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter, useParams } from "next/navigation";
 
 import type { Tables } from "@/lib/types";
+import { AssigneeSelector } from "@/components/taskmanger/assignee-selector";
+
 type Task = Tables<'tasks'>;
 
-const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
-const PRIORITIES = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
+const LISTS = ["todo", "in progress", "completed"];
+const PRIORITIES = ["high", "medium", "normal", "low"];
+
+type ZoomUser = {
+  id: string;
+  first_name: string;
+  last_name: string;
+};
 
 const EditTask = ({
   open,
@@ -36,32 +44,84 @@ const EditTask = ({
   setOpen: (open: boolean) => void;
   task: Task;
 }) => {
-  // Extend form to include description along with title, date, and additionalTask.
+  
+  // Initialize react-hook-form
   const {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors },
-  } = useForm<{ title: string; date: string; description: string; additionalTask: string }>();
+  } = useForm<{
+    title: string;
+    date: string;
+    description: string;
+    additionalTask: string;
+    assigned_users: { value: string; label: string }[];
+  }>({
+    defaultValues: {
+      title: "",
+      date: "",
+      description: "",
+      additionalTask: "",
+      assigned_users: [],
+    },
+  });
 
-  // Track priority and stage in state
-  const [priority, setPriority] = useState<string>(task?.priority);
-  const [stage, setStage] = useState<string>(task?.stage);
+ 
+  const [priority, setPriority] = useState<string>(task?.priority.toLowerCase());
+  const [stage, setStage] = useState<string>(task?.stage.toLowerCase());
+  const [availableUsers, setAvailableUsers] = useState<ZoomUser[]>([]);
 
   const router = useRouter();
   const params = useParams();
-  const projectId = Number(params.projectId); // Assuming projectId is in the URL
+  const projectId = Number(params.projectId);
 
+  // Pre-populate the form values based on the task data.
   useEffect(() => {
     setValue("title", task?.title);
     setValue("description", task?.description || "");
-    // If due_date is ISO string, we extract the date portion (YYYY-MM-DD)
     setValue("date", task?.due_date ? task.due_date.substring(0, 10) : "");
     setValue("additionalTask", "");
+    if (task.assigned_users && Array.isArray(task.assigned_users)) {
+      // Map existing assigned users to the { value, label } format.
+      const assignedOptions = task.assigned_users.map((u: any) => ({
+        value: u.id,
+        label: `${u.first_name} ${u.last_name}`,
+      }));
+      setValue("assigned_users", assignedOptions);
+    }
   }, [task, setValue]);
 
-  const submitHandler = async (data: { title: string; date: string; description: string; additionalTask: string }) => {
+  // Fetch available users from the zoom_users table on mount.
+  useEffect(() => {
+    async function fetchAvailableUsers() {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("zoom_users")
+        .select("id, first_name, last_name");
+      if (error) {
+        console.error("Error fetching zoom users:", error);
+      } else if (data) {
+        setAvailableUsers(data);
+      }
+    }
+    fetchAvailableUsers();
+  }, []);
+
+  const submitHandler = async (data: {
+    title: string;
+    date: string;
+    description: string;
+    additionalTask: string;
+    assigned_users: { value: string; label: string }[];
+  }) => {
     const supabase = createClient();
+
+    // Map selected assignee options to full user objects from availableUsers.
+    const selectedUsers = availableUsers.filter((u) =>
+      data.assigned_users.some((option) => option.value === u.id)
+    );
 
     // Update the main task record.
     const { error: updateError } = await supabase
@@ -72,6 +132,7 @@ const EditTask = ({
         description: data.description,
         priority: priority,
         stage: stage,
+        assigned_users: selectedUsers, 
       })
       .eq("id", task.id);
 
@@ -81,12 +142,11 @@ const EditTask = ({
       console.log("Task updated", { ...data, priority, stage });
     }
 
-    // If additionalTask has been provided, insert it as a new subtask.
+    // Insert an additional subtask if provided.
     if (data.additionalTask) {
       const subtask = {
         task_id: task.id,
         title: data.additionalTask,
-        // Optionally add more fields (like date or tag) if needed.
       };
 
       const { error: subtaskError } = await supabase.from("sub_tasks").insert(subtask);
@@ -97,7 +157,6 @@ const EditTask = ({
       }
     }
 
-    // Close the dialog and refresh the page to show the updated data.
     setOpen(false);
     router.refresh();
   };
@@ -122,9 +181,7 @@ const EditTask = ({
                 placeholder="Enter task title"
                 {...register("title", { required: "Title is required" })}
               />
-              {errors.title && (
-                <p className="text-red-500 text-sm">{errors.title.message}</p>
-              )}
+              {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
             </div>
 
             {/* Task Description */}
@@ -138,12 +195,10 @@ const EditTask = ({
                 {...register("description", { required: "Description is required" })}
                 className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md outline-none focus:ring-2 ring-blue-500 text-gray-900 dark:text-gray-100"
               ></textarea>
-              {errors.description && (
-                <p className="text-red-500 text-sm">{errors.description.message}</p>
-              )}
+              {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
             </div>
 
-            {/* Additional Task (for Subtask insertion) */}
+            {/* Additional Task (for subtask insertion) */}
             <div>
               <label htmlFor="additionalTask" className="block text-sm font-medium text-gray-700">
                 Additional Task
@@ -155,6 +210,31 @@ const EditTask = ({
               />
               {errors.additionalTask && (
                 <p className="text-red-500 text-sm">{errors.additionalTask.message}</p>
+              )}
+            </div>
+
+            {/* Assignee Selection */}
+            <div>
+              <label htmlFor="assigned_users" className="block text-sm font-medium text-gray-700">
+                Assign Task (Select one or more)
+              </label>
+              <Controller
+                control={control}
+                name="assigned_users"
+                rules={{ required: "Please assign at least one user" }}
+                render={({ field: { onChange, value } }) => (
+                  <AssigneeSelector
+                    options={availableUsers.map((u) => ({
+                      value: u.id,
+                      label: `${u.first_name} ${u.last_name}`,
+                    }))}
+                    value={value || []}
+                    onChange={onChange}
+                  />
+                )}
+              />
+              {errors.assigned_users && (
+                <p className="text-red-500 text-sm">{errors.assigned_users.message}</p>
               )}
             </div>
 
@@ -171,7 +251,7 @@ const EditTask = ({
                   <SelectContent>
                     {LISTS.map((list) => (
                       <SelectItem key={list} value={list}>
-                        {list}
+                        {list.toUpperCase()}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -187,9 +267,7 @@ const EditTask = ({
                   id="date"
                   {...register("date", { required: "Date is required" })}
                 />
-                {errors.date && (
-                  <p className="text-red-500 text-sm">{errors.date.message}</p>
-                )}
+                {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
               </div>
             </div>
 
@@ -206,7 +284,7 @@ const EditTask = ({
                   <SelectContent>
                     {PRIORITIES.map((level) => (
                       <SelectItem key={level} value={level}>
-                        {level}
+                        {level.toUpperCase()}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -216,10 +294,7 @@ const EditTask = ({
 
             {/* Submit and Cancel Buttons */}
             <div className="flex justify-end gap-4 mt-4">
-              <Button
-                type="submit"
-                className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700"
-              >
+              <Button type="submit" className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700">
                 Submit
               </Button>
               <Button

@@ -13,6 +13,8 @@ import { PRIORITYSTYLES, TASK_TYPE, formatDate } from "@/utils/utils";
 import { OverlappingAvatars } from "./overlapping-avatars";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
+// Remove unused imports
 import { getZoomUsersByIds } from "@/src/services/supabase/zoom-users";
 
 import type { Tables } from "@/lib/types";
@@ -98,7 +100,6 @@ export default function TaskCard({
             </Button>
           </div> 
           <div className="flex">
-            {/* <OverlappingAvatars assignedUsers={assignedUserDetails} /> */}
             <OverlappingAvatars assignedUsers={task.assigned_users || []} />  
             </div>
         </div>

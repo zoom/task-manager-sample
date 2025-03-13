@@ -19,13 +19,13 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter, useParams } from "next/navigation";
 
 import { useForm, Controller } from "react-hook-form";
-import {AssigneeSelector} from "@/components/taskmanger/assignee-selector"; 
+import { AssigneeSelector } from "@/components/taskmanger/assignee-selector";
 
 import type { Tables } from "@/lib/types";
 type Task = Tables<'tasks'>;
 
-const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
-const PRIORITIES = ["HIGH", "MEDIUM", "LOW"];
+const LISTS = ["todo", "in progress", "completed"];
+const PRIORITIES = ["high", "medium", "low"];
 
 type ZoomUser = {
   id: string;
@@ -40,17 +40,26 @@ const AddActivity = ({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) => {
+  
   const {
     register,
     handleSubmit,
     control,
+    reset, // get the reset function
     formState: { errors },
   } = useForm<{
     title: string;
     date: string;
     description: string;
     assigned_users: { value: string; label: string }[];
-  }>();
+  }>({
+    defaultValues: {
+      title: "",
+      date: "",
+      description: "",
+      assigned_users: [],
+    },
+  });
 
   const [priority, setPriority] = useState(PRIORITIES[1]);
   const [stage, setStage] = useState(LISTS[0]);
@@ -86,34 +95,37 @@ const AddActivity = ({
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
+  
     // Map selected assignee options to an array of user objects
     const selectedUsers = availableUsers.filter((u) =>
       data.assigned_users.some((option) => option.value === u.id)
     );
-
+  
     const task: Partial<Task> = {
       title: data.title,
       completed: false,
       project_id: projectId,
       user_id: user?.id,
       due_date: new Date(data.date).toISOString(),
-      priority,
+      priority, 
       stage,
       description: data.description,
       assigned_users: selectedUsers,
     };
-
+  
     const { error } = await supabase.from("tasks").insert(task);
     if (error) {
       console.error("Error adding task:", error);
     } else {
       console.log("Task Added", task);
     }
-
+  
+    // Reset the form so new task entries start clean
+    reset();
     setOpen(false);
     router.refresh();
   };
+  
 
   return (
     <div className="w-full bg-white dark:bg-background text-black dark:text-white shadow-md p-4 rounded-lg space-y-4 border border-gray-300 dark:border-border">
@@ -161,28 +173,28 @@ const AddActivity = ({
 
               {/* Assignee Selection */}
               <div>
-              <label htmlFor="assigned_users" className="block text-sm font-medium text-gray-700">
-                Assign Task (Select one or more)
-              </label>
-              <Controller
-                control={control}
-                name="assigned_users"
-                rules={{ required: "Please assign at least one user" }}
-                render={({ field: { onChange, value } }) => (
-                  <AssigneeSelector
-                    options={availableUsers.map((u) => ({
-                      value: u.id,
-                      label: `${u.first_name} ${u.last_name}`,
-                    }))}
-                    value={value || []}
-                    onChange={onChange}
-                  />
+                <label htmlFor="assigned_users" className="block text-sm font-medium text-gray-700">
+                  Assign Task (Select one or more)
+                </label>
+                <Controller
+                  control={control}
+                  name="assigned_users"
+                  rules={{ required: "Please assign at least one user" }}
+                  render={({ field: { onChange, value } }) => (
+                    <AssigneeSelector
+                      options={availableUsers.map((u) => ({
+                        value: u.id,
+                        label: `${u.first_name} ${u.last_name}`,
+                      }))}
+                      value={value || []}
+                      onChange={onChange}
+                    />
+                  )}
+                />
+                {errors.assigned_users && (
+                  <p className="text-red-500 text-sm">{errors.assigned_users.message}</p>
                 )}
-              />
-              {errors.assigned_users && (
-                <p className="text-red-500 text-sm">{errors.assigned_users.message}</p>
-              )}
-            </div>
+              </div>
 
               {/* Task Stage and Date */}
               <div className="flex gap-4">
@@ -197,7 +209,7 @@ const AddActivity = ({
                     <SelectContent>
                       {LISTS.map((list) => (
                         <SelectItem key={list} value={list}>
-                          {list}
+                          {list.toUpperCase()}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -232,7 +244,7 @@ const AddActivity = ({
                     <SelectContent>
                       {PRIORITIES.map((level) => (
                         <SelectItem key={level} value={level}>
-                          {level}
+                          {level.toUpperCase()}
                         </SelectItem>
                       ))}
                     </SelectContent>
