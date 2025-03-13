@@ -41,6 +41,7 @@ const AddActivity = ({
   setOpen: (open: boolean) => void;
 }) => {
 
+  // Initialize the form with react-hook-form
   const {
     register,
     handleSubmit,

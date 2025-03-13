@@ -1,5 +1,5 @@
 import {createClient} from "@/utils/supabase/server";
-import {ProjectsClient} from "@/app/dashboard/projects/projects-client";
+import {ProjectsClient} from "@/components/projects/projects-client";
 
 import type { Tables } from '@/lib/types'
 type Project = Tables<'projects'>

@@ -30,8 +30,6 @@ export default async function Page({
     const { projectId } = awaitedParams;
     const tasks = await getProjectTasks(projectId);
 
-    // console.log('Tasks:', tasks);
-
     return tasks.length > 0 ? (
         <Tasks tasks={tasks} />
     ) : (
