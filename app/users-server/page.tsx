@@ -2,15 +2,16 @@ import { getuserContacts, getuserChannels } from "@/src/services/zoom/teamchat";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 type User = {
-    id: string;         // Changed to string
-    member_id: string;  // Add member_id
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-  };
+  id: string;
+  member_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+};
 
 type Channels = {
   id: number;
@@ -48,68 +49,64 @@ export default async function UsersServer() {
   const response = await getuserContacts(accessToken);
   const users: User[] = response.contacts;
   console.log("Users:", users);
-  
 
-   /// Upsert the Zoom user data into the zoom_users table
-const { error: upsertError } = await supabase
-.from("zoom_users")
-.upsert(
-  users.map((user) => ({
-    id: user.id,                // Use string type
-    member_id: user.member_id,  // Now included from the API response
-    email: user.email,
-    first_name: user.first_name,
-    last_name: user.last_name,
-  }))
-);
+  // Upsert the Zoom user data into the zoom_users table
+  const { error: upsertError } = await supabase
+    .from("zoom_users")
+    .upsert(
+      users.map((user) => ({
+        id: user.id,
+        member_id: user.member_id,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+      }))
+    );
+  if (upsertError) {
+    console.error("Upsert error:", upsertError);
+  }
 
   // Get the channels list
   const channelResponse = await getuserChannels(accessToken);
   const channels: Channels[] = channelResponse;
 
-
   return (
     <div className="flex">
-      {/* Left Column - Channel List */}
+      {/* Left Column - Users */}
       <div className="w-1/2 border-r p-4">
         <h2 className="text-xl font-bold mb-4">Users</h2>
-        <ul className="space-y-4">
+        <div className="space-y-4">
           {users.map((user) => (
-            <li
-              key={user.id}
-              className="p-4 bg-white shadow-md rounded-lg text-gray-700"
-            >
-              <div className="font-bold">{user.first_name}</div>
-              <div className="text-sm">
-                <div>Lastname: {user.last_name}</div>
-                <div>Email: {user.email}</div>
-              </div>
-            </li>
+            <Card key={user.id} className="shadow-md rounded-lg">
+              <CardHeader>
+                <CardTitle>
+                  {user.first_name} {user.last_name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Email: {user.email}</p>
+                <p>Phone: {user.phone}</p>
+              </CardContent>
+            </Card>
           ))}
-        </ul>
-
-        
-
+        </div>
       </div>
 
-      {/* Right Column - User List */}
+      {/* Right Column - Channels */}
       <div className="w-1/2 p-4">
         <h2 className="text-xl font-bold mb-4">User Channels</h2>
-
-        <ul className="space-y-4">
+        <div className="space-y-4">
           {channels.map((channel) => (
-            <li
-              key={channel.id}
-              className="p-4 bg-white shadow-md rounded-lg text-gray-700"
-            >
-              <div className="font-bold">Name: {channel.name}</div>
-              <div className="text-sm">
-                <div>Type: {channel.type}</div>
-              </div>
-            </li>
+            <Card key={channel.id} className="shadow-md rounded-lg">
+              <CardHeader>
+                <CardTitle>{channel.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Type: {channel.type}</p>
+              </CardContent>
+            </Card>
           ))}
-        </ul>
-
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter} from "next/navigation";
 import TaskCard from "./task-card";
 import type { Tables } from "@/lib/types";
 import { deleteTask } from "@/src/services/supabase/task-service";
@@ -12,7 +12,7 @@ export default function BoardView({
   tasks: Task[];
   onEditClick: (task: Task) => void;
 }) {
-  const pathname = usePathname();
+  
   const router = useRouter();
 
   // Delete handler
@@ -32,7 +32,7 @@ export default function BoardView({
 
   return (
     <>
-      <h1>You are on this route: {pathname}</h1>
+     
       <div className="w-full px-0 md:px-0">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:grid-cols-3">
           {tasks?.map((task) => (

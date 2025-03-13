@@ -45,9 +45,9 @@ export default function Tasks({ tasks }: {
         {!status && (
           <Button
             onClick={() => setOpen(true)}
-            className="flex items-center gap-1 bg-blue-600 text-white rounded-md py-2 px-4"
+            className="flex items-center gap-1 bg-blue-600 text-white dark:bg-white dark:text-black dark:hover:bg-gray-400 rounded-md py-2 px-4"
           >
-            <Plus className="text-lg" />
+            <Plus className="text-lg font-semibold" />
             Create Task
           </Button>
         )}

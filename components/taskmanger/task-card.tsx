@@ -56,7 +56,9 @@ export default function TaskCard({
     <Card className="w-full shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 dark:border-white">
       <CardHeader className="p-4">
         <div className="flex justify-between">
-          <div className={clsx("flex flex-1 items-center gap-1 text-sm font-medium", PRIORITYSTYLES[priority], "dark:text-white")}>
+          <div className={clsx("flex flex-1 items-center gap-1 text-sm font-medium", PRIORITYSTYLES[priority], "dark:text-white")}
+           title={`Task type: ${task.stage}`}
+          >
             <span className="text-lg">{ICONS[priority]}</span>
             <span className="uppercase">{priority} Priority</span>
           </div>
@@ -65,7 +67,7 @@ export default function TaskCard({
 
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center gap-2">
-          <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[task.stage as keyof typeof TASK_TYPE || "completed"])} />
+          <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[task.stage as keyof typeof TASK_TYPE || "completed"],  "dark:bg-white")} />
 
           <div>
             <h4 className="line-clamp-1 text-black dark:text-white">{task.title}</h4>
@@ -86,14 +88,14 @@ export default function TaskCard({
           <div className="flex flex-row-reverse gap-1">
             <Button
               variant="ghost"
-              className="p-2 hover:text-white hover:bg-gray-700 transition-colors duration-300 rounded-md"
+              className="p-2 hover:text-white hover:bg-blue-700  transition-colors duration-300 rounded-md"
               onClick={() => onDeleteClick(task)}
             >
               <Trash2 />
             </Button>
             <Button
               variant="ghost"
-              className="p-2 hover:text-white hover:bg-gray-700 transition-colors duration-300 rounded-md"
+              className="p-2 hover:text-white hover:bg-blue-700 transition-colors duration-300 rounded-md"
               onClick={() => onEditClick(task)}
             >
               <Pencil />
@@ -112,7 +114,7 @@ export default function TaskCard({
       <CardFooter className="p-4">
         <Button
           onClick={() => handleTaskClick(task.id, task.project_id)}
-          className="w-full flex items-center gap-4 text-sm font-semibold text-gray-600 dark:text-white bg-white dark:bg-background hover:text-white hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors duration-300 rounded-md p-2"
+          className="w-full flex items-center gap-4 text-sm font-semibold text-black dark:text-black bg-white dark:bg-white hover:text-white hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors duration-300 rounded-md p-2"
         >
           <Plus className="text-lg" />
           <span>ADD ACTIVITY</span>
