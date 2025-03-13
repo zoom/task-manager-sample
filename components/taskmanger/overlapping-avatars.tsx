@@ -11,8 +11,8 @@ type OverlappingAvatarsProps = {
 };
 
 export function OverlappingAvatars({ assignedUsers }: OverlappingAvatarsProps) {
-  console.log("Assigned Users:", assignedUsers); 
-  
+  console.log("Assigned Users:", assignedUsers);
+
   return (
     <div className="flex -space-x-2">
       {assignedUsers.map(user => (

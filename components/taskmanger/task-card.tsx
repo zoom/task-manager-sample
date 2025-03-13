@@ -53,8 +53,8 @@ export default function TaskCard({
   };
 
   return (
-<Card className="w-full shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 dark:border-white">
-<CardHeader className="p-4">
+    <Card className="w-full shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 dark:border-white">
+      <CardHeader className="p-4">
         <div className="flex justify-between">
           <div className={clsx("flex flex-1 items-center gap-1 text-sm font-medium", PRIORITYSTYLES[priority], "dark:text-white")}>
             <span className="text-lg">{ICONS[priority]}</span>
@@ -66,22 +66,22 @@ export default function TaskCard({
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center gap-2">
           <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[task.stage as keyof typeof TASK_TYPE || "completed"])} />
-       
+
           <div>
-          <h4 className="line-clamp-1 text-black dark:text-white">{task.title}</h4>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600 dark:text-white">
-              {task.due_date ? formatDate(new Date(task.due_date)) : "No due date"}
-            </span>
-           </div>
-        </div>
-        
+            <h4 className="line-clamp-1 text-black dark:text-white">{task.title}</h4>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-600 dark:text-white">
+                {task.due_date ? formatDate(new Date(task.due_date)) : "No due date"}
+              </span>
+            </div>
+          </div>
+
         </div>
 
         <div className="w-full border-t border-gray-300 my-2" />
 
         <div className="flex items-center justify-between mb-2">
-          
+
 
           <div className="flex flex-row-reverse gap-1">
             <Button
@@ -98,10 +98,10 @@ export default function TaskCard({
             >
               <Pencil />
             </Button>
-          </div> 
+          </div>
           <div className="flex">
-            <OverlappingAvatars assignedUsers={task.assigned_users || []} />  
-            </div>
+            <OverlappingAvatars assignedUsers={task.assigned_users || []} />
+          </div>
         </div>
       </CardContent>
 

@@ -40,7 +40,7 @@ const AddActivity = ({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) => {
-  
+
   const {
     register,
     handleSubmit,
@@ -95,37 +95,37 @@ const AddActivity = ({
     const {
       data: { user },
     } = await supabase.auth.getUser();
-  
+
     // Map selected assignee options to an array of user objects
     const selectedUsers = availableUsers.filter((u) =>
       data.assigned_users.some((option) => option.value === u.id)
     );
-  
+
     const task: Partial<Task> = {
       title: data.title,
       completed: false,
       project_id: projectId,
       user_id: user?.id,
       due_date: new Date(data.date).toISOString(),
-      priority, 
+      priority,
       stage,
       description: data.description,
       assigned_users: selectedUsers,
     };
-  
+
     const { error } = await supabase.from("tasks").insert(task);
     if (error) {
       console.error("Error adding task:", error);
     } else {
       console.log("Task Added", task);
     }
-  
+
     // Reset the form so new task entries start clean
     reset();
     setOpen(false);
     router.refresh();
   };
-  
+
 
   return (
     <div className="w-full bg-white dark:bg-background text-black dark:text-white shadow-md p-4 rounded-lg space-y-4 border border-gray-300 dark:border-border">

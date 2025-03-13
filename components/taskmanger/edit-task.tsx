@@ -44,7 +44,7 @@ const EditTask = ({
   setOpen: (open: boolean) => void;
   task: Task;
 }) => {
-  
+
   // Initialize react-hook-form
   const {
     register,
@@ -68,7 +68,7 @@ const EditTask = ({
     },
   });
 
- 
+
   const [priority, setPriority] = useState<string>(task?.priority.toLowerCase());
   const [stage, setStage] = useState<string>(task?.stage.toLowerCase());
   const [availableUsers, setAvailableUsers] = useState<ZoomUser[]>([]);
@@ -132,7 +132,7 @@ const EditTask = ({
         description: data.description,
         priority: priority,
         stage: stage,
-        assigned_users: selectedUsers, 
+        assigned_users: selectedUsers,
       })
       .eq("id", task.id);
 

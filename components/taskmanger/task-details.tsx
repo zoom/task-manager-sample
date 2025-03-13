@@ -8,7 +8,6 @@ import { PRIORITYSTYLES, TASK_TYPE } from "@/utils/utils";
 import clsx from "clsx";
 
 import type { Tables } from '@/lib/types';
-type Task = Tables<'tasks'>;
 
 const ICONS = {
   high: <ChevronsUp />,
@@ -35,38 +34,37 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   const [selectedSubtasks, setSelectedSubtasks] = useState<number[]>([]);
   const isLoading = false;
   const router = useRouter();
-  const params = useParams(); 
+  const params = useParams();
 
-  const projectId = params.projectId as string; 
+  const projectId = params.projectId as string;
 
   const handleSubmit = async () => {
-   
+
     const selectedSubtaskDetails = task.sub_tasks
       ? task.sub_tasks.filter((subtask: any) =>
-          selectedSubtasks.includes(subtask.id)
-        )
+        selectedSubtasks.includes(subtask.id)
+      )
       : [];
     const location = window.location.href;
-  
+
     const messageLines = [
       `Activity: ${selected}`,
       `Message: ${text}`,
-      `Subtasks: ${
-        selectedSubtaskDetails.length > 0
-          ? selectedSubtaskDetails.map((s: any) => s.title).join(", ")
-          : "None"
+      `Subtasks: ${selectedSubtaskDetails.length > 0
+        ? selectedSubtaskDetails.map((s: any) => s.title).join(", ")
+        : "None"
       }`,
       `Ticket: ${location}`,
     ];
     const messageText = messageLines.join("\n");
-  
+
     try {
       const response = await fetch('/api/zoom/teamchatbot', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
         },
-        
+
         body: JSON.stringify({
           message: { text: messageText },
           location,
@@ -75,7 +73,7 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
       if (!response.ok) {
         throw new Error("Failed to send chatbot message");
       }
-      
+
       const data = await response.json();
       console.log("Chatbot Response:", data);
     } catch (error) {
@@ -83,8 +81,8 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
     }
     router.push(`/dashboard/projects/${projectId}/tasks`);
   };
-  
-  
+
+
   const handleCancel = () => {
     router.push(`/dashboard/projects/${projectId}/tasks`);
   };
@@ -109,7 +107,7 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
           <div
             className={clsx(
               "flex gap-1 items-center text-base font-semibold px-3 py-1 rounded-full"
-              // Optionally add PRIORITYSTYLES and bgColor here if needed
+
             )}
           >
             <span className="uppercase">{task.priority} Priority</span>
@@ -118,7 +116,6 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
             <div
               className={clsx(
                 "w-4 h-4 rounded-full"
-                // Optionally add TASK_TYPE styling here if needed
               )}
             />
           </div>
