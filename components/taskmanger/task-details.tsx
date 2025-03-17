@@ -45,6 +45,7 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
         selectedSubtasks.includes(subtask.id)
       )
       : [];
+
     const location = window.location.href;
 
     const messageLines = [
@@ -58,27 +59,30 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
     ];
     const messageText = messageLines.join("\n");
 
-    try {
-      const response = await fetch('/api/zoom/teamchatbot', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
+    // Send the message to the chatbot API
+try {
+    const response = await fetch('/api/zoom/teamchatbot', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
 
-        body: JSON.stringify({
-          message: { text: messageText },
-          location,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to send chatbot message");
-      }
-
-      const data = await response.json();
-      console.log("Chatbot Response:", data);
-    } catch (error) {
-      console.error(error);
+      body: JSON.stringify({
+        message: { text: messageText },
+        location,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to send chatbot message");
     }
+
+    const data = await response.json();
+    console.log("Chatbot Response:", data);
+  } catch (error) {
+    console.error(error);
+  }
+
+    // Reset the form
     router.push(`/dashboard/projects/${projectId}/tasks`);
   };
 

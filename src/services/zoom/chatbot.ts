@@ -1,8 +1,8 @@
 
+
 const ZOOM_API_BASE_URL = 'https://api.zoom.us/v2';
 
-// Remove to cache retrieved access token
-  export async function getTeamChatBot() {
+export async function getTeamChatBot() {
     
     const response = await fetch(`https://zoom.us/oauth/token?grant_type=client_credentials`, {
       method: 'POST',
@@ -20,56 +20,60 @@ const ZOOM_API_BASE_URL = 'https://api.zoom.us/v2';
     return response.json();
   }
 
-  export async function sendTeamChatBotMessage(text: string, location: string) {
+
+export async function sendTeamChatBotMessage(text: string, location: string) {
     console.log("Sending Team Chat Bot Message: \n", text);
     const { access_token } = await getTeamChatBot();
     // Optionally:  Make to_jid, user_jid, and account_id dynamic
-    const messagePayload = {
-      robot_jid: process.env.ZOOM_BOT_JID,
-      to_jid: "tlma8otuqx-ujuoin1k0qq@xmpp.zoom.us",
-      user_jid: "tlma8otuqx-ujuoin1k0qq@xmpp.zoom.us",
-      account_id: "-RtWUD64T9KwsSAhmHAjaQ",
-      content: {
-        body: [
-          {
-            type: "message",
-            text: text,
-          },
-          {
-            type: "actions",
-            limit: 3,
-            items: [
-              {
-                text: "Open Zoom App Webview",
-                value: "button1",
-                style: "Default",
-                action: "dialog",
-                dialog: {
-                  size: "S",
-                  link: "https://donte.ngrok.io/zoom",
-                  title: {
-                    text: "Create a ticket",
-                  },
+
+
+  const messagePayload = {
+    robot_jid: process.env.ZOOM_BOT_JID,
+    to_jid: "tlma8otuqx-ujuoin1k0qq@xmpp.zoom.us",
+    user_jid: "tlma8otuqx-ujuoin1k0qq@xmpp.zoom.us",
+    account_id: "-RtWUD64T9KwsSAhmHAjaQ",
+    content: {
+      body: [
+        {
+          type: "message",
+          text: text,
+        },
+        {
+          type: "actions",
+          limit: 3,
+          items: [
+            {
+              text: "Open Zoom App Webview",
+              value: "button1",
+              style: "Default",
+              action: "dialog",
+              dialog: {
+                size: "S",
+                link: "https://donte.ngrok.io/zoom",
+                title: {
+                  text: "Create a ticket",
                 },
               },
-              {
-                text: "Review Task",
-                value: "button2",
-                style: "Default",
-                action: "dialog",
-                dialog: {
-                  size: "L",
-                  link: location, 
-                  title: {
-                    text: "Share a ticket",
-                  },
+            },
+            {
+              text: "Review Task",
+              value: "button2",
+              style: "Default",
+              action: "dialog",
+              dialog: {
+                size: "L",
+                link: location, 
+                title: {
+                  text: "Share a ticket",
                 },
               },
-            ],
-          },
-        ],
-      },
-    };
+            },
+          ],
+        },
+      ],
+    },
+  };
+
   
     try {
       const response = await fetch(`${ZOOM_API_BASE_URL}/im/chat/messages`, {
@@ -93,26 +97,39 @@ const ZOOM_API_BASE_URL = 'https://api.zoom.us/v2';
     }
   }
 
-  /**
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
  * Get Recordings for the current user
  */
-  export async function handleGetRecordings(accessToken: string) {
-    const response = await fetch(`${ZOOM_API_BASE_URL}/users/me/recordings`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-  
-    if (!response.ok) {
-      throw new Error(`Failed to fetch recordings: ${response.statusText}`);
-    }
-    
-    const recordingsData = await response.json();
-    console.log("Recordings:", recordingsData);
-    return recordingsData;
+export async function handleGetRecordings(accessToken: string) {
+  const response = await fetch(`${ZOOM_API_BASE_URL}/users/me/recordings`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch recordings: ${response.statusText}`);
   }
-  
+
+  const recordingsData = await response.json();
+  console.log("Recordings:", recordingsData);
+  return recordingsData;
+}
+
 /**
  * Get AI Summary for a meeting
  * Note: This API is only available for paid accounts

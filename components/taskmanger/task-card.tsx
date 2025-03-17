@@ -88,14 +88,14 @@ export default function TaskCard({
           <div className="flex flex-row-reverse gap-1">
             <Button
               variant="ghost"
-              className="p-2 hover:text-white hover:bg-blue-700  transition-colors duration-300 rounded-md"
+              className="p-2 hover:text-white hover:bg-blue-700 dark:hover:bg-gray-700 transition-colors duration-300 rounded-md"
               onClick={() => onDeleteClick(task)}
             >
               <Trash2 />
             </Button>
             <Button
               variant="ghost"
-              className="p-2 hover:text-white hover:bg-blue-700 transition-colors duration-300 rounded-md"
+              className="p-2 hover:text-white hover:bg-blue-700 dark:hover:bg-gray-700 transition-colors duration-300 rounded-md"
               onClick={() => onEditClick(task)}
             >
               <Pencil />
@@ -114,7 +114,7 @@ export default function TaskCard({
       <CardFooter className="p-4">
         <Button
           onClick={() => handleTaskClick(task.id, task.project_id)}
-          className="w-full flex items-center gap-4 text-sm font-semibold text-black dark:text-black bg-white dark:bg-white hover:text-white hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors duration-300 rounded-md p-2"
+          className="w-full flex items-center gap-4 text-sm font-semibold text-white dark:text-black bg-blue-600 dark:bg-white hover:text-white hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors duration-300 rounded-md p-2"
         >
           <Plus className="text-lg" />
           <span>ADD ACTIVITY</span>

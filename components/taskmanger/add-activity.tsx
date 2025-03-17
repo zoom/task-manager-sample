@@ -42,11 +42,11 @@ const AddActivity = ({
 }) => {
 
   // Initialize the form with react-hook-form
-  const {
+const {
     register,
     handleSubmit,
     control,
-    reset, // get the reset function
+    reset,
     formState: { errors },
   } = useForm<{
     title: string;

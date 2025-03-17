@@ -56,13 +56,13 @@ export default function Tasks({ tasks }: {
       {/* Task Tabs Section */}
       <div className="w-full max-w-full">
 
-        {!status && (
+        {/* {!status && (
           <div className='w-full flex justify-between gap-4 md:gap-x-12 py-4'>
             <TaskTitle label='To Do' className={TASK_TYPE.todo} />
             <TaskTitle label='In Progress' className={TASK_TYPE["in progress"]} />
             <TaskTitle label='Completed' className={TASK_TYPE.completed} />
           </div>
-        )}
+        )} */}
 
         <BoardView tasks={tasks} onEditClick={handleEditClick} />
       </div>
