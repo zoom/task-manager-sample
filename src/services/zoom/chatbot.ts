@@ -49,7 +49,7 @@ export async function sendTeamChatBotMessage(text: string, location: string) {
               action: "dialog",
               dialog: {
                 size: "S",
-                link: "https://donte.ngrok.io/zoom",
+                link: "https://donte.ngrok.io/zoom-dashboard",
                 title: {
                   text: "Create a ticket",
                 },

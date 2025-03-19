@@ -31,6 +31,7 @@ export async function POST(req: Request) {
 
     //  Fetch the Supabase session securely
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    console.log("Session Data:", sessionData);
 
     if (sessionError || !sessionData?.session) {
       console.error("Session error:", sessionError);
