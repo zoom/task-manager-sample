@@ -87,7 +87,20 @@ export async function getOtpFromInbucket(email: string): Promise<string | null> 
     }
 }
 
+export async function verifyOtp(email: string, otp: string) {
+    const supabase = await createClient();
 
-
-
-
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token: otp,
+      type: "email", // Use "sms" if verifying phone-based OTP
+    });
+  
+    if (error) {
+      console.error("Error verifying OTP:", error);
+      return null;
+    }
+  
+    return data.session; // Return session if successful
+  }
+  
