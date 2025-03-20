@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleGetRecordings, handleAISummary } from "@/src/services/zoom/chatbot";
+import { handleGetRecordings, handleAISummary } from "@/app/lib/chatbot";
 import crypto from "crypto";
 
 const ZOOM_SECRET_TOKEN = process.env.ZOOM_SECRET_TOKEN || "";
