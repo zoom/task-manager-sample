@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter} from "next/navigation";
 import { useState } from "react";
 import { ChevronsUp, ChevronDown, ChevronUp } from "lucide-react";
 import type { Tables } from '@/lib/types';
@@ -30,8 +30,6 @@ type TaskDetailsProps = {
 
 const TaskDetails = ({ task }: TaskDetailsProps) => {
   const router = useRouter();
-  const params = useParams();
-  const projectId = params.projectId as string;
 
   // Store selected subtasks as { id, title }
   const [selectedSubtasks, setSelectedSubtasks] = useState<{ id: number; title: string }[]>([]);
@@ -42,7 +40,7 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   // Redirect after successful form submission
   useEffect(() => {
     if (state.success) {
-      router.back(); // Redirects to the last page
+      router.back()
     }
   }, [state.success, router]);
 
@@ -96,6 +94,7 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
 
         {/* FORM SUBMISSION */}
         <form action={formAction} className="space-y-6">
+          
           <input type="hidden" name="location" value={typeof window !== "undefined" ? window.location.href : ""} />
 
           {/* Hidden inputs to submit subtask titles instead of IDs */}
@@ -133,7 +132,9 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
               {state.success ? "Sent!" : "Submit"}
             </button>
           </div>
+
         </form>
+
       </div>
     </div>
   );
