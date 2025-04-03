@@ -1,10 +1,11 @@
 'use client';
 
 import { useActionState, useEffect } from "react";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ChevronsUp, ChevronDown, ChevronUp } from "lucide-react";
 import type { Tables } from '@/lib/types';
+
 
 // Import Server Action
 import { sendTeamChatBotMessage } from "@/app/lib/chatbot";
@@ -34,6 +35,7 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   // Store selected subtasks as { id, title }
   const [selectedSubtasks, setSelectedSubtasks] = useState<{ id: number; title: string }[]>([]);
 
+
   // Handle form submission state
   const [state, formAction] = useActionState(sendTeamChatBotMessage, { success: false });
 
@@ -43,6 +45,13 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
       router.back()
     }
   }, [state.success, router]);
+
+
+
+
+ 
+
+
 
   return (
     <div className="max-w-screen-xl min-w-[850px] min-h-[650px] flex flex-col bg-white dark:bg-background md:flex-row gap-5 2xl:gap-10 shadow-lg p-10 overflow-y-auto">
@@ -93,8 +102,8 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
         <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Activity</p>
 
         {/* FORM SUBMISSION */}
-        <form action={formAction} className="space-y-6">
-          
+        <form className="space-y-6" action={formAction}>
+
           <input type="hidden" name="location" value={typeof window !== "undefined" ? window.location.href : ""} />
 
           {/* Hidden inputs to submit subtask titles instead of IDs */}
@@ -125,7 +134,17 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
 
           {/* Submit Button */}
           <div className="flex justify-end gap-4">
-            <button type="button" onClick={() => router.back()} className="bg-gray-400 text-white rounded py-2 px-6">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push("/dashboard");
+                }
+              }}
+              className="bg-gray-400 text-white rounded py-2 px-6"
+            >
               Cancel
             </button>
             <button type="submit" className="bg-blue-600 text-white rounded py-2 px-6">

@@ -28,3 +28,27 @@ Run the development server
 npm run dev
 ```
 
+## Upload the Manifest via a Terminal Command
+
+### Source the .env File Directly
+
+Environment variables defined in a .env file aren't automatically available in your shell. You'll need to load them into your shell session before running the curl command.
+
+```shell
+source .env
+
+```
+
+Then run your curl command:
+
+```shell
+curl --request PUT \
+  --url https://api.zoom.us/v2/marketplace/apps/$ZOOM_APP_ID/manifest \
+  --header "Authorization: Bearer $TEMP_ZOOM_ACCESS_TOKEN" \
+  --header "Content-Type: application/json" \
+  --data @zoom-app-manifest.json && echo "Request successful" || echo "Request failed"
+
+
+```
+If the curl request returns an exit code of 0 (indicating success), the shell will print “Request successful.” If it fails, it prints “Request failed.
+
