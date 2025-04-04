@@ -21,6 +21,9 @@ import { useRouter, useParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { AssigneeSelector } from "@/components/taskmanger/assignee-selector";
 
+import { sendZoomIMMessage, ZoomIMMessagePayload  } from "@/app/lib/teamchat";
+import { redirect } from "next/navigation";
+
 import type { Tables } from "@/lib/types";
 type Task = Tables<'tasks'>;
 
@@ -92,41 +95,131 @@ const {
     description: string;
     assigned_users: { value: string; label: string }[];
   }) => {
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Map selected assignee options to an array of user objects
-    const selectedUsers = availableUsers.filter((u) =>
-      data.assigned_users.some((option) => option.value === u.id)
-    );
-
-    const task: Partial<Task> = {
-      title: data.title,
-      completed: false,
-      project_id: projectId,
-      user_id: user?.id,
-      due_date: new Date(data.date).toISOString(),
-      priority,
-      stage,
-      description: data.description,
-      assigned_users: selectedUsers,
-    };
-
-    const { error } = await supabase.from("tasks").insert(task);
-    if (error) {
-      console.error("Error adding task:", error);
-    } else {
-      console.log("Task Added", task);
+    try {
+      // Initialize Supabase client.
+      const supabase = createClient();
+  
+      // Retrieve the current user and session.
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+  
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData?.session) {
+        console.error("Session error:", sessionError);
+        redirect("/login");
+        return; // Early return in case of session error.
+      }
+  
+      const accessToken = sessionData.session.provider_token ?? "";
+      console.log("Access Token:", accessToken);
+  
+      // Map assigned user options (from form) to full user objects from availableUsers.
+      const selectedUsers = availableUsers.filter((u) =>
+        data.assigned_users.some((option) => option.value === u.id)
+      );
+      console.log("Selected Users:", selectedUsers.map((u) => u.id));
+  
+      // Build the new task object.
+      const newTask: Partial<Task> = {
+        title: data.title,
+        completed: false,
+        project_id: projectId,
+        user_id: user?.id,
+        due_date: new Date(data.date).toISOString(),
+        priority, // state variable from the component
+        stage, // state variable from the component
+        description: data.description,
+        assigned_users: selectedUsers,
+      };
+  
+      // Insert the new task.
+      const { error: insertError } = await supabase.from("tasks").insert(newTask);
+      if (insertError) {
+        console.error("Error adding task:", insertError);
+        return;
+      }
+      console.log("Task Added:", newTask);
+  
+      // Build Zoom message payload.
+      const message = selectedUsers
+        .map((u) => `Special delivery for ${u.first_name} ${u.last_name} 📝!`) // Match at_contact value to hyperlink to email
+        .join(", ");
+      const at_items = selectedUsers.map((u) => ({
+        at_contact: 'max.test.zoom@gmail.com',
+        at_type: 1,
+        start_position: 15,
+        end_position: 20,
+      }));
+      const to_contact = selectedUsers.map((u) => u.id).join(",");
+  
+      const payload: ZoomIMMessagePayload = {
+        message,
+        at_items: [{
+          at_contact: 'max.test.zoom@gmail.com',
+          at_type: 1,
+          start_position: 15,
+          end_position: 20,
+        }
+          
+        ],
+        rich_text: [
+          {
+            start_position: 0,
+            end_position: 5,
+            format_type: "Paragraph",
+            format_attr: "h1",
+          },
+        ],
+        file_ids: [],
+        reply_main_message_id: "",
+        to_contact,
+        interactive_cards: [
+          {
+            card_json: JSON.stringify({
+              content: {
+                settings: { form: true },
+                head: {
+                  text: "New Task Assigned",
+                  sub_head: { text: "I am a sub head text" },
+                },
+                body: [
+                  {
+                    type: "attachments",
+                    resource_url: "https://zoom.us",
+                    img_url:
+                      "https://d24cgw3uvb9a9h.cloudfront.net/static/93516/image/new/ZoomLogo.png",
+                    information: {
+                      title: { text: "I am an attachment title" },
+                      description: { text: "I am an attachment description" },
+                    },
+                  },
+                  {
+                    type: "actions",
+                    items: [
+                      { text: "Open", value: "open", style: "Primary" },
+                      { text: "Edit", value: "edit", style: "Default" },
+                    ],
+                  },
+                ],
+              },
+            }),
+          },
+        ],
+      };
+  
+      // Send the Zoom IM message.
+      await sendZoomIMMessage(accessToken, payload);
+  
+      // Reset the form, close the dialog, and refresh the route.
+      reset();
+      setOpen(false);
+      router.refresh();
+    } catch (err) {
+      console.error("Error in submitHandler:", err);
     }
-
-    // Reset the form so new task entries start clean
-    reset();
-    setOpen(false);
-    router.refresh();
   };
-
+  
 
   return (
     <div className="w-full bg-white dark:bg-background text-black dark:text-white shadow-md p-4 rounded-lg space-y-4 border border-gray-300 dark:border-border">

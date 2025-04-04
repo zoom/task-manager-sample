@@ -24,6 +24,10 @@ import { useRouter, useParams } from "next/navigation";
 import type { Tables } from "@/lib/types";
 import { AssigneeSelector } from "@/components/taskmanger/assignee-selector";
 
+import { sendZoomIMMessage, ZoomIMMessagePayload  } from "@/app/lib/teamchat";
+import { redirect } from "next/navigation";
+
+
 type Task = Tables<'tasks'>;
 
 const LISTS = ["todo", "in progress", "completed"];
@@ -116,49 +120,131 @@ const EditTask = ({
     additionalTask: string;
     assigned_users: { value: string; label: string }[];
   }) => {
-    const supabase = createClient();
-
-    // Map selected assignee options to full user objects from availableUsers.
-    const selectedUsers = availableUsers.filter((u) =>
-      data.assigned_users.some((option) => option.value === u.id)
-    );
-
-    // Update the main task record.
-    const { error: updateError } = await supabase
-      .from("tasks")
-      .update({
+    try {
+      // Initialize Supabase client.
+      const supabase = createClient();
+  
+      // Get the current authenticated session and access token.
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData?.session) {
+        console.error("Session error:", sessionError);
+        redirect("/login");
+        return;
+      }
+      const accessToken = sessionData.session.provider_token ?? "";
+      console.log("Access Token:", accessToken);
+  
+      // Map form assignee values to full user objects.
+      const selectedUsers = availableUsers.filter((u) =>
+        data.assigned_users.some((option) => option.value === u.id)
+      );
+      console.log("Selected Users:", selectedUsers.map((u) => u.id));
+  
+      // Determine which users are new (i.e. not already assigned).
+      const previousAssignedUserIDs = task.assigned_users?.map((u: any) => u.id) || [];
+      const newAssignedUsers = selectedUsers.filter((u) => !previousAssignedUserIDs.includes(u.id));
+  
+      // Build the updated task object.
+      const updatedTask: Partial<Task> = {
         title: data.title,
         due_date: new Date(data.date).toISOString(),
         description: data.description,
-        priority: priority,
-        stage: stage,
+        priority,
+        stage,
         assigned_users: selectedUsers,
-      })
-      .eq("id", task.id);
-
-    if (updateError) {
-      console.error("Error updating task:", updateError);
-    } else {
-      console.log("Task updated", { ...data, priority, stage });
-    }
-
-    // Insert an additional subtask if provided.
-    if (data.additionalTask) {
-      const subtask = {
-        task_id: task.id,
-        title: data.additionalTask,
       };
-
-      const { error: subtaskError } = await supabase.from("sub_tasks").insert(subtask);
-      if (subtaskError) {
-        console.error("Error inserting subtask:", subtaskError);
-      } else {
-        console.log("Subtask added", subtask);
+  
+      // Update the main task record.
+      const { error: updateError } = await supabase
+        .from("tasks")
+        .update(updatedTask)
+        .eq("id", task.id);
+  
+      if (updateError) {
+        console.error("Error updating task:", updateError);
+        return;
       }
-    }
+      console.log("Task updated:", updatedTask);
+  
+      // Insert an additional subtask if provided.
+      if (data.additionalTask) {
+        const newSubtask = {
+          task_id: task.id,
+          title: data.additionalTask,
+        };
+  
+        const { error: subtaskError } = await supabase.from("sub_tasks").insert(newSubtask);
+        if (subtaskError) {
+          console.error("Error inserting subtask:", subtaskError);
+        } else {
+          console.log("Subtask added:", newSubtask);
+        }
+      }
+  
+      // For each newly added assignee, send a Zoom IM message.
+      for (const newUser of newAssignedUsers) {
+        const messageText = `You have been assigned to the task: "${data.title}". Please check your task list for details.`;
 
-    setOpen(false);
-    router.refresh();
+        const payload: ZoomIMMessagePayload = {
+          message: messageText,
+          rich_text: [
+            {
+              start_position: messageText.indexOf("Please check your task list for details."),
+              end_position: messageText.length, // assuming the rest of the message should be bold
+              format_type: "Bold",
+              format_attr: "",
+            },
+          ],
+          to_contact: newUser.id, 
+          // Optionally, add extra properties such as interactive cards:
+          interactive_cards: [
+            {
+              card_json: JSON.stringify({
+                content: {
+                  settings: { form: true },
+                  head: {
+                    text: "New Task Assignment",
+                    sub_head: { text: "Please review the task details" },
+                  },
+                  body: [
+                    {
+                      type: "attachments",
+                      resource_url: "https://yourapp.com/task-details",
+                      img_url:
+                        "https://d24cgw3uvb9a9h.cloudfront.net/static/93516/image/new/ZoomLogo.png",
+                      information: {
+                        title: { text: data.title },
+                        description: { text: data.description },
+                      },
+                    },
+                    {
+                      type: "actions",
+                      items: [
+                        { text: "View Task", value: "view", style: "Primary" },
+                        { text: "Dismiss", value: "dismiss", style: "Default" },
+                      ],
+                    },
+                  ],
+                },
+              }),
+            },
+          ],
+        };
+  
+        try {
+          await sendZoomIMMessage(accessToken, payload);
+          console.log(`Notification sent to ${newUser.first_name} ${newUser.last_name}`);
+        } catch (err) {
+          console.error(`Failed to notify ${newUser.first_name} ${newUser.last_name}:`, err);
+        }
+      }
+  
+      // Close the dialog and refresh the page.
+      setOpen(false);
+      router.refresh();
+    } catch (err) {
+      console.error("Error in submitHandler:", err);
+    }
   };
 
   return (
