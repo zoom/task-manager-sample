@@ -1,14 +1,9 @@
 'use client';
 
-import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ChevronsUp, ChevronDown, ChevronUp } from "lucide-react";
 import type { Tables } from '@/lib/types';
-
-
-// Import Server Action
-import { sendTeamChatBotMessage } from "@/app/lib/chatbot";
 
 const ICONS = {
   high: <ChevronsUp />,
@@ -31,27 +26,27 @@ type TaskDetailsProps = {
 
 const TaskDetails = ({ task }: TaskDetailsProps) => {
   const router = useRouter();
-
-  // Store selected subtasks as { id, title }
   const [selectedSubtasks, setSelectedSubtasks] = useState<{ id: number; title: string }[]>([]);
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  // Handle form submission state
-  const [state, formAction] = useActionState(sendTeamChatBotMessage, { success: false });
+    const formData = new FormData(e.currentTarget);
+    const activity = formData.get("activity");
+    const message = formData.get("message");
+    const location = formData.get("location");
+    const subtasks = selectedSubtasks.map((s) => s.title);
 
-  // Redirect after successful form submission
-  useEffect(() => {
-    if (state.success) {
-      router.back()
-    }
-  }, [state.success, router]);
+    const submissionData = {
+      activity,
+      message,
+      location,
+      subtasks,
+    };
 
-
-
-
- 
-
-
+    console.log("Submitted Data:", submissionData);
+    router.back();
+  };
 
   return (
     <div className="max-w-screen-xl min-w-[850px] min-h-[650px] flex flex-col bg-white dark:bg-background md:flex-row gap-5 2xl:gap-10 shadow-lg p-10 overflow-y-auto">
@@ -62,13 +57,11 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
 
         <div className="w-full border-t border-gray-200 dark:border-gray-700 my-2" />
 
-        {/* Task Details Section */}
         <div className="space-y-4 py-2">
           <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">Task-Details</p>
           <p className="text-gray-700 dark:text-gray-300">{task.description}</p>
         </div>
 
-        {/* Subtasks Section */}
         <p className="text-gray-500 dark:text-gray-300 font-semibold text-sm">SubTasks:</p>
         <div className="space-y-2">
           {task.sub_tasks && task.sub_tasks.length > 0 ? (
@@ -101,15 +94,8 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
       <div className="w-full md:w-1/2 space-y-8">
         <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Add Activity</p>
 
-        {/* FORM SUBMISSION */}
-        <form className="space-y-6" action={formAction}>
-
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="location" value={typeof window !== "undefined" ? window.location.href : ""} />
-
-          {/* Hidden inputs to submit subtask titles instead of IDs */}
-          {selectedSubtasks.map((subtask) => (
-            <input key={subtask.id} type="hidden" name="subtasks" value={subtask.title} />
-          ))}
 
           <div className="w-full grid grid-cols-2 gap-4">
             {act_types.map((item) => (
@@ -120,7 +106,6 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
             ))}
           </div>
 
-          {/* Text Editor */}
           <textarea
             name="message"
             rows={4}
@@ -129,10 +114,6 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
             className="bg-white dark:bg-background w-full border border-gray-300 dark:border-gray-600 outline-none p-4 rounded-md focus:ring-2 ring-blue-500 text-gray-900 dark:text-gray-100"
           ></textarea>
 
-          {/* Display error messages */}
-          {state.error && <p className="text-red-500">{state.error}</p>}
-
-          {/* Submit Button */}
           <div className="flex justify-end gap-4">
             <button
               type="button"
@@ -148,12 +129,10 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
               Cancel
             </button>
             <button type="submit" className="bg-blue-600 text-white rounded py-2 px-6">
-              {state.success ? "Sent!" : "Submit"}
+              Submit
             </button>
           </div>
-
         </form>
-
       </div>
     </div>
   );

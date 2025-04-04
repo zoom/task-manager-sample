@@ -1,7 +1,8 @@
 import { useRouter} from "next/navigation";
 import TaskCard from "./task-card";
 import type { Tables } from "@/lib/types";
-import { deleteTask } from "@/src/services/supabase/task-service";
+
+import { deleteTask } from "@/utils/supabase/task-service";
 
 type Task = Tables<'tasks'>;
 
