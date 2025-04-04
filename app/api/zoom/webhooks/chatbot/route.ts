@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-//import { handleGetRecordings, handleAISummary } from "@/app/lib/chatbot";
 import crypto from "crypto";
+
+// Slash Command Handlers Server Functions
+import { handleGetRecordings, handleAISummary } from "@/app/lib/chatbot";
+
 
 const ZOOM_SECRET_TOKEN = process.env.ZOOM_SECRET_TOKEN || "";
 const ZOOM_VERIFICATION_TOKEN = process.env.ZOOM_VERIFICATION_TOKEN || "";
