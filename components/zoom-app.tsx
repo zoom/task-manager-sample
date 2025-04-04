@@ -20,7 +20,7 @@ export default function Zoom() {
     configure();
   }, []);
 
-  console.log("Zoom App Configuration", config);
+  console.log("Zoom App Configuration: app/lib/zoom-api", config);
 
   return (
     <div>

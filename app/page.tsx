@@ -9,19 +9,18 @@ export default async function Page() {
     const headersList = await headers();
     const isZoom = headersList.has('x-zoom-app-device-type');
 
-    const loadZoom = () => {
+    const loadZoomApp = () => {
         if (!isZoom) return;
 
-        Zoom = dynamic(() => import('@/components/zoom'));
+        Zoom = dynamic(() => import('@/components/zoom-app'));
 
         return (<Zoom/>)
     }
 
-
     return (
         <div>
             <Hero></Hero>
-            {loadZoom()}
+            {loadZoomApp()}
         </div>
     )
 }
