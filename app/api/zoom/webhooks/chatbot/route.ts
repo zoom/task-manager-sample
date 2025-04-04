@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
-// Slash Command Handlers Server Functions
+// Slash Command Handlers Server Action Functions
 import { handleGetRecordings, handleAISummary } from "@/app/lib/chatbot";
 
 
