@@ -14,9 +14,6 @@ import { OverlappingAvatars } from "./overlapping-avatars";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-// Remove unused imports
-import { getZoomUsersByIds } from "@/src/services/supabase/zoom-users";
-
 import type { Tables } from "@/lib/types";
 
 type Task = Tables<'tasks'>;
