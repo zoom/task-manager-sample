@@ -4,6 +4,7 @@ import { UserNav } from "@/components/user-nav"
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
+import {headers} from "next/headers";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -12,7 +13,20 @@ export default async function AuthButton() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!hasEnvVars) {
+  const headersList = await headers();
+  const isZoom = headersList.has('x-zoom-app-device-type');
+
+    const renderInstallBtn = () => {
+        if (!isZoom) {
+            return (
+                <Button onClick={signInWithZoom}>
+                    Sign in With Zoom
+                </Button>
+            )
+        } else return (<span></span>)
+    }
+
+    if (!hasEnvVars) {
     return (
       <>
         <div className="flex gap-4 items-center">

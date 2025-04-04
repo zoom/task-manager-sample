@@ -4,11 +4,13 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import {getDeeplink} from "@/app/lib/zoom-api";
 
 export const signInWithZoom = async () => {
   const supabase = await createClient();
   const headerList = await headers();
   const origin = headerList.get("origin");
+
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'zoom',
