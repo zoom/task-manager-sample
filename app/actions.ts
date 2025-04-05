@@ -4,6 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+
 import {getDeeplink} from "@/app/lib/zoom-api";
 
 export const signInWithZoom = async () => {
@@ -21,7 +22,8 @@ export const signInWithZoom = async () => {
 
   if (error)
     return encodedRedirect("error", "/sign-in", error.message);
-
+ // console.log("Zoom URL:", data.url);
+ 
   return redirect(data.url);
 }
 

@@ -1,10 +1,12 @@
-import { signInWithZoom } from "@/app/actions";
+
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { UserNav } from "@/components/user-nav"
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
 import {headers} from "next/headers";
+
+import { signInWithZoom } from "@/app/actions";
 
 export default async function AuthButton() {
   const supabase = await createClient();

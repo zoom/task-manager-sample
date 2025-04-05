@@ -15,16 +15,22 @@ export async function GET(request: Request) {
     const isLocalEnv = process.env.NODE_ENV === 'development'
     const forwardedHost = "https://" + request.headers.get('x-forwarded-host')
 
+    console.log('Forwarded Host:', forwardedHost)
+
+    // Triggers Deep Link Flow To Zoom App On Auth State Change
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (session && session.provider_token) {
         const deeplink = await getDeeplink(session.provider_token);
 
-        return redirect(deeplink);
+        console.log("Deeplink-Route: ", deeplink)
+
+        // Uncomment the line below to redirect to the deeplink URL
+        // return redirect(deeplink); 
 
       }
     })
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code)
     if (error) {
       console.error(error);
       return NextResponse.redirect(`${forwardedHost}/error`)
