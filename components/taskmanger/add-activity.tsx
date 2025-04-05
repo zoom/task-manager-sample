@@ -377,6 +377,7 @@ const AddActivity = ({
       </div>
       {notification && (
         <TaskNotification
+          location= {window.location.href}
           issueId={notification.issueId}
           deeplink={notification.deeplink}
           onDismiss={() => {

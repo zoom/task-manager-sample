@@ -3,12 +3,14 @@
 import { useState } from "react";
 
 interface TaskNotificationProps {
+  location?: string;        // e.g. "Zoom App"
   issueId: string;         // e.g. "ZSEE-162774"
   deeplink: string;        // The Zoom App deep link
   onDismiss?: () => void;  // Optional callback if parent needs to know when it's dismissed
 }
 
 export default function TaskNotification({
+  location,
   issueId,
   deeplink,
   onDismiss,
@@ -28,10 +30,19 @@ export default function TaskNotification({
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-72 bg-white dark:bg-gray-800 shadow-lg rounded-md p-4">
+    <div className="fixed bottom-4 left-8 z-50 w-72 bg-white dark:bg-gray-800 shadow-lg rounded-md p-4">
       <div className="flex items-start justify-between mb-2">
         <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
-          You’ve created a Task
+          You’ve created “
+          <a
+            href={location + "/" + issueId}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline text-blue-600 hover:text-blue-800"
+          >
+            {issueId}
+          </a>
+          ” Task
         </span>
         <button
           onClick={handleDismiss}
