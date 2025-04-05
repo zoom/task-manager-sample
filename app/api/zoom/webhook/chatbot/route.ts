@@ -2,11 +2,32 @@ import { NextRequest, NextResponse } from "next/server";
 
 import crypto from "crypto";
 
+// Splash Command Handlers Chatbot Server Actions
+import { handleGetRecordings, handleAISummary } from "@/app/lib/chatbot";
 
 const ZOOM_SECRET_TOKEN = process.env.ZOOM_SECRET_TOKEN || "";
 const ZOOM_VERIFICATION_TOKEN = process.env.ZOOM_VERIFICATION_TOKEN || "";
 
-
+// Command dispatcher mapping commands to handler functions
+const commandHandlers: Record<string, (payload: any) => Promise<any>> = {
+  "getrecordings": handleGetRecordings,
+  "aisummary": async (payload: any) => {
+    const { accessToken, meetingId } = payload;
+    return handleAISummary(accessToken, meetingId);
+  },
+  "assignTask": async (payload: any) => {
+    const command = payload.cmd;
+    console.log("Task Command", command);
+    //Need to retrieve the token from a persistent storage location or use a service account flow.
+    const accessToken = process.env.TEMP_ZOOM_ACCESS_TOKEN;
+    console.log("Access Token Webhook", accessToken);
+    
+    if (!accessToken) {
+      return { error: "No Zoom Access Token" };
+    }
+    return handleGetRecordings(accessToken);
+  },
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,6 +60,18 @@ export async function POST(req: NextRequest) {
     if (body.event === "bot_notification") {
       console.log(" 🏁 Bot Notification Received", body.payload);
 
+      // Extract the slash command from the payload
+      // (Assuming the slash command is available as body.payload.command)
+      const command = body.payload.cmd;
+
+      if (command && commandHandlers[command]) {
+        console.log(" Command Handler", command);
+        const result = await commandHandlers[command](body.payload);
+        return NextResponse.json(result, { status: 200 });
+      } else {
+        console.warn("Unknown or missing slash command:", command);
+        return NextResponse.json({ error: "Unknown command" }, { status: 400 });
+      }
     }
 
     // Process Webhook Events

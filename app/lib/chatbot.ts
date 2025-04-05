@@ -155,3 +155,44 @@ export async function sendTeamChatBotMessage(prevState: any, formData: FormData)
     }
   }
 
+//Slash Command Chatbot Functions
+/**
+ * Get Recordings for the current user
+ */
+export async function handleGetRecordings(accessToken: string) {
+  const response = await fetch(`${ZOOM_API_BASE_URL}/users/me/recordings`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch recordings: ${response.statusText}`);
+  }
+
+  const recordingsData = await response.json();
+  console.log("Recordings:", recordingsData);
+  return recordingsData;
+}
+
+/**
+ * Get AI Summary for a meeting
+ * Note: This API is only available for paid accounts
+ */
+export async function handleAISummary(meetingId: string, accessToken: string) {
+  const response = await fetch(`${ZOOM_API_BASE_URL}/meetings/${meetingId}/meeting_summary`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    // If needed, you can include a body with extra parameters here
+    body: JSON.stringify({}),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get AI summary: ${response.statusText}`);
+  }
+  return response.json();
+}
