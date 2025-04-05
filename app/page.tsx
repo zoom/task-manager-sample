@@ -22,6 +22,7 @@ export default async function Page() {
     return (
         <div>
             <Hero></Hero>
+            
             {loadZoomApp()}
            
         </div>
