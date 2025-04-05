@@ -30,7 +30,7 @@ export default function TaskNotification({
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 left-8 z-50 w-72 bg-white dark:bg-gray-800 shadow-lg rounded-md p-4">
+    <div className="fixed bottom-4 left-10 z-50 w-72 bg-white dark:bg-gray-800 shadow-lg rounded-md p-4">
       <div className="flex items-start justify-between mb-2">
         <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
           You’ve created “
@@ -40,7 +40,7 @@ export default function TaskNotification({
             rel="noopener noreferrer"
             className="underline text-blue-600 hover:text-blue-800"
           >
-            {issueId}
+            {"ZDP-"+issueId}
           </a>
           ” Task
         </span>
