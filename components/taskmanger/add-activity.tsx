@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -17,11 +19,11 @@ import {
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter, useParams } from "next/navigation";
-
 import { useForm, Controller } from "react-hook-form";
 import { AssigneeSelector } from "@/components/taskmanger/assignee-selector";
-
-import { sendZoomIMMessage, ZoomIMMessagePayload  } from "@/app/lib/teamchat";
+import { sendZoomIMMessage, ZoomIMMessagePayload } from "@/app/lib/teamchat";
+import { getDeeplink } from "@/app/lib/zoom-api";
+import TaskNotification from "@/components/taskmanger/task-notification"; // adjust import path as needed
 import { redirect } from "next/navigation";
 
 import type { Tables } from "@/lib/types";
@@ -43,9 +45,13 @@ const AddActivity = ({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) => {
+  // Notification state for showing the TaskNotification component.
+  const [notification, setNotification] = useState<{
+    issueId: string;
+    deeplink: string;
+  } | null>(null);
 
-  // Initialize the form with react-hook-form
-const {
+  const {
     register,
     handleSubmit,
     control,
@@ -73,7 +79,7 @@ const {
   const params = useParams();
   const projectId = Number(params.projectId);
 
-  // Fetch available users from zoom_users table on mount.
+  // Fetch available users from the zoom_users table on mount.
   useEffect(() => {
     async function fetchAvailableUsers() {
       const supabase = createClient();
@@ -96,30 +102,27 @@ const {
     assigned_users: { value: string; label: string }[];
   }) => {
     try {
-      // Initialize Supabase client.
       const supabase = createClient();
-  
+
       // Retrieve the current user and session.
       const {
         data: { user },
       } = await supabase.auth.getUser();
-  
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !sessionData?.session) {
         console.error("Session error:", sessionError);
         redirect("/login");
-        return; // Early return in case of session error.
+        return;
       }
-  
       const accessToken = sessionData.session.provider_token ?? "";
       console.log("Access Token:", accessToken);
-  
-      // Map assigned user options (from form) to full user objects from availableUsers.
+
+      // Map form assignee options to full user objects.
       const selectedUsers = availableUsers.filter((u) =>
         data.assigned_users.some((option) => option.value === u.id)
       );
       console.log("Selected Users:", selectedUsers.map((u) => u.id));
-  
+
       // Build the new task object.
       const newTask: Partial<Task> = {
         title: data.title,
@@ -127,42 +130,39 @@ const {
         project_id: projectId,
         user_id: user?.id,
         due_date: new Date(data.date).toISOString(),
-        priority, // state variable from the component
-        stage, // state variable from the component
+        priority,
+        stage,
         description: data.description,
         assigned_users: selectedUsers,
       };
-  
-      // Insert the new task.
-      const { error: insertError } = await supabase.from("tasks").insert(newTask);
-      if (insertError) {
+
+      // Insert the new task and retrieve the inserted record.
+      const { data: insertedData, error: insertError } = await supabase
+        .from("tasks")
+        .insert(newTask)
+        .select();
+      if (insertError || !insertedData || insertedData.length === 0) {
         console.error("Error adding task:", insertError);
         return;
       }
-      console.log("Task Added:", newTask);
-  
+      const insertedTask = insertedData[0];
+      console.log("Task Added:", insertedTask);
+
       // Build Zoom message payload.
       const message = selectedUsers
-        .map((u) => `Special delivery for ${u.first_name} ${u.last_name} 📝!`) // Match at_contact value to hyperlink to email
+        .map((u) => `Special delivery for ${u.first_name} ${u.last_name} 📝!`)
         .join(", ");
       const at_items = selectedUsers.map((u) => ({
-        at_contact: 'max.test.zoom@gmail.com',
+        at_contact: 'max.test.zoom@gmail.com', // example static value or dynamic if needed
         at_type: 1,
         start_position: 15,
         end_position: 20,
       }));
       const to_contact = selectedUsers.map((u) => u.id).join(",");
-  
+
       const payload: ZoomIMMessagePayload = {
         message,
-        at_items: [{
-          at_contact: 'max.test.zoom@gmail.com',
-          at_type: 1,
-          start_position: 15,
-          end_position: 20,
-        }
-          
-        ],
+        at_items,
         rich_text: [
           {
             start_position: 0,
@@ -207,164 +207,185 @@ const {
           },
         ],
       };
-  
+
       // Send the Zoom IM message.
       await sendZoomIMMessage(accessToken, payload);
-  
-      // Reset the form, close the dialog, and refresh the route.
+
+      // Retrieve a deeplink for the created task.
+      const deeplink = await getDeeplink(accessToken);
+      console.log("Deeplink-AddTask:", deeplink);
+      // Set notification state with the inserted task's id and the deeplink.
+      if (insertedTask.id) {
+        setNotification({ issueId: insertedTask.id.toString(), deeplink: deeplink || "" });
+      } else {
+        console.error("Inserted task ID is undefined.");
+      }
+
+      // Reset the form and close the dialog. (We intentionally do not refresh immediately
+      // so the notification remains visible until dismissed.)
       reset();
       setOpen(false);
-      router.refresh();
     } catch (err) {
       console.error("Error in submitHandler:", err);
     }
   };
-  
 
   return (
-    <div className="w-full bg-white dark:bg-background text-black dark:text-white shadow-md p-4 rounded-lg space-y-4 border border-gray-300 dark:border-border">
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
-          <form onSubmit={handleSubmit(submitHandler)}>
-            <DialogHeader>
-              <DialogTitle>Add Task</DialogTitle>
-              <DialogDescription>
-                Fill in the details to create a new task.
-              </DialogDescription>
-            </DialogHeader>
+    <>
+      <div className="w-full bg-white dark:bg-background text-black dark:text-white shadow-md p-4 rounded-lg space-y-4 border border-gray-300 dark:border-border">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent className="sm:max-w-md">
+            <form onSubmit={handleSubmit(submitHandler)}>
+              <DialogHeader>
+                <DialogTitle>Add Task</DialogTitle>
+                <DialogDescription>
+                  Fill in the details to create a new task.
+                </DialogDescription>
+              </DialogHeader>
 
-            <div className="flex flex-col gap-4 mt-4">
-              {/* Task Title */}
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                  Task Title
-                </label>
-                <Input
-                  id="title"
-                  placeholder="Enter task title"
-                  {...register("title", { required: "Task title is required" })}
-                />
-                {errors.title && (
-                  <p className="text-red-500 text-sm">{errors.title.message}</p>
-                )}
-              </div>
-
-              {/* Task Description */}
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                  Task Description
-                </label>
-                <textarea
-                  id="description"
-                  placeholder="Enter task description"
-                  {...register("description", { required: "Task description is required" })}
-                  className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md outline-none focus:ring-2 ring-blue-500 text-gray-900 dark:text-gray-100"
-                ></textarea>
-                {errors.description && (
-                  <p className="text-red-500 text-sm">{errors.description.message}</p>
-                )}
-              </div>
-
-              {/* Assignee Selection */}
-              <div>
-                <label htmlFor="assigned_users" className="block text-sm font-medium text-gray-700">
-                  Assign Task (Select one or more)
-                </label>
-                <Controller
-                  control={control}
-                  name="assigned_users"
-                  rules={{ required: "Please assign at least one user" }}
-                  render={({ field: { onChange, value } }) => (
-                    <AssigneeSelector
-                      options={availableUsers.map((u) => ({
-                        value: u.id,
-                        label: `${u.first_name} ${u.last_name}`,
-                      }))}
-                      value={value || []}
-                      onChange={onChange}
-                    />
-                  )}
-                />
-                {errors.assigned_users && (
-                  <p className="text-red-500 text-sm">{errors.assigned_users.message}</p>
-                )}
-              </div>
-
-              {/* Task Stage and Date */}
-              <div className="flex gap-4">
-                <div className="w-full">
-                  <label htmlFor="stage" className="block text-sm font-medium text-gray-700">
-                    Task Stage
-                  </label>
-                  <Select onValueChange={setStage} defaultValue={stage}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select stage" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LISTS.map((list) => (
-                        <SelectItem key={list} value={list}>
-                          {list.toUpperCase()}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="w-full">
-                  <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                    Task Date
+              <div className="flex flex-col gap-4 mt-4">
+                {/* Task Title */}
+                <div>
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                    Task Title
                   </label>
                   <Input
-                    type="date"
-                    id="date"
-                    {...register("date", { required: "Task date is required" })}
+                    id="title"
+                    placeholder="Enter task title"
+                    {...register("title", { required: "Task title is required" })}
                   />
-                  {errors.date && (
-                    <p className="text-red-500 text-sm">{errors.date.message}</p>
+                  {errors.title && (
+                    <p className="text-red-500 text-sm">{errors.title.message}</p>
                   )}
                 </div>
-              </div>
 
-              {/* Priority */}
-              <div className="flex gap-4">
-                <div className="w-full">
-                  <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
-                    Priority Level
+                {/* Task Description */}
+                <div>
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                    Task Description
                   </label>
-                  <Select onValueChange={setPriority} defaultValue={priority}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PRIORITIES.map((level) => (
-                        <SelectItem key={level} value={level}>
-                          {level.toUpperCase()}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <textarea
+                    id="description"
+                    placeholder="Enter task description"
+                    {...register("description", { required: "Task description is required" })}
+                    className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded-md outline-none focus:ring-2 ring-blue-500 text-gray-900 dark:text-gray-100"
+                  ></textarea>
+                  {errors.description && (
+                    <p className="text-red-500 text-sm">{errors.description.message}</p>
+                  )}
+                </div>
+
+                {/* Assignee Selection */}
+                <div>
+                  <label htmlFor="assigned_users" className="block text-sm font-medium text-gray-700">
+                    Assign Task (Select one or more)
+                  </label>
+                  <Controller
+                    control={control}
+                    name="assigned_users"
+                    rules={{ required: "Please assign at least one user" }}
+                    render={({ field: { onChange, value } }) => (
+                      <AssigneeSelector
+                        options={availableUsers.map((u) => ({
+                          value: u.id,
+                          label: `${u.first_name} ${u.last_name}`,
+                        }))}
+                        value={value || []}
+                        onChange={onChange}
+                      />
+                    )}
+                  />
+                  {errors.assigned_users && (
+                    <p className="text-red-500 text-sm">{errors.assigned_users.message}</p>
+                  )}
+                </div>
+
+                {/* Task Stage and Date */}
+                <div className="flex gap-4">
+                  <div className="w-full">
+                    <label htmlFor="stage" className="block text-sm font-medium text-gray-700">
+                      Task Stage
+                    </label>
+                    <Select onValueChange={setStage} defaultValue={stage}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select stage" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LISTS.map((list) => (
+                          <SelectItem key={list} value={list}>
+                            {list.toUpperCase()}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="w-full">
+                    <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+                      Task Date
+                    </label>
+                    <Input
+                      type="date"
+                      id="date"
+                      {...register("date", { required: "Task date is required" })}
+                    />
+                    {errors.date && (
+                      <p className="text-red-500 text-sm">{errors.date.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Priority */}
+                <div className="flex gap-4">
+                  <div className="w-full">
+                    <label htmlFor="priority" className="block text-sm font-medium text-gray-700">
+                      Priority Level
+                    </label>
+                    <Select onValueChange={setPriority} defaultValue={priority}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select priority" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PRIORITIES.map((level) => (
+                          <SelectItem key={level} value={level}>
+                            {level.toUpperCase()}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Submit and Cancel Buttons */}
+                <div className="flex justify-end gap-4 mt-4">
+                  <Button type="submit" className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700">
+                    Submit
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setOpen(false)}
+                    className="px-5 text-sm font-semibold"
+                  >
+                    Cancel
+                  </Button>
                 </div>
               </div>
-
-              {/* Submit and Cancel Buttons */}
-              <div className="flex justify-end gap-4 mt-4">
-                <Button type="submit" className="bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700">
-                  Submit
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => setOpen(false)}
-                  className="px-5 text-sm font-semibold"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+      {notification && (
+        <TaskNotification
+          issueId={notification.issueId}
+          deeplink={notification.deeplink}
+          onDismiss={() => {
+            setNotification(null);
+            router.refresh();
+          }}
+        />
+      )}
+    </>
   );
 };
 

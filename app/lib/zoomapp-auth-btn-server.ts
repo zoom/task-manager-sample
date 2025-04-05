@@ -42,7 +42,12 @@ export const getZoomSignInUrl = async (): Promise<string> => {
             console.log("Deeplink-Auth: ", deeplink)
 
             // Uncomment the line below to redirect to the deeplink URL
-            return redirect(deeplink);
+            if (deeplink) {
+                return redirect(deeplink);
+            } else {
+                console.error("Deeplink is undefined");
+                redirect("/error"); // Redirect to an error page or handle appropriately
+            }
 
         }
     })
