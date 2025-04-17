@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
 import {headers} from "next/headers";
 
-import { signInWithZoom } from "@/app/actions";
+import { signInWithZoom, signInWithZoomApp} from "@/app/actions";
 
 export default async function AuthButton() {
   const supabase = await createClient();

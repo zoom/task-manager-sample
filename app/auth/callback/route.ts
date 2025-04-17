@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
-import {getDeeplink} from "@/app/lib/zoom-api";
-import {redirect} from "next/navigation";
+import { getDeeplink } from "@/app/lib/zoom-api";
+import { redirect } from "next/navigation";
 
 
 export async function GET(request: Request) {
@@ -20,17 +20,16 @@ export async function GET(request: Request) {
     // Triggers Deep Link Flow To Zoom App On Auth State Change
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (session && session.provider_token) {
+
         const deeplink = await getDeeplink(session.provider_token);
-
         console.log("Deeplink-Route: ", deeplink)
-
         // Uncomment the line below to redirect to the deeplink URL
         // return redirect(deeplink); 
-
       }
     })
 
     const { error, data } = await supabase.auth.exchangeCodeForSession(code)
+    console.log("Exchange Code For Session:", data)
     if (error) {
       console.error(error);
       return NextResponse.redirect(`${forwardedHost}/error`)

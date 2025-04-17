@@ -108,6 +108,7 @@ export async function getInstallURL(): Promise<{ url: URL; state: string; verifi
  * @returns {Promise<any>} Promise resolving to the access token object
  */
 export async function getToken(code: string, verifier: string): Promise<any> {
+
   return tokenRequest(
     new URLSearchParams({
       code,
