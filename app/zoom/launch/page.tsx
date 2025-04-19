@@ -9,14 +9,27 @@ export default function ZoomLaunchRedirectHandler() {
   const [deeplink, setDeeplink] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const run = async () => {
+    const run2 = async () => {
+      
+
+      // What if I send the access token and refresh token in the URL fragment:
+      // TO: https://donte.ngrok.io/api/zoom/entry/
+      // INSTEAD OF:  https://donte.ngrok.io/zoom/launch
+
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
 
       const access_token = hashParams.get("access_token");
       const refresh_token = hashParams.get("refresh_token");
       const provider_token = hashParams.get("provider_token");
       const provider_refresh_token = hashParams.get("provider_refresh_token");
-   
+
+      const url = new URL("/api/zoom/entry", window.location.origin);
+      url.searchParams.set("access_token", access_token);
+      url.searchParams.set("refresh_token", refresh_token);
+      url.searchParams.set("provider_token", provider_token);
+
+      window.location.href = url.toString();
+
       console.log("🔑 Extracted Tokens from URL fragment:", {
         access_token,
         refresh_token,
@@ -35,12 +48,12 @@ export default function ZoomLaunchRedirectHandler() {
       const data = {
         action: JSON.stringify({ // MAX: 256
           url: '/dashboard',
-          role_name: 'Owner',
-          verified: 1,
-          role_id: 0,
-          refresh_token,         
+          // role_name: 'Owner',
+          // verified: 1,
+          // role_id: 0,
+          refresh_token,
           access_token  // May exceed character 256 limit
-               
+
         }),
       };
 
@@ -48,12 +61,25 @@ export default function ZoomLaunchRedirectHandler() {
       const link = await getDeeplink(provider_token, data);
       console.log("🔗 Zoom deeplink:", link, '\n');
 
+
+
       if (!link) {
         setStatus("❌ Failed to retrieve Zoom deeplink");
         return;
       }
-
       setDeeplink(link);
+
+      // Set Backend GET Route to Home Page, get access token and refresh token from the URL fragment
+      // and pass them to the getDeeplink function
+
+      const supaHashParams = new URLSearchParams(window.location.hash);
+      const res = await fetch(`/api/zoom/entry/?code=${supaHashParams}`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const json = await res.json();
+      console.log("🔄 Supabase callback response:", json);
 
       // ✅ Attempt to open in a new tab
       // const newTab = window.open(link, "_blank");
@@ -64,8 +90,37 @@ export default function ZoomLaunchRedirectHandler() {
       //   setStatus("✅ Zoom App opened in new tab.");
       // }
 
-
     };
+
+    const run = async () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    
+      const access_token = hashParams.get("access_token");
+      const refresh_token = hashParams.get("refresh_token");
+      const provider_token = hashParams.get("provider_token");
+    
+      console.log("🔑 Client SIDE: Extracted Tokens from URL fragment :", {
+        access_token,
+        refresh_token,
+        provider_token,
+      });
+    
+      // ✅ Redirect with tokens as query params
+      if (access_token && refresh_token && provider_token) {
+        const url = new URL("/api/zoom/entry", window.location.origin);
+        url.searchParams.set("access_token", access_token);
+        url.searchParams.set("refresh_token", refresh_token);
+        url.searchParams.set("provider_token", provider_token);
+
+        console.log("🔗 Redirecting to server-side handler:", url.toString());
+    
+        // window.location.href = url.toString(); // 👈 Redirect to server-side handler
+        return; // ✅ Prevent further execution
+      }
+    
+      setStatus("❌ Missing access or refresh token");
+    };
+    
 
     run();
   }, []);

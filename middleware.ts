@@ -12,9 +12,9 @@ export async function middleware(request: NextRequest) {
       secure: true,
       sameSite: "lax",
     });
-    console.log("🧩 Zoom App Context Header received in middleware:\n", zoomHeader, "\n");
+    // console.log("🧩 Zoom App Context Header received in middleware:\n", zoomHeader, "\n");
   } else {
-    console.log("⚠️ No x-zoom-app-context header present.", '\n');
+    console.log("🕵️‍♂️  Middleware: No x-zoom-app-context header present.", '\n');
   }
 
   return response;

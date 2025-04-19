@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import zoomSdk from "@zoom/appssdk";
 import { createClient } from '@/utils/supabase/client';
-import {decryptZoomAppContext} from "@/app/lib/zoom-helper";
+import { decryptZoomAppContext } from "@/app/lib/zoom-helper";
 import { Button } from "./ui/button";
 
 import { usePathname } from 'next/navigation';
 
-function getCookie(name: string )  {
+function getCookie(name: string) {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
   return match ? decodeURIComponent(match[2]) : null;
 }
@@ -17,7 +17,8 @@ export default function ZoomAuth() {
   const [isConfigured, setIsConfigured] = useState(false);
   const [runningContext, setRunningContext] = useState(null);
   const [authStatus, setAuthStatus] = useState<"idle" | "success" | "error" | "loading">("idle");
-   const location = usePathname();
+  const location = usePathname();
+  
   // Known working verifier and challenge pair, has to been SHA256 then base64url encoded
   const code_verifier = "fr4O07RDpEBQQzbgKK3sIP7ePRU5YIhdb5lTfVAoLU4";
 
@@ -54,9 +55,13 @@ export default function ZoomAuth() {
     const supabaseProjectRef = "svkmdyqdhpvqvgyosxmc";
 
     try {
-      
+
       const zoomAppRedirect = `${window.location.origin}/zoom/launch`;
       console.log("Zoom App Redirect:", zoomAppRedirect);
+
+      const zoomHomeAPIRoute = `${window.location.origin}api/zoom/entry/`;
+
+      console.log("Zoom Home API Route:", zoomHomeAPIRoute);
 
       // Add to url to site: https://donte.ngrok.io/zoom/launch
 
@@ -69,11 +74,8 @@ export default function ZoomAuth() {
       Set Open your app outside of a meeting url pattern as Supabase default redirect URL 
       Supabase URL Configuration : https://supabase.com/dashboard/project/svkmdyqdhpvqvgyosxmc/auth/url-configuration
       
-      Note: Required you have published your app in the Zoom Marketplace.
-      Zoom App URL Configuration : https://developers.zoom.us/docs/zoom-apps/guides/open-zoom-apps-from-native-web-apps/#open-your-app-outside-of-a-meeting
       */
-      const open_app_outside_meeting = `https://marketplace.zoom.us/zoomapp/78oLjJY6R8eJ9v-IzJXwMg/context/panel/target/launch/deeplink`
-
+     
       // ✅ 2. Open the Supabase Zoom OAuth flow in the browser
       await zoomSdk.openUrl({ url: supabaseAuthUrl });
       console.log("✅ Opened Supabase Zoom OAuth in browser");
@@ -90,9 +92,9 @@ export default function ZoomAuth() {
   // Configure the Zoom SDK and check running context
   // Need to configure a way to get the deeplink token onDeeplink to Zoom client
   // Reality Check: You cannot access the x-zoom-app-context header from the client (frontend)
-  
+
   // Third Party OAuth: https://developers.zoom.us/docs/zoom-apps/authentication/#third-party-oauth-optional
-  
+
   // Tried to use the x-zoom-app-context header but it is not available in the clients 
   // So used supabase cookies set deep link to Zoom App in middleware file instead
   // Chanllenge: Not able to call decryptZoomAppContext on the client, consider using sever action function
@@ -119,12 +121,12 @@ export default function ZoomAuth() {
 
         if (configResponse.runningContext === "inMainClient") {
 
-          // Decode then extact access_token and refresh_token from deeplinkToken
-
           // Read the x-zoom-app-context value set by the middleware
           const zoomToken = getCookie("zoom_contet");
-          
           console.log("Zoom Context Token:", zoomToken);
+
+          // Decode then extact access_token and refresh_token from deeplinkToken
+          // TypeError: undefined is not an object (evaluating 'e.length')
 
           // const decryptedAppContext = decryptZoomAppContext(zoomToken, process.env.ZOOM_CLIENT_SECRET)
           // console.log("Decrypted Zoom App Context:", decryptedAppContext);
@@ -173,8 +175,6 @@ export default function ZoomAuth() {
     <>
 
       <p>You are on this route: {location}</p>
-
-      
       <Button onClick={authorize} disabled={!isConfigured || authStatus === "loading"}>
         {authStatus === "loading" ? "Authorizing..." : "Authorize with Zoom"}
       </Button>
