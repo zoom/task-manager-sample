@@ -25,6 +25,7 @@
     "@zoom/appssdk": "^0.16.26",
     "autoprefixer": "10.4.20",
     "axios": "^1.8.4",
+    "base64url": "^3.0.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",

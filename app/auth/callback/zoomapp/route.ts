@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from "next/server";
-import { getToken } from "@/app/lib/zoom-api";
+import { getToken, getDeeplink} from "@/app/lib/zoom-api";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -18,14 +18,20 @@ export async function GET(request: Request) {
   }
 
   try {
+
+    const supabase = await createClient()
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code)
+    console.log("Exchange Code For Session:", data, '\n' )
+
     const token = await getToken(code, code_verifier);
-    console.log("✅ Zoom token request success:", token);
+    // console.log("✅ Zoom token request success:", token);
+
+    const deeplink = await getDeeplink(token.access_token);
+    console.log("✅ Zoom deeplink request success:", deeplink, "\n");
 
     return NextResponse.json({
       success: true,
-      access_token: token.access_token,
-      refresh_token: token.refresh_token,
-      redirect_url: next,
+      deeplink: deeplink ,
     });
   } catch (error: any) {
     console.error("❌ Zoom token exchange failed:", error?.response?.data || error.message);

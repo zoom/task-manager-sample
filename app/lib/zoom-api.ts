@@ -74,6 +74,7 @@ function apiRequest(method: string, endpoint: string, token: string, data: objec
     url: `/v2${endpoint}`,
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
   }).then(({ data }) => Promise.resolve(data));
 }
@@ -148,15 +149,34 @@ export async function getZoomUser(uid: string, token: string): Promise<any> {
  * @param {string | null | undefined} token - Zoom App Access Token
  * @returns {Promise<string | undefined>}
  */
-export async function getDeeplink(token: string | null | undefined): Promise<string | undefined> {
-  if (!token) {
-    token = "";
+
+export async function getDeeplink(
+  token: string | null | undefined,
+  data: { action?: string } = {}
+): Promise<string | undefined> {
+
+  if (!token || !data.action) {
+    console.warn("Missing token or action payload");
+    return undefined;
   }
+
   try {
-    const data = await apiRequest("POST", "/zoomapp/deeplink", token, {});
-    return data.deeplink;
+    
+    // Zoom injects the act field into the decrypted x-zoom-app-context when the Zoom App is opened via the deeplink.
+    const body = { action: data.action }; // ✅ only pass `action` as root param
+
+    // If the action character limit is exceeded, Zoom client will freeze.
+    if (body.action.length > 256) {
+      console.warn("⚠️  Action exceeds 256 characters, truncating...", '\n');
+      console.log("🚨 Possible bug with Zoom client freezing if action exceeds 256 characters and the act field is not truncated.", '\n');
+      body.action = body.action.substring(0, 256); // Possible bug with Zoom client freezing if action exceeds 256 characters and the act field is not truncated.
+    }
+
+    const response = await apiRequest("POST", "/zoomapp/deeplink", token, body);
+    return response.deeplink;
   } catch (e: any) {
-    console.log(e.response);
+    console.error("❌ Zoom Deeplink API failed:", e?.response?.data || e.message);
     return undefined;
   }
 }
+
