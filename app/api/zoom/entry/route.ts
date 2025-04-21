@@ -7,10 +7,12 @@ export async function GET(request: NextRequest) {
 
   const zoomHeader = request.headers.get("x-zoom-app-context");
   const { searchParams, origin } = new URL(request.url);
-  
+
   console.log("__________________________Zoom App Home Page Route___________________________", "\n");
   console.log("🔗 GET Request Handler:\n", "https://developers.zoom.us/docs/zoom-apps/zoom-app-context/#homeurl-template-parameters", "\n");
   console.log("🔗 Request URL Recieved:", request.url, "\n");
+
+  // Should be Null or Undefined from browser request
   console.log("🔍 HomeURL Template Params: ", searchParams, "\n");
 
   // HomeURL template parameters
@@ -35,10 +37,8 @@ export async function GET(request: NextRequest) {
 
   console.log("🔑 Extracted Tokens Params:", tokenParams, "\n")
 
-
+  //Need to fix
   console.log("🚨 Access Token from search params:", access_token, "\n");
-
-
   console.log(
     "🏡 Zoom APP Home ROUTE: Extracted Tokens from URL search Params:\n",
     {
@@ -54,13 +54,14 @@ export async function GET(request: NextRequest) {
   const forwardedHost = "https://" + request.headers.get("x-forwarded-host");
   const next = searchParams.get("next") ?? "/";
 
-  console.log(`🧩 Incoming x-zoom-app-context header on Zoom App HOME PAGE ROUTE:------------------\n\n${zoomHeader}\n`);
-  console.log(`🤖 Home Template URL Action Param:------------------------------------\n\n${action}\n`);
-0
-
+  // Should be Null or Undefined from browser request
   if (!zoomHeader) {
     console.warn("⚠️  No Zoom context header");
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  } else {
+    console.log(`🧩 Incoming x-zoom-app-context header on Zoom App HOME PAGE ROUTE:------------------\n\n${zoomHeader}\n`);
+    console.log(`🤖 Home Template URL Action Param:------------------------------------\n\n${action}\n`);
+
   }
 
   try {
@@ -69,27 +70,30 @@ export async function GET(request: NextRequest) {
       process.env.ZOOM_CLIENT_SECRET!
     );
 
-    console.log("🔐 Decrypted Zoom Context Header:\n", context, "\n");
+    if (zoomHeader) {
 
-    const { act } = context;
-    console.log("🔗 Action from context:", act, "\n");
+      console.log("🔐 Decrypted Zoom Context Header:\n", context, "\n");
 
-    // Set decrypted context as a cookie, not being set as expected!
-    response.cookies.set("zoom_context", JSON.stringify(context), {
-      path: "/",
-      httpOnly: false, 
-      secure: true,
-      sameSite: "lax",
-    });
+      const { act } = context;
+      console.log("🔗 Action from context:", act, "\n");
+
+      // Set decrypted context as a cookie, not being set as expected!
+      response.cookies.set("zoom_context", JSON.stringify(context), {
+        path: "/",
+        httpOnly: false,
+        secure: true,
+        sameSite: "lax",
+      });
+    }
 
     const redirectUrl = isLocalEnv
       ? `${forwardedHost}${next}`
       : `${origin}${next}`;
 
-    
+
     const redirectUrl2 = isLocalEnv
-    ? `${forwardedHost}${next}?${tokenParams}`
-    : `${origin}${next}?${tokenParams}`;
+      ? `${forwardedHost}${next}?${tokenParams}`
+      : `${origin}${next}?${tokenParams}`;
 
     console.log("🔄 Redirecting to:", redirectUrl2, "\n");
     response.headers.set("Location", redirectUrl2);
