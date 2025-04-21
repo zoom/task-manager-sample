@@ -7,8 +7,11 @@ export async function GET(request: NextRequest) {
 
   const zoomHeader = request.headers.get("x-zoom-app-context");
   const { searchParams, origin } = new URL(request.url);
-
-  console.log("🔍 Request URL Search Params :", searchParams, "\n");
+  
+  console.log(" ___________________________________________________________________________", "\n");
+  console.log("🔗 Zoom App Home Page Route: GET Request Handler:\n", "https://developers.zoom.us/docs/zoom-apps/zoom-app-context/#homeurl-template-parameters", "\n");
+  console.log("🔗 Request URL Recieved:", request.url, "\n");
+  console.log("🔍 HomeURL Template Params :", searchParams, "\n");
 
   // HomeURL template parameters
   // URL : https://developers.zoom.us/docs/zoom-apps/zoom-app-context/#homeurl-template-parameters
@@ -30,20 +33,20 @@ export async function GET(request: NextRequest) {
   if (provider_token) tokenParams.set("provider_token", provider_token);
   if (provider_refresh_token) tokenParams.set("provider_refresh_token", provider_refresh_token);
 
-  console.log("🔑 Extracted Tokens Params:", tokenParams, '/n')
+  console.log("🔑 Extracted Tokens Params:", tokenParams, "\n")
 
 
-  console.log("🚨  Access Token from search params:", access_token, "\n");
+  console.log("🚨 Access Token from search params:", access_token, "\n");
 
 
-  console.log("🔑 Zoom APP Home ROUTE: Extracted Tokens from URL search Params:",
+  console.log(
+    "🏡 Zoom APP Home ROUTE: Extracted Tokens from URL search Params:\n",
     {
       access_token,
       refresh_token,
       provider_refresh_token,
       provider_token,
-    },
-    "\n"
+    }, "\n"
   );
 
 
@@ -52,12 +55,11 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get("next") ?? "/";
 
   console.log(`🧩 Incoming x-zoom-app-context header on Zoom App HOME PAGE ROUTE:------------------\n\n${zoomHeader}\n`);
-  console.log(`🤖 Home Template URL Action Param:------------------\n\n${action}\n`);
-
-
+  console.log(`🤖 Home Template URL Action Param:------------------------------------\n\n${action}\n`);
+0
 
   if (!zoomHeader) {
-    console.warn("⚠️ No Zoom context header");
+    console.warn("⚠️  No Zoom context header");
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
@@ -67,7 +69,7 @@ export async function GET(request: NextRequest) {
       process.env.ZOOM_CLIENT_SECRET!
     );
 
-    console.log("🔐 Decrypted Zoom Context Header:", context, "\n");
+    console.log("🔐 Decrypted Zoom Context Header:\n", context, "\n");
 
     const { act } = context;
     console.log("🔗 Action from context:", act, "\n");

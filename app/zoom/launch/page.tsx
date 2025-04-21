@@ -9,7 +9,7 @@ export default function ZoomLaunchRedirectHandler() {
   const [deeplink, setDeeplink] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const run2 = async () => {
+    const run = async () => {
       
 
       // What if I send the access token and refresh token in the URL fragment:
@@ -23,12 +23,6 @@ export default function ZoomLaunchRedirectHandler() {
       const provider_token = hashParams.get("provider_token");
       const provider_refresh_token = hashParams.get("provider_refresh_token");
 
-      const url = new URL("/api/zoom/entry", window.location.origin);
-      url.searchParams.set("access_token", access_token);
-      url.searchParams.set("refresh_token", refresh_token);
-      url.searchParams.set("provider_token", provider_token);
-
-      window.location.href = url.toString();
 
       console.log("🔑 Extracted Tokens from URL fragment:", {
         access_token,
@@ -92,7 +86,7 @@ export default function ZoomLaunchRedirectHandler() {
 
     };
 
-    const run = async () => {
+    const runQueryParams = async () => {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
     
       const access_token = hashParams.get("access_token");
