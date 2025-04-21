@@ -8,10 +8,10 @@ export async function GET(request: NextRequest) {
   const zoomHeader = request.headers.get("x-zoom-app-context");
   const { searchParams, origin } = new URL(request.url);
   
-  console.log(" ___________________________________________________________________________", "\n");
-  console.log("🔗 Zoom App Home Page Route: GET Request Handler:\n", "https://developers.zoom.us/docs/zoom-apps/zoom-app-context/#homeurl-template-parameters", "\n");
+  console.log("__________________________Zoom App Home Page Route___________________________", "\n");
+  console.log("🔗 GET Request Handler:\n", "https://developers.zoom.us/docs/zoom-apps/zoom-app-context/#homeurl-template-parameters", "\n");
   console.log("🔗 Request URL Recieved:", request.url, "\n");
-  console.log("🔍 HomeURL Template Params :", searchParams, "\n");
+  console.log("🔍 HomeURL Template Params: ", searchParams, "\n");
 
   // HomeURL template parameters
   // URL : https://developers.zoom.us/docs/zoom-apps/zoom-app-context/#homeurl-template-parameters

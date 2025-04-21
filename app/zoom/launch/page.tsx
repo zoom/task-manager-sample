@@ -22,8 +22,9 @@ export default function ZoomLaunchRedirectHandler() {
       const refresh_token = hashParams.get("refresh_token");
       const provider_token = hashParams.get("provider_token");
       const provider_refresh_token = hashParams.get("provider_refresh_token");
-
-
+      
+      console.log("_____________ Auth Handler Page: Third-party OAuth with Supabase ______________", "\n");
+      console.log("LEARN MORE: https://developers.zoom.us/docs/zoom-apps/authentication/#third-party-oauth-optional", "\n");
       console.log("🔑 Extracted Tokens from URL fragment:", {
         access_token,
         refresh_token,
