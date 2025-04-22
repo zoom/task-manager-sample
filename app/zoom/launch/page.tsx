@@ -11,7 +11,6 @@ export default function ZoomLaunchRedirectHandler() {
   useEffect(() => {
     const run = async () => {
 
-
       // What if I send the access token and refresh token in the URL fragment:
       // TO: https://donte.ngrok.io/api/zoom/entry/
       // INSTEAD OF:  https://donte.ngrok.io/zoom/launch
@@ -62,6 +61,7 @@ export default function ZoomLaunchRedirectHandler() {
       }
       setDeeplink(link);
 
+      // TEST
       // Set Backend GET Route to Home Page, get access token and refresh token from the URL fragment
       // and pass them to the getDeeplink function
       if (hashParams && hashParams.toString().length > 0) {
