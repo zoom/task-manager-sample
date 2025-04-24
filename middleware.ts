@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
       sameSite: "lax",
     });
     console.log("______________________________Middleware Event____________________________", "\n");
-    console.log(`📬  Zoom sent an HTTP request to the App Home URL:"\n\n${zoomHeader}`, "\n");
+    console.log(`📬  Zoom sent an HTTP request to the App Home URL: \n\n${zoomHeader}`, "\n");
   } else {
     console.log("🕵️‍♂️  Middleware: No x-zoom-app-context header present.", '\n');
   }

@@ -23,8 +23,8 @@ export default function ZoomLaunchRedirectHandler() {
       const provider_refresh_token = hashParams.get("provider_refresh_token");
 
       console.log("_____________ Auth Handler Page: Third-party OAuth with Supabase ______________", "\n");
-      console.log("LEARN MORE: https://developers.zoom.us/docs/zoom-apps/authentication/#third-party-oauth-optional", "\n");
-      console.log("🔑 Extracted Tokens from URL fragment:", {
+      console.log("🧑‍🏫 LEARN MORE: https://developers.zoom.us/docs/zoom-apps/authentication/#third-party-oauth-optional", "\n");
+      console.log("🔑 Extracted Supabase Provider Tokens from URL fragment:", {
         access_token,
         refresh_token,
         provider_token,
@@ -65,7 +65,7 @@ export default function ZoomLaunchRedirectHandler() {
       // Set Backend GET Route to Home Page, get access token and refresh token from the URL fragment
       // and pass them to the getDeeplink function
       if (hashParams && hashParams.toString().length > 0) {
-        console.log("🔄  Sent query params to Home URL:");
+        console.log("🔄 <----- Sent query params to Home URL:-----> 🔄 ");
         
         const supaHashParams = new URLSearchParams(window.location.hash);
         const res = await fetch(`/api/zoom/entry/?code=${supaHashParams}`, {

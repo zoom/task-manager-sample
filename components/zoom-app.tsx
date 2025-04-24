@@ -79,10 +79,10 @@ export default function ZoomAuth() {
 
       // ✅ 2. Open the Supabase Zoom OAuth flow in the browser
       await zoomSdk.openUrl({ url: supabaseAuthUrl });
-      console.log("✅ Opened Supabase Zoom OAuth in browser");
-
+      console.log(`🔗 Open the authorization GET request in the browser."\n\n ${supabaseAuthUrl}`);
+      console.log("✅ Opened Supabase Zoom OAuth Page in browser");
+      console.log("1️⃣ Third party OAuth Flow with Supabase Started");
       ///..... // Handle the response from Supabase
-
 
     } catch (error) {
       console.error("❌ Error opening Supabase auth URL:", error);

@@ -27,18 +27,21 @@ export async function GET(request: NextRequest) {
   const provider_token = searchParams.get('provider_token');
   const provider_refresh_token = searchParams.get("provider_refresh_token");
 
-  // Try to extract tokens from the URL search params
-  const tokenParams = new URLSearchParams();
+    // To be removed: Try to extract tokens from the URL search params
+    const tokenParams = new URLSearchParams();
 
-  if (access_token) tokenParams.set("access_token", access_token);
-  if (refresh_token) tokenParams.set("refresh_token", refresh_token);
-  if (provider_token) tokenParams.set("provider_token", provider_token);
-  if (provider_refresh_token) tokenParams.set("provider_refresh_token", provider_refresh_token);
+    if (access_token) tokenParams.set("access_token", access_token);
+    if (refresh_token) tokenParams.set("refresh_token", refresh_token);
+    if (provider_token) tokenParams.set("provider_token", provider_token);
+    if (provider_refresh_token) tokenParams.set("provider_refresh_token", provider_refresh_token);
+  
+    console.log("🔑 Extracted Supabase Provider Tokens Params Value:", tokenParams, "\n")
+  
+    // Remove above
 
-  console.log("🔑 Extracted Tokens Params:", tokenParams, "\n")
 
   //Need to fix
-  console.log("🚨 Access Token from search params:", access_token, "\n");
+  console.log(`🚨 Access Token from search params: \n\n ${access_token}\n`);
   console.log(
     "🏡 Zoom APP Home ROUTE: Extracted Tokens from URL search Params:\n",
     {
@@ -60,8 +63,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   } else {
     console.log(`🧩 Incoming x-zoom-app-context header on Zoom App HOME PAGE ROUTE:------------------\n\n${zoomHeader}\n`);
-    console.log(`🤖 Home Template URL Action Param:------------------------------------\n\n${action}\n`);
-
+    console.log(`🏡 Home Template URL Action Param:------------------------------------\n\n${action}\n`);
   }
 
   try {
@@ -75,7 +77,7 @@ export async function GET(request: NextRequest) {
       console.log("🔐 Decrypted Zoom Context Header:\n", context, "\n");
 
       const { act } = context;
-      console.log("🔗 Action from context:", act, "\n");
+      console.log(`🎬 Action context value: \n\n ${act}\n`);
 
       // Set decrypted context as a cookie, not being set as expected!
       response.cookies.set("zoom_context", JSON.stringify(context), {
@@ -97,7 +99,7 @@ export async function GET(request: NextRequest) {
 
     console.log("🔄 Redirecting to:", redirectUrl2, "\n");
     response.headers.set("Location", redirectUrl2);
-    //return response;
+    // return response;
     // send the access token and refresh token in the URL fragment for redirect
 
     return NextResponse.redirect(redirectUrl2);
