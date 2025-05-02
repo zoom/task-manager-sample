@@ -22,25 +22,24 @@ export async function GET(request: NextRequest) {
   // // What if I send the access token and refresh token in the URL fragment:
   // // TO: https://donte.ngrok.io/api/zoom/entry/
   // // INSTEAD OF:  https://donte.ngrok.io/zoom/launch
-  const access_token = searchParams.get("access_token");
-  const refresh_token = searchParams.get("refresh_token");
-  const provider_token = searchParams.get('provider_token');
-  const provider_refresh_token = searchParams.get("provider_refresh_token");
+  let access_token = searchParams.get("access_token");
+  let refresh_token = searchParams.get("refresh_token");
+  let provider_token = searchParams.get('provider_token');
+  let provider_refresh_token = searchParams.get("provider_refresh_token");
 
-    // To be removed: Try to extract tokens from the URL search params
-    const tokenParams = new URLSearchParams();
+  // If not found, check for it mistakenly embedded in the 'code' param
+if (!access_token) {
+  const codeParam = searchParams.get("code") ?? "";
+  if (codeParam.startsWith("#access_token=")) {
+    // Clean and parse the string into individual params
+    const fixedParams = new URLSearchParams(codeParam.slice(1)); // remove #
+    access_token = fixedParams.get("access_token");
+    refresh_token = fixedParams.get("refresh_token") ?? refresh_token;
+    provider_token = fixedParams.get("provider_token") ?? provider_token;
+    provider_refresh_token = fixedParams.get("provider_refresh_token") ?? provider_refresh_token;
+  }
+}
 
-    if (access_token) tokenParams.set("access_token", access_token);
-    if (refresh_token) tokenParams.set("refresh_token", refresh_token);
-    if (provider_token) tokenParams.set("provider_token", provider_token);
-    if (provider_refresh_token) tokenParams.set("provider_refresh_token", provider_refresh_token);
-  
-    console.log("🔑 Extracted Supabase Provider Tokens Params Value:", tokenParams, "\n")
-  
-    // Remove above
-
-
-  //Need to fix
   console.log(`🚨 Access Token from search params: \n\n ${access_token}\n`);
   console.log(
     "🏡 Zoom APP Home ROUTE: Extracted Tokens from URL search Params:\n",
@@ -93,16 +92,12 @@ export async function GET(request: NextRequest) {
       : `${origin}${next}`;
 
 
-    const redirectUrl2 = isLocalEnv
-      ? `${forwardedHost}${next}?${tokenParams}`
-      : `${origin}${next}?${tokenParams}`;
-
-    console.log("🔄 Redirecting to:", redirectUrl2, "\n");
-    response.headers.set("Location", redirectUrl2);
+    console.log(`🔄 Redirecting to Zoom Client Home Page: ${redirectUrl} \n`);
+    response.headers.set("Location:", redirectUrl);
     // return response;
     // send the access token and refresh token in the URL fragment for redirect
 
-    return NextResponse.redirect(redirectUrl2);
+    return NextResponse.redirect(redirectUrl);
   } catch (err: any) {
     console.error("❌ Failed to decode Zoom context:", err.message);
     return NextResponse.redirect(new URL("/", request.url));

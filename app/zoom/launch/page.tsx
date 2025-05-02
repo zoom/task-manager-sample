@@ -45,8 +45,8 @@ export default function ZoomLaunchRedirectHandler() {
           // role_name: 'Owner',
           // verified: 1,
           // role_id: 0,
-          refresh_token,
-          access_token  // May exceed character 256 limit
+         refresh_token,
+          //access_token  // Exceed character 256 limit
 
         }),
       };
