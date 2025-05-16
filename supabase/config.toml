@@ -2,7 +2,7 @@
 # https://supabase.com/docs/guides/local-development/cli/config
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
-project_id = "zoom-task-manager"
+project_id = "svkmdyqdhpvqvgyosxmc"
 
 [api]
 enabled = true
@@ -83,7 +83,7 @@ enabled = true
 file_size_limit = "50MiB"
 
 [storage.image_transformation]
-enabled = true
+enabled = false
 
 # Uncomment to configure local storage buckets
 # [storage.buckets.images]

@@ -4,13 +4,17 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import zoomSdk from "@zoom/appssdk";
+
 
 export const signInWithZoom= async () => {
   const supabase = await createClient();
   const headerList = await headers();
   const origin = headerList.get("origin");
-
-  console.log("Origin:", origin);
+ 
+  
+  console.log("Origin:", origin, '\n');
+  console.log('Headers:', headerList), '\n';
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'zoom',
@@ -47,16 +51,7 @@ export const signInWithZoomApp = async () => {
     return { error: error.message, url: null, codeChallenge: null };
   }
 
-  const urlObj = new URL(data.url);
-  const codeChallenge = urlObj.searchParams.get("code_challenge");
-
-   console.log("Supabase Code Challenge: ", codeChallenge)
-
-  return {
-    url: data.url,
-    codeChallenge,
-    error: null,
-  };
+  return { url: data.url };
 };
 
 export const signOutAction = async () => {

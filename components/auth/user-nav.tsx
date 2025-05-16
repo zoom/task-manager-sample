@@ -27,7 +27,12 @@ export async function UserNav() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-    const { user_metadata: {name, email, avatar_url } } = user;
+
+  if (!user) {
+    return null;
+  }
+  
+  const { user_metadata: {name, email, avatar_url } } = user;
 
   const initials = getInitials(name);
 

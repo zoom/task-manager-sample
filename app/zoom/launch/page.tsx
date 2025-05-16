@@ -10,6 +10,7 @@ export default function ZoomLaunchRedirectHandler() {
 
   useEffect(() => {
     const run = async () => {
+      console.log("__________________________ Zoom App External Page _______________________", "\n");
 
       // What if I send the access token and refresh token in the URL fragment:
       // TO: https://donte.ngrok.io/api/zoom/entry/
@@ -41,11 +42,12 @@ export default function ZoomLaunchRedirectHandler() {
       // Construct data to pass to getDeeplink
       const data = {
         action: JSON.stringify({ // MAX: 256
-          url: '/dashboard',
+          // url: '/dashboard',
           // role_name: 'Owner',
-          // verified: 1,
+           verified: 'getToken',
           // role_id: 0,
-         refresh_token,
+          
+        //  refresh_token,
           //access_token  // Exceed character 256 limit
 
         }),
