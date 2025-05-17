@@ -3,32 +3,29 @@ import { decryptZoomAppContext } from "@/app/lib/zoom-helper";
 import { updateSession } from "@/utils/supabase/middleware";
 import { upsertSupabaseUser, getSupabaseUser } from "@/app/lib/supabaseTokenStore";
 
-import { createClient } from "@/utils/supabase/server";
-
-
 export async function GET(request: NextRequest) {
-  console.log("____________________________Zoom Entry Get Route__________________________", "\n");
+  console.log("__________________________Zoom Home Page Get Route________________________", "\n");
   const response = await updateSession(request);
   const { searchParams, origin } = new URL(request.url);
+  const url = request.url;
   const zoomHeader = request.headers.get("x-zoom-app-context");
-  const userId = "tlMA8OtuQX-UjUoIN1k0qQ"; // TODO: Make dynamic
+
+  // Should get from the params instead of hardcoding
+  //const userId = "tlMA8OtuQX-UjUoIN1k0qQ"; // TODO: Make dynamic
+  const userId = "TIA5UgoMte"
+
+  const access_token = extractToken("access_token", searchParams, url);
+  const refresh_token = extractToken("refresh_token", searchParams, url);
 
   logRequest(request.url, zoomHeader, searchParams);
 
-  const access_token = extractToken("access_token", searchParams);
-  const refresh_token = extractToken("refresh_token", searchParams);
-
-  console.log("🔑 Access Token:", access_token, '\n');
-  console.log("🔑 Refresh Token:", refresh_token, '\n');
-
   if (access_token && refresh_token) {
-    const sessionRedirect = await setSupabaseSession(request, access_token, refresh_token);
-    if (!sessionRedirect) {
-      return NextResponse.redirect("https://donte.ngrok.io?error=supabase_session_failed");
-    }
-    return sessionRedirect;
-    await upsertSupabaseUser(userId, access_token, refresh_token, Date.now() + 3600 * 1000);
-    console.log("✅ Tokens stored in Redis");
+
+    // await upsertSupabaseUser(userId, access_token, refresh_token, Date.now() + 3600 * 1000);
+    // console.log("✅ Tokens stored in Redis");
+
+    return NextResponse.json({ success: true });
+
   } else {
     console.warn("⚠️ Missing access_token or refresh_token");
   }
@@ -42,10 +39,10 @@ export async function GET(request: NextRequest) {
       console.log("🔐 Token retrieved from Redis:", tokenData);
 
       const redirectUrl = new URL("https://donte.ngrok.io");
-      redirectUrl.searchParams.set("access_token", tokenData.accessToken);
-      redirectUrl.searchParams.set("refresh_token", tokenData.refreshToken);
+      // redirectUrl.searchParams.set("access_token", tokenData.accessToken);
+      // redirectUrl.searchParams.set("refresh_token", tokenData.refreshToken);
 
-      console.log("🔄 Redirecting to Zoom App Home:", redirectUrl.toString());
+      console.log("🔄 Zoom App Home redirected:", redirectUrl.toString());
 
       return NextResponse.redirect(redirectUrl.toString());
     } catch (e) {
@@ -56,49 +53,33 @@ export async function GET(request: NextRequest) {
 
   const redirectUrl = buildRedirectUrl(request, searchParams, origin);
   console.log("🔄 Redirecting to Zoom Client Home:", redirectUrl);
-  response.headers.set("Location", redirectUrl);
 
   return NextResponse.redirect(redirectUrl);
 
 }
 
-async function setSupabaseSession(
-  request: NextRequest,
-  access_token: string,
-  refresh_token: string
-): Promise<NextResponse | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
-
-  if (error) {
-    console.error("❌ Supabase session error:", error.message);
-    return null;
-  }
-
-  console.log("✅ Supabase session set successfully:", data);
-
-  const isLocalEnv = process.env.NODE_ENV === 'development';
-  const forwardedHost = request.headers.get('x-forwarded-host');
-  const origin = new URL(request.url).origin;
-
-  const redirectBase = isLocalEnv && forwardedHost
-    ? `https://${forwardedHost}`
-    : origin;
-
-  return NextResponse.redirect(`${redirectBase}/dashboard`);
-}
-
-
 
 // Utility to extract tokens from both query param and URL fragment fallback
-function extractToken(key: string, searchParams: URLSearchParams) {
-  const value = searchParams.get(key);
-  if (value) return value;
+function extractToken(key: string, searchParams: URLSearchParams, url: string) {
+  // Check standard query param first
+  const direct = searchParams.get(key);
+  if (direct) return direct;
 
-  const codeParam = searchParams.get("code") ?? "";
-  if (codeParam.startsWith("#")) {
-    const parsed = new URLSearchParams(codeParam.slice(1));
-    return parsed.get(key);
+  // Handle case where URL contains a fragment (after '#' or '%23')
+  const hashIndex = url.indexOf('#');
+  const encodedHashIndex = url.indexOf('%23');
+
+  let fragment = "";
+  if (hashIndex !== -1) {
+    fragment = url.substring(hashIndex + 1);
+  } else if (encodedHashIndex !== -1) {
+    fragment = decodeURIComponent(url.substring(encodedHashIndex)); // decode and remove `%23`
+    if (fragment.startsWith('#')) fragment = fragment.substring(1); // remove actual '#'
+  }
+
+  if (fragment) {
+    const fragmentParams = new URLSearchParams(fragment);
+    return fragmentParams.get(key);
   }
 
   return null;
@@ -136,6 +117,7 @@ function handleZoomContext(header: string | null): { verified?: string } {
 function logRequest(url: string, header: string | null, params: URLSearchParams) {
   console.log("🔗 Request URL:", url, "\n");
   console.log("🔑 Zoom Header:", header, "\n");
+  console.log("🔍 Search Params:", params.toString(), "\n");
   console.log("🔍 Extracted Tokens:", {
     access_token: params.get("access_token"),
     refresh_token: params.get("refresh_token"),

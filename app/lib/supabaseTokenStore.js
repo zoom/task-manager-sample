@@ -1,8 +1,8 @@
 const { Redis } = require('@upstash/redis');
 
 const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  url: process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL,
+  token: process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN,
 });
 
 module.exports = {
@@ -10,20 +10,15 @@ module.exports = {
   getSupabaseUser: async function (userId) {
     const key = `supabase:user:${userId}`;
     const raw = await redis.get(key);
-  
-    console.log("🧪 Raw value from Redis:", raw); // Add this!
-  
+
+    console.log("🧪 Raw value from Redis:", raw);
+
     if (!raw) {
-      console.log('Supabase user token not found in Redis');
-      return Promise.reject('User not found');
+      console.log("Supabase user token not found in Redis");
+      throw new Error("User not found");
     }
-  
-    try {
-      return raw;
-    } catch (e) {
-      console.error("❌ Failed to parse JSON from Redis value:", e.message);
-      return Promise.reject("Invalid token data format");
-    }
+
+    return raw;
   },
 
   // Insert or update Supabase tokens

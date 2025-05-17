@@ -36,7 +36,7 @@ const nextConfig = {
               default-src 'self';
               script-src 'self' 'unsafe-inline' 'unsafe-eval';
               style-src 'self' 'unsafe-inline';
-              connect-src 'self' ${supabaseURL} ${supabaseURL.replace(/^https:\/\//, 'wss://')};
+              connect-src 'self' ${supabaseURL} ${supabaseURL.replace(/^https:\/\//), 'wss://' , 'https://top-monitor-23377.upstash.io'};
               img-src 'self' data: https:;
               font-src 'self';
               frame-src 'self';

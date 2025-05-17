@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from 'next/router';
 import zoomSdk from "@zoom/appssdk";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "./ui/button";
-import { signInWithZoomApp } from "@/app/actions";
+
+
+import {getSupabaseUser } from "@/app/lib/supabaseTokenStore";
+import {signInWithZoomApp } from "@/app/actions";
  
 export default function ZoomAuth() {
   console.log("__________________________ Zoom App Home Page _______________________", "\n");
@@ -15,69 +19,6 @@ export default function ZoomAuth() {
 
   // Ref to dynamically assign the correct onAuthorized handler
   const authorizedHandlerRef = useRef<(event: any) => void>(() => {});
-
-  // OAuth PKCE values (normally you'd generate these securely)
-  const code_challenge = "ZjBjMDdjYWEwODJkYjQ0NDZjNDEwODc0MzljYjA2ZGRlYTk3YzM0YmI3YzljZDVjNTcxOTI0NzMyODhhMmZhYg==";
-  const hardcodedState = "TIA5UgoMte";
-
-  const handleZoomInClientAuthorization = async (event: any) => {
-    console.log("📥 Zoom In-Client OAuth Authorization Event:", event);
-    // Handle the Zoom In-Client authorization result here
-    // You can exchange `event.code` with your backend if needed
-    setAuthStatus("success");
-  };
-
-  const handleSupabaseZoomOAuth = async () => {
-    try {
-      setAuthStatus("loading");
-      const { url, error } = await signInWithZoomApp();
-
-      if (error || !url) {
-        console.error("❌ Failed to get Supabase OAuth URL:", error);
-        setAuthStatus("error");
-        return;
-      }
-
-      await zoomSdk.openUrl({ url });
-      console.log("✅ Opened Supabase Zoom OAuth URL:", url);
-      setAuthStatus("success");
-    } catch (err) {
-      console.error("❌ Error during Supabase Zoom OAuth flow:", err);
-      setAuthStatus("error");
-    }
-  };
-
-  const handleRawSupabaseOAuth = async () => {
-    try {
-      setAuthStatus("loading");
-
-      const supabaseProjectRef = "svkmdyqdhpvqvgyosxmc";
-      const zoomAppRedirect = `${window.location.origin}/zoom/launch`;
-      const supabaseAuthUrl = `https://${supabaseProjectRef}.supabase.co/auth/v1/authorize?provider=zoom&redirect_to=${encodeURIComponent(zoomAppRedirect)}`;
-
-      await zoomSdk.openUrl({ url: supabaseAuthUrl });
-      console.log("✅ Opened raw Supabase OAuth URL:", supabaseAuthUrl);
-      setAuthStatus("success");
-    } catch (error) {
-      console.error("❌ Error opening raw Supabase auth URL:", error);
-      setAuthStatus("error");
-    }
-  };
-
-  const authorizeViaZoomClient = async () => {
-    try {
-      authorizedHandlerRef.current = handleZoomInClientAuthorization;
-      setAuthStatus("loading");
-
-      await zoomSdk.authorize({
-        codeChallenge: code_challenge,
-        state: hardcodedState,
-      });
-    } catch (error) {
-      console.error("❌ Zoom SDK authorize error:", error);
-      setAuthStatus("error");
-    }
-  };
 
   const initializeZoomSDK = async () => {
     try {
@@ -101,6 +42,78 @@ export default function ZoomAuth() {
       console.log("✅ Zoom SDK configured");
     } catch (error) {
       console.error("❌ Zoom SDK config error:", error);
+    }
+  };
+
+  const handleRawSupabaseOAuth = async () => {
+    try {
+      setAuthStatus("loading");
+      const { url } = await signInWithZoomApp();
+      await zoomSdk.openUrl({ url: url });
+      console.log("✅ Opened raw Supabase OAuth URL:", url);
+      setAuthStatus("success");
+    } catch (error) {
+      console.error("❌ Error opening raw Supabase auth URL:", error);
+      setAuthStatus("error");
+    }
+  };
+
+  const handleZoomInClientAuthorization = async (event: any) => {
+    console.log("📥 Zoom In-Client OAuth Authorization Event:", event);
+    // Handle the Zoom In-Client authorization result here
+    // You can exchange `event.code` with your backend if needed
+    setAuthStatus("success");
+  };
+
+ 
+  const authorizeViaZoomClient = async () => {
+     // OAuth PKCE values (normally you'd generate these securely)
+    const code_challenge = "ZjBjMDdjYWEwODJkYjQ0NDZjNDEwODc0MzljYjA2ZGRlYTk3YzM0YmI3YzljZDVjNTcxOTI0NzMyODhhMmZhYg==";
+    const hardcodedState = "TIA5UgoMte";
+
+    try {
+      authorizedHandlerRef.current = handleZoomInClientAuthorization;
+      setAuthStatus("loading");
+
+      await zoomSdk.authorize({
+        codeChallenge: code_challenge,
+        state: hardcodedState,
+      });
+    } catch (error) {
+      console.error("❌ Zoom SDK authorize error:", error);
+      setAuthStatus("error");
+    }
+  };
+
+
+
+  const setSupabaseSessionFromCache = async () => {
+    const hardcodedState = "TIA5UgoMte";
+  
+    try {
+      const tokenData = await getSupabaseUser(hardcodedState);
+      console.log("🔐 Token data from Redis:", tokenData);
+  
+      if (!tokenData.accessToken || !tokenData.refreshToken) {
+        console.error("❌ Token data incomplete.");
+        return;
+      }
+  
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.setSession({
+        access_token: tokenData.accessToken,
+        refresh_token: tokenData.refreshToken,
+      });
+  
+      if (error) {
+        console.error("❌ Supabase session set error:", error.message);
+        return;
+      }
+  
+      console.log("✅ Supabase session set successfully from Redis cache.");
+      window.location.href = "/dashboard";
+    } catch (err) {
+      console.error("❌ Failed to get Supabase tokens from cache:", err);
     }
   };
 
@@ -137,18 +150,21 @@ export default function ZoomAuth() {
     newUrl.searchParams.delete("access_token");
     newUrl.searchParams.delete("refresh_token");
     window.history.replaceState({}, document.title, newUrl.toString());
+
+    // Redirect to the dashboard or any other page
+    // You can use Next.js router for navigation
+    window.location.href = "/dashboard";
   };
   
 
-
-
   useEffect(() => {
     initializeZoomSDK();
-    setSupabaseSessionFromURL();
+    // setSupabaseSessionFromURL();
+    setSupabaseSessionFromCache();
     return () => {
       console.log("🧹 Cleaning up Zoom SDK event listeners:", authorizedHandlerRef.current);
       // zoomSdk.removeEventListener("onAuthorized", authorizedHandlerRef.current);
-      
+    
     };
   }, []);
 
@@ -161,9 +177,6 @@ export default function ZoomAuth() {
           {authStatus === "loading" ? "Authorizing..." : "Authorize with Zoom In-Client Flow"}
         </Button>
 
-        <Button onClick={handleSupabaseZoomOAuth} disabled={!isConfigured || authStatus === "loading"}>
-          {authStatus === "loading" ? "Authorizing..." : "Authorize with Supabase via Server Action"}
-        </Button>
 
         <Button onClick={handleRawSupabaseOAuth} disabled={!isConfigured || authStatus === "loading"}>
           {authStatus === "loading" ? "Authorizing..." : "Authorize with Raw Supabase URL"}

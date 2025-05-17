@@ -68,9 +68,10 @@ export default function ZoomLaunchRedirectHandler() {
       // and pass them to the getDeeplink function
       if (hashParams && hashParams.toString().length > 0) {
         console.log("🔄 <----- Sent query params to Home URL:-----> 🔄 ");
+        const state = "TIA5UgoMte";
         
         const supaHashParams = new URLSearchParams(window.location.hash);
-        const res = await fetch(`/api/zoom/entry/?code=${supaHashParams}`, {
+        const res = await fetch(`/api/zoom/entry/?state=${state}&${supaHashParams}`, {
           method: "GET",
           credentials: "include",
         });
@@ -92,34 +93,7 @@ export default function ZoomLaunchRedirectHandler() {
 
     };
 
-    const runQueryParams = async () => {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-
-      const access_token = hashParams.get("access_token");
-      const refresh_token = hashParams.get("refresh_token");
-      const provider_token = hashParams.get("provider_token");
-
-      console.log("🔑 Client SIDE: Extracted Tokens from URL fragment :", {
-        access_token,
-        refresh_token,
-        provider_token,
-      });
-
-      // ✅ Redirect with tokens as query params
-      if (access_token && refresh_token && provider_token) {
-        const url = new URL("/api/zoom/entry", window.location.origin);
-        url.searchParams.set("access_token", access_token);
-        url.searchParams.set("refresh_token", refresh_token);
-        url.searchParams.set("provider_token", provider_token);
-
-        console.log("🔗 Redirecting to server-side handler:", url.toString());
-
-        // window.location.href = url.toString(); // 👈 Redirect to server-side handler
-        return; // ✅ Prevent further execution
-      }
-
-      setStatus("❌ Missing access or refresh token");
-    };
+   
 
 
     run();

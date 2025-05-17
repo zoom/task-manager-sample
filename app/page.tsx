@@ -2,13 +2,6 @@ import Hero from '@/components/hero'
 import {headers} from "next/headers";
 import dynamic from "next/dynamic";
 
-import SignInWithZoomButton from '@/components/taskmanger/zoom-app-signin-btn';
-
-import { signInWithZoomApp } from "@/app/actions";
-
- // Remove the hardcoded code_challenge and url
-// const { codeChallenge, url, error } = await signInWithZoomApp();
-
 
 export default async function Page() {
     let Zoom;
@@ -17,7 +10,7 @@ export default async function Page() {
     const isZoom = headersList.has('x-zoom-app-device-type');
 
     const loadZoomApp = () => {
-        if (!isZoom) return  <SignInWithZoomButton/>;
+        if (!isZoom) return <div>Zoom App Landing Page</div>;
 
         Zoom = dynamic(() => import('@/components/zoom-app'));
 

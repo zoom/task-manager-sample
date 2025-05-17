@@ -4,7 +4,6 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import zoomSdk from "@zoom/appssdk";
 
 
 export const signInWithZoom= async () => {
@@ -33,25 +32,18 @@ export const signInWithZoom= async () => {
   
 }
 
+
+// TODO: Remove this function
 export const signInWithZoomApp = async () => {
-  const supabase = await createClient();
   const headerList = await headers();
   const origin = headerList.get("origin");
+
+  // Generate state add to the URL
+  const state = "TIA5UgoMte";
+  const zoomAppRedirect = `${origin}/zoom/launch?state=${state}`;
+  const supabaseAuthUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/authorize?provider=zoom&redirect_to=${encodeURIComponent(zoomAppRedirect)}`;
   
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "zoom",
-    options: {
-      skipBrowserRedirect: true,
-      redirectTo: `${origin}/auth/callback`,
-    },
-  });
-
-  if (error) {
-    console.error("OAuth Error:", error.message);
-    return { error: error.message, url: null, codeChallenge: null };
-  }
-
-  return { url: data.url };
+  return { url: supabaseAuthUrl };
 };
 
 export const signOutAction = async () => {
