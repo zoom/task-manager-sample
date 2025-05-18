@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { decryptZoomAppContext } from "@/app/lib/zoom-helper";
 import { updateSession } from "@/utils/supabase/middleware";
 import { getSupabaseUser } from "@/app/lib/supabaseTokenStore";
+import { start } from "repl";
 
 export async function GET(request: NextRequest) {
   console.log("__________________________Zoom Home Page Get Route________________________", "\n");
@@ -12,25 +13,25 @@ export async function GET(request: NextRequest) {
   // Should get from the params instead of hardcoding
   //const userId = "tlMA8OtuQX-UjUoIN1k0qQ"; // TODO: Make dynamic
 
-  
-
   logRequest(request.url, zoomHeader, searchParams);
   const parsedAction = handleZoomContext(zoomHeader);
-  const { uid, act } = parsedAction;
+  const { uid ,state,act} = parsedAction;
 
-  const state = searchParams.get("state") || uid; // TODO: Make dynamic
+  
+
   const userId = "TIA5UgoMte"
 
   // Handle API mode from client request (no redirect)
-  if (parsedAction.verified === "getToken") {
+  if (act && act.verified === "getToken") {
+    console.log(" ⭐️ Action:", act.verified, "\n");
+
     try {
-      const tokenData = await getSupabaseUser(userId);
+      const tokenData = await getSupabaseUser(state);
       console.log("🔐 Token retrieved from Redis:", tokenData);
 
       const redirectUrl = new URL("https://donte.ngrok.io");
-      // redirectUrl.searchParams.set("access_token", tokenData.accessToken);
-      // redirectUrl.searchParams.set("refresh_token", tokenData.refreshToken);
-
+      redirectUrl.searchParams.set("state", state ?? "");
+      
       console.log("🔄 Zoom App Home redirected:", redirectUrl.toString());
 
       return NextResponse.redirect(redirectUrl.toString());
@@ -59,6 +60,7 @@ function handleZoomContext(header: string | null): {
   uid?: string;
   act?: any;
   verified?: string;
+  state?: string;
 } {
   if (!header) {
     console.log("ℹ️ No x-zoom-app-context header found. Likely first load in Zoom Client.");
@@ -78,12 +80,22 @@ function handleZoomContext(header: string | null): {
 
     console.log("🧑‍💻 User ID from Zoom Context:", uid);
 
+    
     // Act is optional — deep linking or context-based actions
     let act: any = undefined;
+    let state: any  = undefined;
     if (context.act) {
       try {
         act = JSON.parse(context.act);
         console.log("🎬 Parsed Zoom Action Context:", act);
+
+        state = act.state 
+        if (act.state) {
+          console.log("🧑‍💻 State from Action Context:", act.state);
+        } else {
+          console.log("⚠️ Action Context missing State — invalid or malformed.");
+        }
+
       } catch (e) {
         console.warn("❌ Failed to parse 'act' from context:", e);
       }
@@ -91,7 +103,7 @@ function handleZoomContext(header: string | null): {
       console.log(" ⚠️  No 'act' value in Zoom Context — likely a standard app open.");
     }
 
-    return {uid,act};
+    return {uid,act,state};
   } catch (error) {
     console.error("❌ Failed to process Zoom context:", error);
     return {};

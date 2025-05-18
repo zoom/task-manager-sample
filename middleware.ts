@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 import { upsertSupabaseUser } from "@/app/lib/supabaseTokenStore";
-import { decryptZoomAppContext } from "@/app/lib/zoom-helper";
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -12,7 +11,6 @@ export async function middleware(request: NextRequest) {
     console.log("📬  Zoom x-zoom-app-context Header:\n", zoomHeader, "\n");
   }
   
-
   // Extract query parameters
   let access_token = url.searchParams.get("access_token");
   let refresh_token = url.searchParams.get("refresh_token");
@@ -31,13 +29,13 @@ export async function middleware(request: NextRequest) {
   if (access_token && refresh_token) {
     console.log('\n', "🪪  MD - Access token:", access_token);
     console.log("🔁  MD - Refresh token:", refresh_token);
-    console.log("🔑  MD - State:", state);
+    console.log("🔑  MD - State:", state, "\n");
 
     try {
       // Store tokens in Redis with a TTL of 1 hour from now
       const expiresAt = Date.now() + 3600 * 1000;
       await upsertSupabaseUser(state, access_token, refresh_token, expiresAt);
-      console.log("✅ Middleware: Tokens stored in Redis.");
+      console.log("✅ Middleware: Tokens stored in Redis - state: ", state, "\n");
     } catch (error) {
       console.error("❌ Middleware: Failed to store tokens in Redis:", error);
     }

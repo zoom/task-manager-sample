@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getDeeplink } from "@/app/lib/zoom-api";
+import { state } from "@snaplet/copycat/dist/state";
 
 
 export default function ZoomLaunchRedirectHandler() {
@@ -17,11 +18,19 @@ export default function ZoomLaunchRedirectHandler() {
       // INSTEAD OF:  https://donte.ngrok.io/zoom/launch
 
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      console.log("🔗 Supabase Hash Params:", hashParams.toString(), "\n");
 
       const access_token = hashParams.get("access_token");
       const refresh_token = hashParams.get("refresh_token");
       const provider_token = hashParams.get("provider_token");
       const provider_refresh_token = hashParams.get("provider_refresh_token");
+
+
+
+      const queryParams = new URLSearchParams(window.location.search);
+      const state = queryParams.get("state")
+      console.log("🪵 State from query params:", state, "\n");
+
 
       console.log("_____________ Auth Handler Page: Third-party OAuth with Supabase ______________", "\n");
       console.log("🧑‍🏫 LEARN MORE: https://developers.zoom.us/docs/zoom-apps/authentication/#third-party-oauth-optional", "\n");
@@ -44,11 +53,11 @@ export default function ZoomLaunchRedirectHandler() {
         action: JSON.stringify({ // MAX: 256
           // url: '/dashboard',
           // role_name: 'Owner',
-           verified: 'getToken',
           // role_id: 0,
-          
-        //  refresh_token,
+          //refresh_token,
           //access_token  // Exceed character 256 limit
+          state: state, // TODO: Make dynamic
+          verified: 'getToken',
 
         }),
       };
@@ -63,37 +72,31 @@ export default function ZoomLaunchRedirectHandler() {
       }
       setDeeplink(link);
 
-      // TEST
-      // Set Backend GET Route to Home Page, get access token and refresh token from the URL fragment
-      // and pass them to the getDeeplink function
+      
       if (hashParams && hashParams.toString().length > 0) {
         console.log("🔄 <----- Sent query params to Home URL:-----> 🔄 ");
-        const state = "TIA5UgoMte";
-        
+
         const supaHashParams = new URLSearchParams(window.location.hash);
         const res = await fetch(`/api/zoom/entry/?state=${state}&${supaHashParams}`, {
           method: "GET",
           credentials: "include",
         });
 
-        const json = await res.json();
-        console.log("🔄 Supabase callback response:", json);
+        // Check if the response is ok
+        //Sent query params to Home URL -- Home Route Will handle token extraction and redirect to the Zoom App
+
+        // ✅ Open in a new tab
+        const newTab = window.open(link, "_blank");
+        if (!newTab || newTab.closed || typeof newTab.closed === "undefined") {
+          console.warn("⚠️ Popup blocked. Showing button fallback.");
+          setStatus("⚠️ Please click the button below to open the Zoom App.");
+        } else {
+          setStatus("✅ Zoom App opened in new tab.");
+        }
+
         return;
       }
-
-      // ✅ Attempt to open in a new tab
-
-      // const newTab = window.open(link, "_blank");
-      // if (!newTab || newTab.closed || typeof newTab.closed === "undefined") {
-      //   console.warn("⚠️ Popup blocked. Showing button fallback.");
-      //   setStatus("⚠️ Please click the button below to open the Zoom App.");
-      // } else {
-      //   setStatus("✅ Zoom App opened in new tab.");
-      // }
-
     };
-
-   
 
 
     run();

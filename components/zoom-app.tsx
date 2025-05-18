@@ -10,12 +10,19 @@ import { Button } from "./ui/button";
 
 import {getSupabaseUser } from "@/app/lib/supabaseTokenStore";
 import {signInWithZoomApp } from "@/app/actions";
+
+import { useSearchParams } from "next/navigation";
  
 export default function ZoomAuth() {
   console.log("__________________________ Zoom App Home Page _______________________", "\n");
   const [isConfigured, setIsConfigured] = useState(false);
   const [authStatus, setAuthStatus] = useState<"idle" | "success" | "error" | "loading">("idle");
   const location = usePathname();
+
+  //get state from the URL
+  const searchParams = useSearchParams();
+  const state = searchParams.get("state");
+  console.log("🪵 State from query params:", state, "\n");
 
   // Ref to dynamically assign the correct onAuthorized handler
   const authorizedHandlerRef = useRef<(event: any) => void>(() => {});
@@ -88,7 +95,7 @@ export default function ZoomAuth() {
 
 
   const setSupabaseSessionFromCache = async () => {
-    const hardcodedState = "TIA5UgoMte";
+    const hardcodedState = state;
   
     try {
       const tokenData = await getSupabaseUser(hardcodedState);
