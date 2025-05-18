@@ -35,7 +35,9 @@ async function handleActParam(
   state: string | undefined
 ): Promise<Response | null> {
   if (act?.verified === "getToken") {
-    console.log("⭐️ Action:", act.verified, "\n");
+    console.log("\n","⭐️ User-defined Deeplink Action:", act.verified, );
+    console.log("🧑‍🏫 LEARN MORE: https://developers.zoom.us/docs/api/marketplace/#tag/apps/POST/zoomapp/deeplink", "\n");
+
 
     try {
       const tokenData = await getSupabaseUser(state);
