@@ -17,24 +17,8 @@ export async function GET(request: NextRequest) {
   const userId = uid;
 
   // Handle API mode from client request (no redirect)
-  if (act && act.verified === "getToken") {
-    console.log(" ⭐️ Action:", act.verified, "\n");
-
-    try {
-      const tokenData = await getSupabaseUser(state);
-      console.log("🔐 Token retrieved from Redis:", tokenData,'\n');
-
-      const redirectUrl = new URL("https://donte.ngrok.io");
-      redirectUrl.searchParams.set("state", state ?? "");
-      
-      console.log("🔄 Zoom App Home redirected:", redirectUrl.toString(),'\n');
-
-      return NextResponse.redirect(redirectUrl.toString());
-    } catch (e) {
-      console.error("❌ Failed to retrieve token from Redis:", e);
-      return NextResponse.redirect("https://donte.ngrok.io?error=token_not_found");
-    }
-  }
+  const result = await handleActParam(act, state);
+  if (result) return result;
 
   const redirectUrl = buildRedirectUrl(request, searchParams, origin);
   console.log("🔄 Redirecting to Zoom Client Home:", redirectUrl, "\n");
@@ -43,6 +27,34 @@ export async function GET(request: NextRequest) {
 
 }
 
+/**
+ * Helper function to handle the "act" parameter logic
+ */
+async function handleActParam(
+  act: { verified?: string } | undefined,
+  state: string | undefined
+): Promise<Response | null> {
+  if (act?.verified === "getToken") {
+    console.log("⭐️ Action:", act.verified, "\n");
+
+    try {
+      const tokenData = await getSupabaseUser(state);
+      console.log("🔐 Token retrieved from Redis:", tokenData, "\n");
+
+      const redirectUrl = new URL("https://donte.ngrok.io");
+      redirectUrl.searchParams.set("state", state ?? "");
+
+      console.log("🔄 Zoom App Home redirected:", redirectUrl.toString(), "\n");
+
+      return NextResponse.redirect(redirectUrl.toString());
+    } catch (e) {
+      console.error("❌ Failed to retrieve token from Redis:", e);
+      return NextResponse.redirect("https://donte.ngrok.io?error=token_not_found");
+    }
+  }
+
+  return null;
+}
 
 function buildRedirectUrl(request: NextRequest, searchParams: URLSearchParams, origin: string) {
   const isLocalEnv = process.env.NODE_ENV === "development";
