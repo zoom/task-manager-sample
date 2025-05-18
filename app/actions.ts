@@ -33,7 +33,6 @@ export const signInWithZoom= async () => {
 }
 
 
-// TODO: Remove this function
 export const signInWithZoomApp = async () => {
   const headerList = await headers();
   const origin = headerList.get("origin");

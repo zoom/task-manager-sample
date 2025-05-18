@@ -1,67 +1,59 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
-import { upsertSupabaseUser, getSupabaseUser } from "@/app/lib/supabaseTokenStore";
+import { upsertSupabaseUser } from "@/app/lib/supabaseTokenStore";
+import { decryptZoomAppContext } from "@/app/lib/zoom-helper";
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
-
-  console.log("__________________________Middleware Event________________________", "\n");
-
   const zoomHeader = request.headers.get("x-zoom-app-context");
-  // 🔐 Extract tokens from query string
-  // Manually decode tokens from malformed query string
+
+  if (zoomHeader) {
+    console.log("__________________________Middleware Event________________________\n");
+    console.log("📬  Zoom x-zoom-app-context Header:\n", zoomHeader, "\n");
+  }
+  
+
+  // Extract query parameters
   let access_token = url.searchParams.get("access_token");
   let refresh_token = url.searchParams.get("refresh_token");
-  let state = url.searchParams.get("state");
+  const state = url.searchParams.get("state") || "unknown";
 
-
-  // Try fallback if not found normally
+  // Fallback parsing for malformed query strings (e.g. fragments misrouted as queries)
   if (!access_token || !refresh_token) {
-    const rawSearch = url.search; // includes the '?'
-    console.log("Raw search params:", rawSearch, "\n");
-    console.log("__________________________________________________", "\n");
-    const decodedSearch = decodeURIComponent(rawSearch);
-    const fragmentParams = new URLSearchParams(decodedSearch.replace(/^\?/, ""));
+    const rawSearch = url.search; // includes '?'
+    const decodedSearch = decodeURIComponent(rawSearch.replace(/^\?/, ""));
+    const fragmentParams = new URLSearchParams(decodedSearch);
 
     access_token = access_token || fragmentParams.get("access_token") || fragmentParams.get("#access_token") || fragmentParams.get("%23access_token");
     refresh_token = refresh_token || fragmentParams.get("refresh_token");
   }
 
-  if (access_token && refresh_token ) {
+  if (access_token && refresh_token) {
+    console.log('\n', "🪪  MD - Access token:", access_token);
+    console.log("🔁  MD - Refresh token:", refresh_token);
+    console.log("🔑  MD - State:", state);
 
-    console.log("🪪  MD - Access token:", access_token, "\n");
-    console.log("🔁  MD - Refresh token:", refresh_token, "\n");
-    console.log("🔑  MD - State:", state, "\n");
-    
-    // Store tokens in Redis
-    console.log("Storing tokens in Redis...");
+    try {
+      // Store tokens in Redis with a TTL of 1 hour from now
+      const expiresAt = Date.now() + 3600 * 1000;
+      await upsertSupabaseUser(state, access_token, refresh_token, expiresAt);
+      console.log("✅ Middleware: Tokens stored in Redis.");
+    } catch (error) {
+      console.error("❌ Middleware: Failed to store tokens in Redis:", error);
+    }
+  
 
-    // Insert or update Supabase tokens
-    await upsertSupabaseUser(state, access_token, refresh_token, Date.now() + 3600 * 1000);
-    console.log("✅  Middle Ware: Tokens stored in Redis");
-
-    // Clean up tokens and redirect
+    // Clean up tokens from URL and redirect
     url.searchParams.delete("access_token");
     url.searchParams.delete("refresh_token");
     url.pathname = "/dashboard";
 
     return NextResponse.redirect(url);
-
-  } else {
-    console.log("❌ No tokens found in query params.");
   }
 
 
+  // Continue normal Supabase session logic
   const response = await updateSession(request);
-
-  if (zoomHeader) {
-    console.log("______________________________Middleware Event____________________________", "\n");
-    console.log(`📬  Zoom sent an HTTP request to the App Home URL: \n\n${zoomHeader}`, "\n");
-    console.log("____________________________End Of Middleware Event__________________________", "\n");
-  } else {
-    console.log("🕵️‍♂️  Middleware: No x-zoom-app-context header present.", '\n');
-  }
-
   return response;
 }
 

@@ -21,9 +21,10 @@ module.exports = {
     return raw;
   },
 
-  // Insert or update Supabase tokens
-  upsertSupabaseUser: async function (userId, accessToken, refreshToken, expiresAt) {
+  // Insert or update Supabase tokens, add state
+  upsertSupabaseUser: async function ( userId, accessToken, refreshToken, expiresAt) {
     const isValid = Boolean(
+      //typeof state === 'string' &&
       typeof userId === 'string' &&
       typeof accessToken === 'string' &&
       typeof refreshToken === 'string' &&
