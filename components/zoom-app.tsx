@@ -7,8 +7,8 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "./ui/button";
 
-import {getSupabaseUser } from "@/app/lib/token-store";
 import {signInWithZoomApp } from "@/app/actions";
+import {getSupabaseUser } from "@/app/lib/token-store";
 
 import { useSearchParams } from "next/navigation";
  

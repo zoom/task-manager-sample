@@ -9,8 +9,6 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const url = request.url;
   const zoomHeader = request.headers.get("x-zoom-app-context");
-  // Should get from the params instead of hardcoding
-  //const userId = "tlMA8OtuQX-UjUoIN1k0qQ"; // TODO: Make dynamic
 
   logRequest(request.url, zoomHeader, searchParams);
   const parsedAction = handleZoomContext(zoomHeader);
