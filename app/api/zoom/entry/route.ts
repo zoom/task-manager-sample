@@ -36,7 +36,7 @@ async function handleActParam(
 ): Promise<Response | null> {
   if (act?.verified === "getToken") {
     console.log("\n","⭐️ User-defined Deeplink Action:", act.verified, );
-    console.log("🧑‍🏫 LEARN MORE: https://developers.zoom.us/docs/api/marketplace/#tag/apps/POST/zoomapp/deeplink", "\n");
+    console.log(" 🧠 LEARN MORE: https://developers.zoom.us/docs/api/marketplace/#tag/apps/POST/zoomapp/deeplink", "\n");
 
 
     try {
@@ -87,7 +87,7 @@ function handleZoomContext(header: string | null): {
       return {};
     }
 
-    console.log("🧑‍💻 User ID from Zoom Context:", uid);
+    console.log("☄️  User ID from Zoom Context:", uid);
 
     
     // Act is optional — deep linking or context-based actions
@@ -100,7 +100,7 @@ function handleZoomContext(header: string | null): {
 
         state = act.state 
         if (act.state) {
-          console.log("🧑‍💻 State from Action Context:", act.state);
+          console.log("☄️  State from Action Context:", act.state);
         } else {
           console.log("⚠️ Action Context missing State — invalid or malformed.");
         }

@@ -21,10 +21,10 @@ export default function ZoomLaunchRedirectHandler() {
 
       const queryParams = new URLSearchParams(window.location.search);
       const state = queryParams.get("state")
-      console.log("🪵 State from query params:", state, "\n");
+      console.log("🪵  State from query params:", state, "\n");
 
       console.log("_____________ Auth Handler Page: Third-party OAuth with Supabase ______________", "\n");
-      console.log("🧑‍🏫 LEARN MORE: https://developers.zoom.us/docs/zoom-apps/authentication/#third-party-oauth-optional", "\n");
+      console.log("🧠 LEARN MORE: https://developers.zoom.us/docs/zoom-apps/authentication/#third-party-oauth-optional", "\n");
       console.log("🔑 Extracted Supabase Provider Tokens from URL fragment:", {
         access_token,
         refresh_token,
