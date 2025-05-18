@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { getDeeplink } from "@/app/lib/zoom-api";
-import { state } from "@snaplet/copycat/dist/state";
-
 
 export default function ZoomLaunchRedirectHandler() {
   const [status, setStatus] = useState("🔄 Signing you in...");
@@ -13,10 +11,6 @@ export default function ZoomLaunchRedirectHandler() {
     const run = async () => {
       console.log("__________________________ Zoom App External Page _______________________", "\n");
 
-      // What if I send the access token and refresh token in the URL fragment:
-      // TO: https://donte.ngrok.io/api/zoom/entry/
-      // INSTEAD OF:  https://donte.ngrok.io/zoom/launch
-
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       console.log("🔗 Supabase Hash Params:", hashParams.toString(), "\n");
 
@@ -25,12 +19,9 @@ export default function ZoomLaunchRedirectHandler() {
       const provider_token = hashParams.get("provider_token");
       const provider_refresh_token = hashParams.get("provider_refresh_token");
 
-
-
       const queryParams = new URLSearchParams(window.location.search);
       const state = queryParams.get("state")
       console.log("🪵 State from query params:", state, "\n");
-
 
       console.log("_____________ Auth Handler Page: Third-party OAuth with Supabase ______________", "\n");
       console.log("🧑‍🏫 LEARN MORE: https://developers.zoom.us/docs/zoom-apps/authentication/#third-party-oauth-optional", "\n");
@@ -97,7 +88,6 @@ export default function ZoomLaunchRedirectHandler() {
         return;
       }
     };
-
 
     run();
   }, []);

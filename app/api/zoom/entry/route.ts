@@ -1,8 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { decryptZoomAppContext } from "@/app/lib/zoom-helper";
 import { updateSession } from "@/utils/supabase/middleware";
-import { getSupabaseUser } from "@/app/lib/supabaseTokenStore";
-import { start } from "repl";
+import { getSupabaseUser } from "@/app/lib/token-store";
 
 export async function GET(request: NextRequest) {
   console.log("__________________________Zoom Home Page Get Route________________________", "\n");
@@ -17,9 +16,7 @@ export async function GET(request: NextRequest) {
   const parsedAction = handleZoomContext(zoomHeader);
   const { uid ,state,act} = parsedAction;
 
-  
-
-  const userId = "TIA5UgoMte"
+  const userId = uid;
 
   // Handle API mode from client request (no redirect)
   if (act && act.verified === "getToken") {
@@ -27,12 +24,12 @@ export async function GET(request: NextRequest) {
 
     try {
       const tokenData = await getSupabaseUser(state);
-      console.log("🔐 Token retrieved from Redis:", tokenData);
+      console.log("🔐 Token retrieved from Redis:", tokenData,'\n');
 
       const redirectUrl = new URL("https://donte.ngrok.io");
       redirectUrl.searchParams.set("state", state ?? "");
       
-      console.log("🔄 Zoom App Home redirected:", redirectUrl.toString());
+      console.log("🔄 Zoom App Home redirected:", redirectUrl.toString(),'\n');
 
       return NextResponse.redirect(redirectUrl.toString());
     } catch (e) {

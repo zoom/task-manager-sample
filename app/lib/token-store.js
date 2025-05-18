@@ -11,8 +11,6 @@ module.exports = {
     const key = `supabase:user:${userId}`;
     const raw = await redis.get(key);
 
-    console.log("🧪 Raw value from Redis:", raw);
-
     if (!raw) {
       console.log("Supabase user token not found in Redis");
       throw new Error("User not found");

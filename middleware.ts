@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
-import { upsertSupabaseUser } from "@/app/lib/supabaseTokenStore";
+import { upsertSupabaseUser } from "@/app/lib/token-store";
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -27,9 +27,9 @@ export async function middleware(request: NextRequest) {
   }
 
   if (access_token && refresh_token) {
-    console.log('\n', "🪪  MD - Access token:", access_token);
-    console.log("🔁  MD - Refresh token:", refresh_token);
-    console.log("🔑  MD - State:", state, "\n");
+    console.log('\n', "🪪  MW - Access token:", access_token);
+    console.log("🔁  MW - Refresh token:", refresh_token);
+    console.log("🔑  MW - State:", state, "\n");
 
     try {
       // Store tokens in Redis with a TTL of 1 hour from now

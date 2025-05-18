@@ -38,7 +38,6 @@ export const signInWithZoomApp = async () => {
   const origin = headerList.get("origin");
 
   // Generate state add to the URL
-  
   const state = crypto.randomBytes(12).toString("hex"); // 24 characters
   console.log("\n","Generated state for third-party Auth:", state, '\n');
   const zoomAppRedirect = `${origin}/zoom/launch?state=${state}`;

@@ -7,8 +7,7 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "./ui/button";
 
-
-import {getSupabaseUser } from "@/app/lib/supabaseTokenStore";
+import {getSupabaseUser } from "@/app/lib/token-store";
 import {signInWithZoomApp } from "@/app/actions";
 
 import { useSearchParams } from "next/navigation";
@@ -52,19 +51,7 @@ export default function ZoomAuth() {
     }
   };
 
-  const handleRawSupabaseOAuth = async () => {
-    try {
-      setAuthStatus("loading");
-      const { url } = await signInWithZoomApp();
-      await zoomSdk.openUrl({ url: url });
-      console.log("✅ Opened raw Supabase OAuth URL:", url);
-      setAuthStatus("success");
-    } catch (error) {
-      console.error("❌ Error opening raw Supabase auth URL:", error);
-      setAuthStatus("error");
-    }
-  };
-
+ 
   const handleZoomInClientAuthorization = async (event: any) => {
     console.log("📥 Zoom In-Client OAuth Authorization Event:", event);
     // Handle the Zoom In-Client authorization result here
@@ -72,7 +59,6 @@ export default function ZoomAuth() {
     setAuthStatus("success");
   };
 
- 
   const authorizeViaZoomClient = async () => {
      // OAuth PKCE values (normally you'd generate these securely)
     const code_challenge = "ZjBjMDdjYWEwODJkYjQ0NDZjNDEwODc0MzljYjA2ZGRlYTk3YzM0YmI3YzljZDVjNTcxOTI0NzMyODhhMmZhYg==";
@@ -92,7 +78,18 @@ export default function ZoomAuth() {
     }
   };
 
-
+  const handleRawSupabaseOAuth = async () => {
+    try {
+      setAuthStatus("loading");
+      const { url } = await signInWithZoomApp();
+      await zoomSdk.openUrl({ url: url });
+      console.log("✅ Opened raw Supabase OAuth URL:", url);
+      setAuthStatus("success");
+    } catch (error) {
+      console.error("❌ Error opening raw Supabase auth URL:", error);
+      setAuthStatus("error");
+    }
+  };
 
   const setSupabaseSessionFromCache = async () => {
     const hardcodedState = state;
@@ -123,47 +120,7 @@ export default function ZoomAuth() {
       console.error("❌ Failed to get Supabase tokens from cache:", err);
     }
   };
-
-  const setSupabaseSessionFromURL = async () => {
-    const urlParams = new URLSearchParams(window.location.search);
   
-    const access_token = urlParams.get("access_token");
-    const refresh_token = urlParams.get("refresh_token");
-  
-    if (!access_token || !refresh_token) {
-      console.log("ℹ️ No Supabase tokens found in URL.");
-      return;
-    }
-  
-    console.log("🔐 Found tokens in URL, setting Supabase session...");
-  
-    const supabase = createClient();
-    const { data, error } = await supabase.auth.setSession({
-      access_token,
-      refresh_token,
-    });
-  
-    if (error) {
-      console.error("❌ Zoom App Home Page - Failed to set Supabase session:", error.message);
-      setAuthStatus("error");
-      return;
-    }
-  
-    console.log("✅ Supabase session set successfully Home Page:", data);
-    setAuthStatus("success");
-  
-    // Optional: Clean up URL by removing tokens after setting the session
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.delete("access_token");
-    newUrl.searchParams.delete("refresh_token");
-    window.history.replaceState({}, document.title, newUrl.toString());
-
-    // Redirect to the dashboard or any other page
-    // You can use Next.js router for navigation
-    window.location.href = "/dashboard";
-  };
-  
-
   useEffect(() => {
     initializeZoomSDK();
     // setSupabaseSessionFromURL();
