@@ -27,6 +27,23 @@ export async function GET(request: NextRequest) {
 
 }
 
+function logRequest(url: string, header: string | null, params: URLSearchParams) {
+  console.log("🔗 Request URL:", url, "\n");
+  console.log("🔍 HomeURL Template Parameters:");
+  for (const [key, value] of Array.from(params.entries())) {
+    console.log(`• ${key}: ${value}`);
+  }
+  console.log("\n","🚨 Note the Action Parameter will include the State param and deeplink Action!", '\n');
+  console.log("🔑 Zoom Header:", header, "\n");
+}
+
+function buildRedirectUrl(request: NextRequest, searchParams: URLSearchParams, origin: string) {
+  const isLocalEnv = process.env.NODE_ENV === "development";
+  const next = searchParams.get("next") ?? "/";
+  const host = "https://" + request.headers.get("x-forwarded-host");
+  return isLocalEnv ? `${host}${next}` : `${origin}${next}`;
+}
+
 /**
  * Helper function to handle the "act" parameter logic
  */
@@ -58,12 +75,6 @@ async function handleActParam(
   return null;
 }
 
-function buildRedirectUrl(request: NextRequest, searchParams: URLSearchParams, origin: string) {
-  const isLocalEnv = process.env.NODE_ENV === "development";
-  const next = searchParams.get("next") ?? "/";
-  const host = "https://" + request.headers.get("x-forwarded-host");
-  return isLocalEnv ? `${host}${next}` : `${origin}${next}`;
-}
 
 function handleZoomContext(header: string | null): {
   uid?: string;
@@ -119,14 +130,3 @@ function handleZoomContext(header: string | null): {
   }
 }
 
-
-
-function logRequest(url: string, header: string | null, params: URLSearchParams) {
-  console.log("🔗 Request URL:", url, "\n");
-  console.log("🔍 HomeURL Template Parameters:");
-  for (const [key, value] of Array.from(params.entries())) {
-    console.log(`• ${key}: ${value}`);
-  }
-  console.log("\n","🚨 Note the Action Parameter will include the State param and deeplink Action!", '\n');
-  console.log("🔑 Zoom Header:", header, "\n");
-}

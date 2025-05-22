@@ -123,7 +123,6 @@ export default function ZoomAuth() {
   
   useEffect(() => {
     initializeZoomSDK();
-    // setSupabaseSessionFromURL();
     setSupabaseSessionFromCache();
     return () => {
       console.log("🧹 Cleaning up Zoom SDK event listeners:", authorizedHandlerRef.current);

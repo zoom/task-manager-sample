@@ -6,6 +6,19 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import crypto from "crypto";
 
+export const signInWithZoomApp = async () => {
+  const headerList = await headers();
+  const origin = headerList.get("origin");
+
+  // Generate state add to the URL
+  const state = crypto.randomBytes(12).toString("hex"); 
+  console.log("\n","Generated state for third-party Auth:", state, '\n');
+  const zoomAppRedirect = `${origin}/zoom/launch?state=${state}`;
+  const supabaseAuthUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/authorize?provider=zoom&redirect_to=${encodeURIComponent(zoomAppRedirect)}`;
+  
+  return { url: supabaseAuthUrl };
+};
+
 export const signInWithZoom= async () => {
   const supabase = await createClient();
   const headerList = await headers();
@@ -32,18 +45,6 @@ export const signInWithZoom= async () => {
   
 }
 
-export const signInWithZoomApp = async () => {
-  const headerList = await headers();
-  const origin = headerList.get("origin");
-
-  // Generate state add to the URL
-  const state = crypto.randomBytes(12).toString("hex"); // 24 characters
-  console.log("\n","Generated state for third-party Auth:", state, '\n');
-  const zoomAppRedirect = `${origin}/zoom/launch?state=${state}`;
-  const supabaseAuthUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/authorize?provider=zoom&redirect_to=${encodeURIComponent(zoomAppRedirect)}`;
-  
-  return { url: supabaseAuthUrl };
-};
 
 export const signOutAction = async () => {
   const supabase = await createClient();

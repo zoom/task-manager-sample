@@ -37,8 +37,6 @@ export default function ZoomLaunchRedirectHandler() {
         return;
       }
 
-      setStatus("✅ Supabase session set! Getting Zoom App link...");
-
       // Construct data to pass to getDeeplink
       const data = {
         action: JSON.stringify({ // MAX: 256
@@ -49,7 +47,6 @@ export default function ZoomLaunchRedirectHandler() {
           //access_token  // Exceed character 256 limit
           state: state, // TODO: Make dynamic
           verified: 'getToken',
-
         }),
       };
 
