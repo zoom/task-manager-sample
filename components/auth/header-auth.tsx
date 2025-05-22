@@ -18,15 +18,6 @@ export default async function AuthButton() {
   const headersList = await headers();
   const isZoom = headersList.has('x-zoom-app-device-type');
 
-    const renderInstallBtn = () => {
-        if (!isZoom) {
-            return (
-                <Button onClick={signInWithZoom}>
-                    Sign in With Zoom
-                </Button>
-            )
-        } else return (<span></span>)
-    }
 
     if (!hasEnvVars) {
     return (
@@ -44,6 +35,7 @@ export default async function AuthButton() {
       </>
     );
   }
+  
   return user ? (
       <div className="flex items-center gap-4">
           <div className="flex items-center space-x-2">
