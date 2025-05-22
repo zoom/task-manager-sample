@@ -1,8 +1,8 @@
 
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
-import { UserNav } from "@/components/user-nav"
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { UserNav } from "@/components/auth/user-nav"
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 import { createClient } from "@/utils/supabase/server";
 import {headers} from "next/headers";
 

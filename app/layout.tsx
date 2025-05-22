@@ -1,6 +1,6 @@
-import { EnvVarWarning } from "@/components/env-var-warning";
-import HeaderAuth from "@/components/header-auth";
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import { EnvVarWarning } from "@/components/layout/env-var-warning";
+import HeaderAuth from "@/components/auth/header-auth";
+import { ThemeSwitcher } from "@/components/layout/theme-switcher";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
