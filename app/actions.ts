@@ -5,7 +5,6 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import {getDeeplink} from "@/app/lib/zoom-api";
 
 export const signInWithZoom = async () => {
   const supabase = await createClient();
