@@ -23,10 +23,11 @@ import { useForm, Controller } from "react-hook-form";
 import { AssigneeSelector } from "@/components/taskmanger/assignee-selector";
 import { sendZoomIMMessage, ZoomIMMessagePayload } from "@/app/lib/teamchat";
 import { getDeeplink } from "@/app/lib/zoom-api";
-import TaskNotification from "@/components/taskmanger/task-notification"; 
 import { redirect } from "next/navigation";
 
+import TaskNotification from "@/components/taskmanger/task-notification"; 
 import type { Tables } from "@/lib/types";
+
 type Task = Tables<'tasks'>;
 
 const LISTS = ["todo", "in progress", "completed"];
@@ -108,14 +109,16 @@ const AddActivity = ({
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
       if (sessionError || !sessionData?.session) {
         console.error("Session error:", sessionError);
         redirect("/login");
         return;
       }
+      
       const accessToken = sessionData.session.provider_token ?? "";
-      console.log("Access Token:", accessToken);
 
       // Map form assignee options to full user objects.
       const selectedUsers = availableUsers.filter((u) =>
@@ -211,11 +214,9 @@ const AddActivity = ({
       // Send the Zoom IM message.
       await sendZoomIMMessage(accessToken, payload);
 
-      console.log("Access Token for Zoom IM:", accessToken);
-
       // Retrieve a deeplink for the created task.
       const deeplink = await getDeeplink(accessToken);
-      console.log("Deeplink-AddTask:", deeplink);
+    
       // Set notification state with the inserted task's id and the deeplink.
       if (insertedTask.id) {
         setNotification({ issueId: insertedTask.id.toString(), deeplink: deeplink || "" });
