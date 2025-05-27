@@ -155,8 +155,10 @@ export async function getDeeplink(
   data: { action?: string } = {}
 ): Promise<string | undefined> {
 
-  if (!token || !data.action) {
-    console.warn("Missing token or action payload");
+  console.log("🔗 Requesting Zoom Deeplink with token:", token, "and action:", data.action);
+
+  if (!token ) {
+    console.warn("Missing token payload");
     return undefined;
   }
 
@@ -173,6 +175,9 @@ export async function getDeeplink(
     // }
 
     const response = await apiRequest("POST", "/zoomapp/deeplink", token, body);
+    
+    console.log("✅ Zoom Deeplink API response:", response);
+
     return response.deeplink;
   } catch (e: any) {
     console.error("❌ Zoom Deeplink API failed:", e?.response?.data || e.message);

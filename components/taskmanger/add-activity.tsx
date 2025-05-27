@@ -211,6 +211,8 @@ const AddActivity = ({
       // Send the Zoom IM message.
       await sendZoomIMMessage(accessToken, payload);
 
+      console.log("Access Token for Zoom IM:", accessToken);
+
       // Retrieve a deeplink for the created task.
       const deeplink = await getDeeplink(accessToken);
       console.log("Deeplink-AddTask:", deeplink);

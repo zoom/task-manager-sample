@@ -39,8 +39,11 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
   // Handle form submission state
   const [state, formAction] = useActionState(sendTeamChatBotMessage, { success: false });
 
+  const [location, setLocation] = useState("");
+
   // Redirect after successful form submission
   useEffect(() => {
+    setLocation(window.location.href);
     if (state.success) {
       router.back()
     }
@@ -104,7 +107,8 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
         {/* FORM SUBMISSION */}
         <form className="space-y-6" action={formAction}>
 
-          <input type="hidden" name="location" value={typeof window !== "undefined" ? window.location.href : ""} />
+          
+          <input type="hidden" name="location" value={location} />
 
           {/* Hidden inputs to submit subtask titles instead of IDs */}
           {selectedSubtasks.map((subtask) => (

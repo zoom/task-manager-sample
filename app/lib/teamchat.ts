@@ -145,7 +145,7 @@ export async function getuserChannels(accessToken: string) {
         content: options.content,
       };
 
-      console.log("Zoom IM Message Payload:", payload);
+      
     
       const url = `${ZOOM_API_BASE_URL}/chat/users/me/messages`;
       const response = await fetch(url, {
@@ -163,7 +163,7 @@ export async function getuserChannels(accessToken: string) {
       }
     
       const data = await response.json();
-      console.log("Zoom IM Message Response:", data);
+      
       return data;
     }
     
