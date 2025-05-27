@@ -117,7 +117,7 @@ const AddActivity = ({
         redirect("/login");
         return;
       }
-      
+
       const accessToken = sessionData.session.provider_token ?? "";
 
       // Map form assignee options to full user objects.
@@ -224,8 +224,6 @@ const AddActivity = ({
         console.error("Inserted task ID is undefined.");
       }
 
-      // Reset the form and close the dialog. (We intentionally do not refresh immediately
-      // so the notification remains visible until dismissed.)
       reset();
       setOpen(false);
     } catch (err) {
