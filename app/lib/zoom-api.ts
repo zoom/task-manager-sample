@@ -167,13 +167,6 @@ export async function getDeeplink(
     // Zoom injects the act field into the decrypted x-zoom-app-context when the Zoom App is opened via the deeplink.
     const body = { action: data.action }; 
 
-    // If the action character limit is exceeded, Zoom client will freeze.
-    // if (body.action.length > 256) {
-    //   console.warn("⚠️  Action exceeds 256 characters, truncating...", '\n');
-    //   console.log("🚨 Possible bug with Zoom client freezing if action exceeds 256 characters and the act field is not truncated.", '\n');
-    //   body.action = body.action.substring(0, 256); // Possible bug with Zoom client freezing if action exceeds 256 characters and the act field is not truncated.
-    // }
-
     const response = await apiRequest("POST", "/zoomapp/deeplink", token, body);
     
     console.log("✅ Zoom Deeplink API response:", response);
