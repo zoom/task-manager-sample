@@ -98,3 +98,7 @@ If the command returns an exit code of `0`, it will print “Request successful.
 ## What do I do next?
 
 Start building your app! You can check out the [Zoom Apps developer docs](https://developers.zoom.us/docs/zoom-apps/) for more information on the JS SDK. You can also explore the [Zoom REST API](https://developers.zoom.us/docs/api/) or use the third party OAuth to call a different API.
+
+More of a viual person? Check out the Task Manager Zoom App video series on our YouTube channel:
+
+* [Zoom Developers](https://www.youtube.com/@Zoomdeveloper)
