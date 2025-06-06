@@ -57,6 +57,16 @@ cp .env.example .env.local
 
 Update `.env.local` with your credentials. For development, use the Client ID and Client Secret under "Development".
 
+
+### Start your local Supabase instance
+
+Run your local Supabase instance is running by executing
+
+```shell
+supabase start
+
+```
+
 ### Run the development server
 
 ```shell
