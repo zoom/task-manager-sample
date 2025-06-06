@@ -216,6 +216,7 @@ const AddActivity = ({
 
       // Retrieve a deeplink for the created task.
       const deeplink = await getDeeplink(accessToken);
+      console.log("Deeplink-AddTask:", deeplink);
     
       // Set notification state with the inserted task's id and the deeplink.
       if (insertedTask.id) {
