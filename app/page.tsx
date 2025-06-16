@@ -12,7 +12,7 @@ export default async function Page() {
     const loadZoomApp = () => {
         if (!isZoom) return <div>Zoom App Landing Page</div>;
 
-        Zoom = dynamic(() => import('@/components/zoom-app'));
+        Zoom = dynamic(() => import('@/components/zoomapp-sdk/zoom-app'));
 
         return ( <Zoom />)
     }
