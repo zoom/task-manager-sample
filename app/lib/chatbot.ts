@@ -75,13 +75,13 @@ function buildMessagePayload(text: string, location: string) {
                 action: "dialog", 
                 dialog: {
                   size: "M",
-                  link: "https://donte.ngrok.io/zoom-dashboard",
+                  link: "https://donte.ngrok.io/dashboard",
                   title: { text: "Zoom Dashboard" },
                 },
               },
               {
                 text: "View Task",
-                value: "button2",
+                value: "button3",
                 style: "Default",
                 action: "dialog", 
                 dialog: {

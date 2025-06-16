@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Home, Settings, Users, Menu, Newspaper, ChartNoAxesCombined } from "lucide-react";
+import { Home, Settings, Users, Menu, Newspaper, ChartNoAxesCombined, Send } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +9,7 @@ const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/users-contacts", label: "Users", icon: Users },
   { href: "/zoomapp/zcx", label: "App Context", icon: Newspaper },
+  { href: "/zoomapp/zoom-card", label: "Message", icon: Send },
   { href: "/zoomapp/report", label: "Report", icon: ChartNoAxesCombined },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

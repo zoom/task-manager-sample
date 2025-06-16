@@ -220,6 +220,17 @@ const EditTask = ({
                     {
                       type: "actions",
                       items: [
+                        {
+                          text: "Open Task List",
+                          value: "button2",
+                          style: "Default",
+                          action: "dialog", 
+                          dialog: {
+                            size: "M",
+                            link: "https://donte.ngrok.io/zoomapp/zoom-card",
+                            title: { text: "Zoom Dashboard" },
+                          },
+                        },
                         { text: "View Task", value: "view", style: "Primary" },
                         { text: "Dismiss", value: "dismiss", style: "Default" },
                       ],
