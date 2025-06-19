@@ -166,7 +166,7 @@ export async function getZoomAccessToken(
   return tokenRequest(params);
 }
 
-export async function getZoomAccessTokenRaw(
+export async function getZoomAccessTokenRawViod(
   code: string,
   pkceVerifier?: string
 ): Promise<any> {
@@ -211,6 +211,37 @@ export async function getZoomAccessTokenRaw(
   }
 
   return response.json();
+}
+
+export async function getZoomAccessTokenRaw(
+  code: string,
+  pkceVerifier?: string
+): Promise<any> {
+  const redirectUri = process.env.ZOOM_REDIRECT_URL!;
+  if (!pkceVerifier) {
+    throw new Error("PKCE verifier is required for token exchange");
+  }
+
+  const params = new URLSearchParams({
+    grant_type: "authorization_code",
+    code,
+    redirect_uri: redirectUri,
+    code_verifier: pkceVerifier,
+  }).toString();
+
+  const url = `${ZOOM_HOST}/oauth/token?${params}`;
+  const clientId = process.env.ZOOM_CLIENT_ID!;
+  const clientSecret = process.env.ZOOM_CLIENT_SECRET!;
+
+  const response = await axios.request({
+    method: "POST",
+    url,
+    auth: { username: clientId, password: clientSecret },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    maxBodyLength: Infinity,
+  });
+
+  return response.data;
 }
 
 /**
