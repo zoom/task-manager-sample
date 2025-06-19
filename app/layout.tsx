@@ -24,26 +24,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning className="h-full bg-background text-foreground">
+      <html lang="en" className="h-full" suppressHydrationWarning>
+
+      <body suppressHydrationWarning className="h-screen bg-background text-foreground">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+            
+         
           {/* Outer container to make Sidebar and main content side-by-side */}
-          <div className="flex min-h-screen">
+          <div className="flex h-full">
 
-            {/* Sidebar on the left */}
-            <Sidebar />
+              {/* Sidebar on the left */}
+           <Sidebar />
+
+           
 
             {/* Main content on the right */}
-            <main className="flex-1 flex flex-col items-center h-full">
+            <main className="flex-1 flex flex-col">
               <div className="w-full flex flex-col gap-20 items-center">
                 {/* Top Navigation */}
                 <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                  <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
+                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                     <div className="flex gap-5 items-center font-semibold">
                       <Link href={"/"}>Zoom Task Manager</Link>
                     </div>
@@ -52,13 +57,13 @@ export default function RootLayout({
                 </nav>
 
                 {/* Page content */}
-                <div className="flex flex-col gap-20">
-                  {children}
+                <div className="flex-1 overflow-auto p-5 max-w-5xl mx-auto">
+                {children}
                 </div>
 
                 {/* Footer */}
-                <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-                  <p>
+                <footer className="w-full flex items-center justify-center border-t text-xs gap-8 py-16">
+                <p>
                     Powered by{" "}
                     <a
                       href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"

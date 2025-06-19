@@ -7,8 +7,21 @@ const redis = new Redis({
 
 module.exports = {
   // Get Supabase tokens for a user
-  getSupabaseUser: async function (userId) {
-    const key = `supabase:user:${userId}`;
+  getSupabaseUserbyId: async function (userId) {
+
+    const key = `user:${userId}:latestState`;
+    const raw = await redis.get(key);
+
+    if (!raw) {
+      console.log("Supabase user token not found in Redis");
+      throw new Error("User not found");
+    }
+
+    return raw;
+  },
+  // Get Supabase tokens for a user
+  getSupabaseUser: async function (state) {
+    const key = `supabase:user:${state}`;
     const raw = await redis.get(key);
 
     if (!raw) {
@@ -20,10 +33,10 @@ module.exports = {
   },
 
   // Insert or update Supabase tokens, add state
-  upsertSupabaseUser: async function ( userId, accessToken, refreshToken, expiresAt) {
+  upsertSupabaseUser: async function ( state, accessToken, refreshToken, expiresAt) {
     const isValid = Boolean(
-      //typeof state === 'string' &&
-      typeof userId === 'string' &&
+      typeof state === 'string' &&
+      // typeof userId === 'string' &&
       typeof accessToken === 'string' &&
       typeof refreshToken === 'string' &&
       typeof expiresAt === 'number'
@@ -33,7 +46,7 @@ module.exports = {
       return Promise.reject('Invalid Supabase user input');
     }
 
-    const key = `supabase:user:${userId}`;
+    const key = `supabase:user:${state}`;
     const value = JSON.stringify({ accessToken, refreshToken, expiresAt });
 
     // Set with a TTL of 1 hour (3600 seconds)

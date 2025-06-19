@@ -3,6 +3,12 @@ import { decryptZoomAppContext } from "@/app/lib/zoom-helper";
 import { updateSession } from "@/utils/supabase/middleware";
 import { getSupabaseUser } from "@/app/lib/token-store";
 
+import { Redis } from "@upstash/redis"
+const redis = new Redis({
+  url: process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL,
+  token: process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN,
+});
+
 export async function GET(request: NextRequest) {
   console.log("__________________________Zoom Home Page Get Route________________________", "\n");
   const response = await updateSession(request);
@@ -14,7 +20,23 @@ export async function GET(request: NextRequest) {
   const parsedAction = handleZoomContext(zoomHeader);
   const { uid ,state,act} = parsedAction;
 
-  const userId = uid;
+  console.log(
+    "\n",
+    `Used for looking up Team Chat modal token using secondary Redis key (userId: ${uid}, state: ${state}) from Zoom context headers.\n`
+  );
+  
+  // Only write to Redis if *both* uid and state are present
+  if (uid && state) {
+    try {
+      await redis.set(`user:${uid}:latestState`, state, { ex: 3600 });
+      console.log("☑️  Saved latestState to Redis");
+    } catch (e) {
+      console.error("❌ Upstash write failed:", e);
+      return NextResponse.json({ error: "Redis write failed" }, { status: 500 });
+    }
+  } else {
+    console.log("ℹ No state in context (or missing uid) — skipping Redis write");
+  }
 
   // Handle API mode from client request (no redirect)
   const result = await handleActParam(act, state);

@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Home, Settings, Users, Menu, Newspaper, ChartNoAxesCombined, Send } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+
+import {createClient} from "@/utils/supabase/client";
+import {redirect} from "next/navigation";
+
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
@@ -16,11 +20,57 @@ const navItems = [
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const supabase = createClient();
+
+  const [user, setUser] = useState(null as null | { id: string });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 1) Listen for all auth events
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      // whenever they sign in or out, session.user will be either a User or null
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+  
+    // 2) Fetch initial session (won't throw if there's no session)
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setUser(session?.user ?? null);
+      })
+      .catch((err) => {
+        console.error("Error getting initial session:", err);
+        setUser(null);
+        return redirect("/");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  
+    // 3) Clean up listener
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+  
+  if (loading) {
+    // you could render a spinner here instead
+    return null;
+  }
+
+  if (!user) {
+    // not logged in
+    return null;
+  }
 
   return (
     <div
       className={cn(
-        "h-screen flex flex-col border-r border-muted bg-muted/40 transition-all duration-300",
+        "fixed inset-y-0 left-0 flex flex-col border-r border-muted bg-muted/40 transition-all duration-300",
+      
         collapsed ? "w-16" : "w-48"
       )}
     >
@@ -31,7 +81,7 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <nav className="mt-4 flex-1 overflow-y-auto flex flex-col gap-2" aria-label="Sidebar Navigation">
+      <nav className="mt-4 flex-1 overflow-y-auto flex  flex-col gap-2" aria-label="Sidebar Navigation">
         {navItems.map((item) => (
           <Link
             key={item.href}

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { getSupabaseUser } from "@/app/lib/token-store";
+import { getSupabaseUserbyId, getSupabaseUser } from "@/app/lib/token-store";
 import { createClient } from "@/utils/supabase/client";
 
 
@@ -19,9 +19,7 @@ interface ChatContext {
 
 export default function ZoomCardPage() {
     const [meetingId, setMeetingId] = useState("97231146424");
-    const [shareUrl, setShareUrl] = useState(
-        "https://pooja-onelogin-test.zoom.us/rec/share/yZlABeUkEqe8T22L_9uiJY21HgFNt1LaelsTU_X__8xIhC-vVxDV4BtCG-bbESmz.Vd1h6n_U7QRyvZXe"
-    );
+    const [shareUrl, setShareUrl] = useState(" https://saveoj.us");
     const [bitmap, setBitmap] = useState("Placeholder for bitmap");
     const [chatContext, setChatContext] = useState<ChatContext | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -36,7 +34,8 @@ export default function ZoomCardPage() {
             capabilities: [
                 "getChatContext",
                 "composeCard",
-                "sendMessageToChat"
+                "sendMessageToChat",
+                "getRunningContext"
             ],
             version: "0.16.0",
         });
@@ -48,14 +47,18 @@ export default function ZoomCardPage() {
 
 
     const getSupabaseSessionFromCache = async () => {
-        const hardcodedState = "093a3ad2b0d815c5180d35ef";
-
         try {
-            const tokenData = await getSupabaseUser(hardcodedState);
-            console.log("🔐 Token data from Redis:", tokenData);
 
-            const chatCtx = await zoomSdk.getChatContext();
-            console.log("Chat Context:", chatCtx);
+            // Make sure this value is retrieved dyncamically or set appropriately
+            const userId = 'vbDj8eUxRduts0tAN29trA'
+
+            // Get latest state for this user
+            const state = await getSupabaseUserbyId(userId);
+            console.log("🔑 Retrieved state for user:", state);
+
+            // 🔐 Fetch token data using the retrieved state
+            const tokenData = await getSupabaseUser(state);
+            console.log("🔐 Retrieved Supabase Provider Token:", tokenData);
 
             if (!tokenData.accessToken || !tokenData.refreshToken) {
                 console.error("❌ Token data incomplete.");
@@ -74,15 +77,13 @@ export default function ZoomCardPage() {
             }
 
             console.log("✅ Supabase session set successfully from Redis cache.");
-
-            // ✅ Prevent future redirects
             hasRedirected.current = true;
-
 
         } catch (err) {
             console.error("❌ Failed to get Supabase tokens from cache:", err);
         }
     };
+
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -132,10 +133,7 @@ export default function ZoomCardPage() {
                 }),
             };
 
-
             const cardcompose = await zoomSdk.composeCard(card);
-            console.log("Card composed:", cardcompose);
-
             if (cardcompose) {
                 console.log("Card composed successfully");
                 window.close();

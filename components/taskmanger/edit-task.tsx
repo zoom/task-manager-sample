@@ -79,7 +79,7 @@ const EditTask = ({
 
   const router = useRouter();
   const params = useParams();
-  const projectId = Number(params.projectId);
+  const projectId = Number(params?.projectId);
 
   // Pre-populate the form values based on the task data.
   useEffect(() => {
