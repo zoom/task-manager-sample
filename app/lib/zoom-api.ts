@@ -166,52 +166,6 @@ export async function getZoomAccessToken(
   return tokenRequest(params);
 }
 
-export async function getZoomAccessTokenRawViod(
-  code: string,
-  pkceVerifier?: string
-): Promise<any> {
-  const redirectUri = process.env.ZOOM_REDIRECT_URL!;
-
-  if (!pkceVerifier) throw new Error("PKCE verifier is required");
-
-  const params = new URLSearchParams({
-    code,
-    grant_type: "authorization_code",
-    redirect_uri: redirectUri,
-    code_verifier: pkceVerifier,
-  });
-
-  const basicAuth = Buffer.from(
-    `${process.env.ZOOM_CLIENT_ID!}:${process.env.ZOOM_CLIENT_SECRET!}`
-  ).toString("base64");
-
-  const urlviod = `${ZOOM_HOST}/oauth/token?code=${code}&grant_type=authorization_code&redirect_uri=${redirectUri}&code_verifier=${pkceVerifier}`;
-  console.log(`\n`,"🔗 Zoom token exchange URL:", urlviod, `\n`);
-
-  const url = `${ZOOM_HOST}/oauth/token?${new URLSearchParams({
-    code,
-    grant_type: 'authorization_code',
-    redirect_uri: redirectUri,
-    code_verifier: pkceVerifier!,
-  }).toString()}`;
-
-  console.log(`🔗 Zoom token exchange URL2: ${url}`, `\n`);
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic aWl3NlgyVGhSeEduZlNCYlA4bDdROnV2OHcxd29QOTBwNWV6MlpURkxTM3hyejU4ZmJiVzhr`,
-    },
-  });
-
-  if (!response.ok) {
-    const errorBody = await response.text();
-    console.error("Zoom token exchange failed:", response.status, errorBody, `\n`);
-    throw new Error(`Token request failed with status ${response.status}`);
-  }
-
-  return response.json();
-}
 
 export async function getZoomAccessTokenRaw(
   code: string,
