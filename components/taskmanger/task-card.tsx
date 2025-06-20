@@ -18,8 +18,6 @@ import { Button } from "@/components/ui/button";
 import type { Tables } from "@/lib/types";
 
 type Task = Tables<'tasks'>;
-
-// Type issue
 type Priority = 'high' | 'medium' | 'low';
 
 const ICONS = {
@@ -55,7 +53,7 @@ export default function TaskCard({
       <CardHeader className="p-4">
         <div className="flex justify-between">
           <div className={clsx("flex flex-1 items-center gap-1 text-sm font-medium", PRIORITYSTYLES[priority], "dark:text-white")}
-           title={`Task type: ${task.stage}`}
+            title={`Task type: ${task.stage}`}
           >
             <span className="text-lg">{ICONS[priority]}</span>
             <span className="uppercase">{priority} Priority</span>
@@ -65,7 +63,7 @@ export default function TaskCard({
 
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center gap-2">
-          <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[task.stage as keyof typeof TASK_TYPE || "completed"],  "dark:bg-white")} />
+          <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[task.stage as keyof typeof TASK_TYPE || "completed"], "dark:bg-white")} />
 
           <div>
             <h4 className="line-clamp-1 text-black dark:text-white">{task.title}</h4>
@@ -81,8 +79,6 @@ export default function TaskCard({
         <div className="w-full border-t border-gray-300 my-2" />
 
         <div className="flex items-center justify-between mb-2">
-
-
           <div className="flex flex-row-reverse gap-1">
             <Button
               variant="ghost"

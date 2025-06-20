@@ -118,6 +118,10 @@ export default function UsersClientPage() {
   const startZoomOAuth = async () => {
     setAuthStatus("loading");
     try {
+      // Manually set the code challenge and state for testing
+      // In production, these should be dynamically generated
+      // and securely stored in your backend or environment variables
+      // This is just a placeholder; replace with your actual code challenge logic
       const code_challenge = "ZDdkZmFkYjE4MzZmZjYzOWJiZjg0NTY0ZDMxYjA4YmU2YWQ1NTAyOTBlMWQ5YThhOWU4MDMzMmRkYzI4YzdmOQ==";
       const state = "TIA5UgoMte";
       await zoomSdk.authorize({ state, codeChallenge: code_challenge });

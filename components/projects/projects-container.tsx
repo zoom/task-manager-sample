@@ -17,7 +17,6 @@ export default async function ProjectsContainer() {
         `)
         .returns<Project[]>()
 
-
     if (error) {
         console.error('Error fetching task lists:', error)
         return <div>Error loading task lists. Please try again later.</div>
@@ -28,9 +27,6 @@ export default async function ProjectsContainer() {
         console.error('Error fetching task lists:', error)
         return <div>Error loading task lists. Please try again later.</div>
     }
-
-    // console.log('Listed Projects: ', projects);
-
 
     return <ProjectsClient projects={projects || []} />
 }

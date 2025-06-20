@@ -10,15 +10,14 @@ export async function middleware(request: NextRequest) {
     console.log("__________________________Middleware Event________________________\n");
     console.log("📬  Zoom x-zoom-app-context Header:\n", zoomHeader, "\n");
   }
-  
+
   // Extract query parameters
   let access_token = url.searchParams.get("access_token");
   let refresh_token = url.searchParams.get("refresh_token");
   const state = url.searchParams.get("state") || "unknown";
 
-  // Fallback parsing for malformed query strings (e.g. fragments misrouted as queries)
   if (!access_token || !refresh_token) {
-    const rawSearch = url.search; // includes '?'
+    const rawSearch = url.search;
     const decodedSearch = decodeURIComponent(rawSearch.replace(/^\?/, ""));
     const fragmentParams = new URLSearchParams(decodedSearch);
 
@@ -39,7 +38,6 @@ export async function middleware(request: NextRequest) {
     } catch (error) {
       console.error("❌ Middleware: Failed to store tokens in Redis:", error);
     }
-  
 
     // Clean up tokens from URL and redirect
     url.searchParams.delete("access_token");
@@ -48,8 +46,6 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.redirect(url);
   }
-
-
   // Continue normal Supabase session logic
   const response = await updateSession(request);
   return response;

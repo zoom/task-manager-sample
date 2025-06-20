@@ -17,7 +17,6 @@ export default function ZoomAuth() {
   const [authStatus, setAuthStatus] = useState<"idle" | "success" | "error" | "loading">("idle");
   const location = usePathname();
 
-  //get state from the URL
   const searchParams = useSearchParams();
   const state = searchParams?.get("state");
   console.log("🪵 State from query params:", state, "\n");
@@ -140,7 +139,6 @@ export default function ZoomAuth() {
   return (
     <>
       <p>You are on this route: {location}</p>
-
       <div className="flex flex-col gap-3 mt-4">
         <Button onClick={authorizeViaZoomClient} disabled={!isConfigured || authStatus === "loading"}>
           {authStatus === "loading" ? "Authorizing..." : "Authorize with Zoom In-Client Flow"}

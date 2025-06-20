@@ -41,8 +41,6 @@ export default function ZoomLaunchRedirectHandler() {
       const data = {
         action: JSON.stringify({ // MAX: 256
           // url: '/dashboard',
-          // role_name: 'Owner',
-          // role_id: 0,
           //refresh_token,
           //access_token  // Exceed character 256 limit
           state: state, // TODO: Make dynamic

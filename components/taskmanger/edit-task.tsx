@@ -27,7 +27,6 @@ import { AssigneeSelector } from "@/components/taskmanger/assignee-selector";
 import { sendZoomIMMessage, ZoomIMMessagePayload  } from "@/app/lib/teamchat";
 import { redirect } from "next/navigation";
 
-
 type Task = Tables<'tasks'>;
 
 const LISTS = ["todo", "in progress", "completed"];
@@ -164,7 +163,6 @@ const EditTask = ({
         console.error("Error updating task:", updateError);
         return;
       }
-      console.log("Task updated:", updatedTask);
   
       // Insert an additional subtask if provided.
       if (data.additionalTask) {

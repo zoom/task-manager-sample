@@ -15,7 +15,6 @@ export default function BoardView({
   
   const router = useRouter();
 
-  // Delete handler
   const handleDeleteClick = async (task: Task) => {
     try {
       const error = await deleteTask(task.id);

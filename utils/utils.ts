@@ -15,8 +15,6 @@ export function encodedRedirect(
   return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
 }
 
-
-
 export const formatDate = (date: Date) => {
   // Check if the date is a valid Date object
 

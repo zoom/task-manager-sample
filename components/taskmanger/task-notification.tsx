@@ -19,8 +19,6 @@ export default function TaskNotification({
 
   const chatbotDeeplink = process.env.NEXT_PUBLIC_ZOOM_CHATBOT_DEEPLINK;
 
-  console.log("Chatbot Deeplink: ", chatbotDeeplink);
-
   // If user closes or after a timeout, hide the notification
   const handleDismiss = () => {
     setVisible(false);

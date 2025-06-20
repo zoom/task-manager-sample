@@ -1,17 +1,17 @@
 {
     "manifest": {
       "display_information": {
-        "display_name": "Test Task Manger"
+        "display_name": "Task Manager Zoom App sample"
       },
       "oauth_information": {
         "usage": "USER_OPERATION",
         "development_redirect_uri": "https://zoom.us/launch/chat?jid=v1e1l0-tgeqagn236xhwrepg@xmpp.zoom.us",
-        "production_redirect_uri": "https://donte-backend.ngrok.io/auth/v1/callback",
+        "production_redirect_uri": "https://example-backend.ngrok.io/auth/v1/callback",
         "oauth_allow_list": [
-          "https://donte-backend.ngrok.io/auth/v1/callback",
+          "https://example-backend.ngrok.io/auth/v1/callback",
           "https://oauth.pstmn.io/v1/callback",
-          "https://donte-backend.ngrok.io",
-          "https://donte-backend.ngrok.io/auth/v1/authorize?provider=zoom",
+          "https://example-backend.ngrok.io",
+          "https://example-backend.ngrok.io/auth/v1/authorize?provider=zoom",
           "https://zoom.us/launch/chat?jid=v1e1l0-tgeqagn236xhwrepg@xmpp.zoom.us"
         ],
         "strict_mode": false,
@@ -36,10 +36,10 @@
       },
       "features": {
         "products": ["ZOOM_CHAT", "ZOOM_MEETING"],
-        "development_home_uri": "https://donte.ngrok.io/zoom-dashboard",
-        "production_home_uri": "https://donte.ngrok.io",
+        "development_home_uri": "https://example.ngrok.io/zoom-dashboard",
+        "production_home_uri": "https://example.ngrok.io",
         "domain_allow_list": [
-          { "domain": "donte-backend.ngrok.io", "explanation": "" }
+          { "domain": "example-backend.ngrok.io", "explanation": "" }
         ],
         "in_client_feature": {
           "zoom_app_api": {
@@ -101,7 +101,7 @@
               }
             ],
             "enable_add_to_channel": false,
-            "development_message_url": "https://donte.ngrok.io/api/zoom/webhooks/chatbot",
+            "development_message_url": "https://example.ngrok.io/api/zoom/webhooks/chatbot",
             "production_message_url": "",
             "sender_type": "zoom",
             "welcome_msg": { "title": "", "body": "" },
@@ -121,7 +121,7 @@
                 "team_chat.channel_message_posted",
                 "team_chat.channel_app_added"
               ],
-              "development_webhook_url": "https://donte.ngrok.io/api/zoom/webhooks/teamchat",
+              "development_webhook_url": "https://example.ngrok.io/api/zoom/webhooks/teamchat",
               "event_usage": "EVENT_FOR_USER"
             }
           ]

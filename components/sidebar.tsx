@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import {createClient} from "@/utils/supabase/client";
 import {redirect} from "next/navigation";
 
-
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/users-contacts", label: "Users", icon: Users },
@@ -69,9 +68,17 @@ export default function Sidebar() {
   return (
     <div
       className={cn(
+        // always fixed left, borders, BG, animation:
         "fixed inset-y-0 left-0 flex flex-col border-r border-muted bg-muted/40 transition-all duration-300",
-      
-        collapsed ? "w-16" : "w-48"
+
+        // 1) hide on xs:
+        "hidden sm:flex",
+
+        // 2) on sm (640px+) always width 16 (collapsed)
+        "sm:w-16",
+
+        // 3) on md (768px+) override: if collapsed md:w-16 else md:w-44
+        collapsed ? "md:w-16" : "md:w-44"
       )}
     >
       <div className="flex items-center justify-between p-4">

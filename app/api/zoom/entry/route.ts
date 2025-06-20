@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
   console.log("__________________________Zoom Home Page Get Route________________________", "\n");
   const response = await updateSession(request);
   const { searchParams, origin } = new URL(request.url);
-  const url = request.url;
   const zoomHeader = request.headers.get("x-zoom-app-context");
 
   logRequest(request.url, zoomHeader, searchParams);
@@ -120,9 +119,8 @@ function handleZoomContext(header: string | null): {
       return {};
     }
 
-    console.log("☄️  User ID from Zoom Context:", uid);
+    console.log("⭐️ User ID from Zoom Context:", uid);
 
-    
     // Act is optional — deep linking or context-based actions
     let act: any = undefined;
     let state: any  = undefined;
@@ -137,7 +135,6 @@ function handleZoomContext(header: string | null): {
         } else {
           console.log("⚠️ Action Context missing State — invalid or malformed.");
         }
-
       } catch (e) {
         console.warn("❌ Failed to parse 'act' from context:", e);
       }
