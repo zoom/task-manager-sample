@@ -10,20 +10,6 @@ import { Button } from "@/components/ui/button";
 
 import zoomSdk from "@zoom/appssdk";
 
-type User = {
-  id: string;
-  member_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-};
-
-type Channel = {
-  id: number;
-  name: string;
-  type: string;
-};
 
 export default function UsersClientPage() {
   const supabase = createClient();

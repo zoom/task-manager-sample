@@ -14,11 +14,11 @@ const navItems = [
   { href: "/zoomapp/zcx", label: "App Context", icon: Newspaper },
   { href: "/zoomapp/zoom-card", label: "Message", icon: Send },
   { href: "/zoomapp/report", label: "Report", icon: ChartNoAxesCombined },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/zoomapp/settings", label: "Settings", icon: Settings },
 ];
 
 export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const supabase = createClient();
 
   const [user, setUser] = useState(null as null | { id: string });
@@ -67,22 +67,25 @@ export default function Sidebar() {
 
   return (
     <div
-      className={cn(
-        // always fixed left, borders, BG, animation:
-        "fixed inset-y-0 left-0 flex flex-col border-r border-muted bg-muted/40 transition-all duration-300",
+    className={cn(
+      "fixed inset-y-0 left-0 flex flex-col border-r border-muted bg-muted/40 transition-all duration-300",
 
-        // 1) hide on xs:
+      // ALWAYS visible (remove your old `hidden sm:flex`)
+      // 1) hide on xs:
         "hidden sm:flex",
 
-        // 2) on sm (640px+) always width 16 (collapsed)
-        "sm:w-16",
+      // manual toggle: 4rem vs 10rem
+      collapsed ? "w-16" : "w-40",
 
-        // 3) on md (768px+) override: if collapsed md:w-16 else md:w-44
-        collapsed ? "md:w-16" : "md:w-44"
-      )}
-    >
+      // AUTOMATIC collapse at ≤ 320px panel width:
+      "max-[320px]:w-16",
+
+      // still allow manual expand on medium+ if you want
+      "md:" + (collapsed ? "w-16" : "w-40")
+    )}
+  >
       <div className="flex items-center justify-between p-4">
-        {!collapsed && <span className="font-bold text-lg">MyApp</span>}
+      {!collapsed && <span className="max-[320px]:hidden font-bold text-lg">MyApp</span>}
         <button onClick={() => setCollapsed(!collapsed)} className="text-muted-foreground">
           <Menu className="h-5 w-5" />
         </button>
@@ -94,7 +97,9 @@ export default function Sidebar() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors",
+              "flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors",
+              // center icons when collapsed or at ≤320px
+              collapsed || "max-[320px]:justify-center",
               collapsed && "justify-center"
             )}
           >
