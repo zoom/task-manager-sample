@@ -121,6 +121,8 @@ export default function UsersClientPage() {
       const code_challenge = "ZDdkZmFkYjE4MzZmZjYzOWJiZjg0NTY0ZDMxYjA4YmU2YWQ1NTAyOTBlMWQ5YThhOWU4MDMzMmRkYzI4YzdmOQ==";
       const state = "TIA5UgoMte";
       await zoomSdk.authorize({ state, codeChallenge: code_challenge });
+      setAuthStatus("idle");
+      setAuthNeeded(false);
     } catch (e) {
       console.error('Zoom authorize error', e);
       setAuthStatus('error');
