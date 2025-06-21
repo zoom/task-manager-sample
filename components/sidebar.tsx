@@ -11,7 +11,7 @@ import {redirect} from "next/navigation";
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/users-contacts", label: "Users", icon: Users },
-  { href: "/zoomapp/zcx", label: "App Context", icon: Newspaper },
+  { href: "/zoomapp/zoom-context", label: "App Context", icon: Newspaper },
   { href: "/zoomapp/zoom-card", label: "Message", icon: Send },
   { href: "/zoomapp/report", label: "Report", icon: ChartNoAxesCombined },
   { href: "/zoomapp/settings", label: "Settings", icon: Settings },
