@@ -46,7 +46,7 @@ export default function UsersClientPage() {
         setAuthStatus("loading");
         try {
           // POST to backend to exchange code for Zoom tokens and set Supabase session
-          const res = await fetch('/api/inclient', {
+          const res = await fetch('/api/zoom/inclient-auth', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ code: event.code, state: event.state })

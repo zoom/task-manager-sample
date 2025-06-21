@@ -36,7 +36,7 @@
       },
       "features": {
         "products": ["ZOOM_CHAT", "ZOOM_MEETING"],
-        "development_home_uri": "https://example.ngrok.io/zoom-dashboard",
+        "development_home_uri": "https://example.ngrok.io/api/zoom/home/?accountId={accountId}&runningContext={runningContext}&action={action}",
         "production_home_uri": "https://example.ngrok.io",
         "domain_allow_list": [
           { "domain": "example-backend.ngrok.io", "explanation": "" }

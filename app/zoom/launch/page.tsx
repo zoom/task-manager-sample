@@ -63,7 +63,7 @@ export default function ZoomLaunchRedirectHandler() {
         console.log("🔄 <----- Sent query params to Home URL:-----> 🔄 ");
 
         const supaHashParams = new URLSearchParams(window.location.hash);
-        const res = await fetch(`/api/zoom/entry/?state=${state}&${supaHashParams}`, {
+        const res = await fetch(`/api/zoom/home/?state=${state}&${supaHashParams}`, {
           method: "GET",
           credentials: "include",
         });
