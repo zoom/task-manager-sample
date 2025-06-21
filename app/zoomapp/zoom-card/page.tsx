@@ -108,7 +108,7 @@ export default function ZoomCardPage() {
 
             const message = JSON.stringify(content);
 
-            const res = await fetch("/api/zoom/sign", {
+            const res = await fetch("/api/zoom/sign-card", {
                 method: "POST",
                 body: JSON.stringify({ message }),
                 headers: {
