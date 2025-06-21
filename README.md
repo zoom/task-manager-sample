@@ -1,23 +1,23 @@
 ## Task Manager Zoom App sample
 
-The Task Manager Zoom App is a multi-featured sample application that showcases core Zoom Developer Platform features, including Zoom Team Chat, chatbots, Zoom Apps SDK integration, and Zoom client deeplinking.
+The Task Manager Zoom App is a multi-featured sample application that showcases core Zoom Developer Platform features, including Zoom Team Chat, Zoom Team Chat Chatbots, Zoom Apps SDK integration, and Zoom client deeplinking.
 
 ---
 
 ## Key features
+- [x] **Supabase authentication**: Authenticate with Supabase.
+- [X] **Zoom Team Chat**: Send messages to Zoom Team Chat from your application.
+- [X] **Zoom Team Chat Chatbot**: Install the Zoom Team Chat Chatbot and send notifications through it.
+- [X] **Zoom App SDK**: Surface your app within meetings, the Zoom client, and Team Chat using the Zoom App SDK.
+- [X] **Zoom client deep linking**: Deep linking support from a browser to the Zoom App and the Zoom Team Chat Chatbot in the Zoom client.
 
-* Supabase authentication
-* Zoom Team Chat
-* Zoom Team Chatbot
-* Deep linking
-* Zoom App SDK
 
 ## Tech stack
-
 * Next.js
 * Supabase
 * Shadcn
 * Tailwind CSS
+* Redis - Upstash
 
 ## Prerequisites
 

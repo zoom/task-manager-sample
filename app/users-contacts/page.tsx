@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 
 import zoomSdk from "@zoom/appssdk";
 
-
 export default function UsersClientPage() {
   const supabase = createClient();
   const router = useRouter();

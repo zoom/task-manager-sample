@@ -37,7 +37,6 @@ export async function GET(request: Request) {
       }
     })
 
-
     console.log("Exchange Code For Session:", data,'\n')
 
     // When in a local dev environment we may be using Ngrok so we need to check the x-forwarded-host
