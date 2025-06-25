@@ -219,7 +219,7 @@ const EditTask = ({
                       type: "actions",
                       items: [
                         {
-                          text: "Open Task List",
+                          text: "Comment",
                           value: "button2",
                           style: "Default",
                           action: "dialog", 
