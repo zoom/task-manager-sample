@@ -16,10 +16,9 @@ export async function GET(request: Request) {
     const isLocalEnv = process.env.NODE_ENV === 'development'
     const forwardedHost = "https://" + request.headers.get('x-forwarded-host')
     
-    console.log("🔍 Extracted Code:", code, '\n')
+    console.log("🔍 Extracted Auth Code:", code, '\n')
     console.log("🔗 Forward Host Path:", forwardedHost, '\n')
 
-    
     const { error, data } = await supabase.auth.exchangeCodeForSession(code)
    
     if (error) {
@@ -37,7 +36,6 @@ export async function GET(request: Request) {
         // return redirect(deeplink); 
       }
     })
-
 
     console.log("Exchange Code For Session:", data,'\n')
 

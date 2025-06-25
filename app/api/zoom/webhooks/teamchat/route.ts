@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // // Verify Authorization Header (Optional but Recommended)
+    // // Verify Authorization Header (Optional but recommended)
     const authHeader = req.headers.get("authorization") || "";
     if (authHeader !== ZOOM_VERIFICATION_TOKEN) {
       return NextResponse.json({ error: "Unauthorized request" }, { status: 401 });

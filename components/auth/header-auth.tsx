@@ -8,7 +8,6 @@ import { headers } from "next/headers";
 
 import { signInWithZoom } from "@/app/actions";
 
-
 export default async function AuthButton() {
   const supabase = await createClient();
 
@@ -18,8 +17,6 @@ export default async function AuthButton() {
 
   const headersList = await headers();
   const isZoom = headersList.has("x-zoom-app-device-type");
-
-
 
   if (!hasEnvVars) {
     return (

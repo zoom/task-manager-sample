@@ -1,0 +1,133 @@
+{
+    "manifest": {
+      "display_information": {
+        "display_name": "Task Manager Zoom App sample"
+      },
+      "oauth_information": {
+        "usage": "USER_OPERATION",
+        "development_redirect_uri": "https://zoom.us/launch/chat?jid=v1e1l0-tgeqagn236xhwrepg@xmpp.zoom.us",
+        "production_redirect_uri": "https://example-backend.ngrok.io/auth/v1/callback",
+        "oauth_allow_list": [
+          "https://example-backend.ngrok.io/auth/v1/callback",
+          "https://oauth.pstmn.io/v1/callback",
+          "https://example-backend.ngrok.io",
+          "https://example-backend.ngrok.io/auth/v1/authorize?provider=zoom",
+          "https://zoom.us/launch/chat?jid=v1e1l0-tgeqagn236xhwrepg@xmpp.zoom.us"
+        ],
+        "strict_mode": false,
+        "subdomain_strict_mode": false,
+        "scopes": [
+          { "scope": "zoomapp:inmeeting", "optional": false },
+          { "scope": "user:read:user", "optional": false },
+          { "scope": "team_chat:read:list_user_channels", "optional": false },
+          { "scope": "imchat:userapp", "optional": false },
+          { "scope": "team_chat:read:user_message", "optional": false },
+          { "scope": "app:channel_content:write", "optional": false },
+          { "scope": "marketplace:write:notifications", "optional": false },
+          { "scope": "team_chat:write:user_message", "optional": false },
+          { "scope": "meeting:write:meeting", "optional": false },
+          { "scope": "meeting:write:open_app", "optional": false },
+          { "scope": "meeting:read:meeting", "optional": false },
+          { "scope": "marketplace:read:app", "optional": false },
+          { "scope": "cloud_recording:read:list_user_recordings", "optional": false },
+          { "scope": "contact:read:list_contacts", "optional": false },
+          { "scope": "team_chat:read:list_contacts", "optional": false }
+        ]
+      },
+      "features": {
+        "products": ["ZOOM_CHAT", "ZOOM_MEETING"],
+        "development_home_uri": "https://example.ngrok.io/api/zoom/home/?accountId={accountId}&runningContext={runningContext}&action={action}",
+        "production_home_uri": "https://example.ngrok.io",
+        "domain_allow_list": [
+          { "domain": "example-backend.ngrok.io", "explanation": "" }
+        ],
+        "in_client_feature": {
+          "zoom_app_api": {
+            "enable": false,
+            "zoom_app_apis": []
+          },
+          "guest_mode": {
+            "enable": false,
+            "enable_test_guest_mode": false
+          },
+          "in_client_oauth": {
+            "enable": false
+          },
+          "collaborate_mode": {
+            "enable": false,
+            "enable_screen_sharing": false,
+            "enable_play_together": false,
+            "enable_start_immediately": false,
+            "enable_join_immediately": false
+          }
+        },
+        "zoom_client_support": {
+          "mobile": { "enable": false },
+          "zoom_room": {
+            "enable": false,
+            "enable_personal_zoom_room": false,
+            "enable_shared_zoom_room": false,
+            "enable_digital_signage": false,
+            "enable_zoom_rooms_controller": false
+          },
+          "pwa_client": { "enable": false }
+        },
+        "embed": {
+          "meeting_sdk": {
+            "enable": false,
+            "enable_device": false,
+            "devices": []
+          },
+          "contact_center_sdk": { "enable": false },
+          "phone_sdk": { "enable": false }
+        },
+        "team_chat_subscription": {
+          "enable": true,
+          "enable_support_channel": true,
+          "slash_command": {
+            "command": "task_manager_command",
+            "command_hints": [
+              {
+                "usage_hint": "getrecordings",
+                "description": "List Recordings"
+              },
+              {
+                "usage_hint": "createMeeting",
+                "description": "Create A Meeting with Task Manager Zoom App added"
+              },
+              {
+                "usage_hint": "assignTask",
+                "description": "Assign a task"
+              }
+            ],
+            "enable_add_to_channel": false,
+            "development_message_url": "https://example.ngrok.io/api/zoom/webhooks/chatbot",
+            "production_message_url": "",
+            "sender_type": "zoom",
+            "welcome_msg": { "title": "", "body": "" },
+            "trust_domain_list": [
+              { "domain": "saveoj.us", "unfurling": true }
+            ]
+          },
+          "shortcuts": []
+        },
+        "event_subscription": {
+          "enable": true,
+          "events": [
+            {
+              "subscription_id": "",
+              "subscription_name": "ChatBot",
+              "event_types": [
+                "team_chat.channel_message_posted",
+                "team_chat.channel_app_added"
+              ],
+              "development_webhook_url": "https://example.ngrok.io/api/zoom/webhooks/teamchat",
+              "event_usage": "EVENT_FOR_USER"
+            }
+          ]
+        }
+      }
+    },
+     "app_id": "YOUR_APP_ID_HERE"
+  }
+  

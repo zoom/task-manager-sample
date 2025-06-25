@@ -1,23 +1,23 @@
 ## Task Manager Zoom App sample
 
-The Task Manager Zoom App is a multi-featured sample application that showcases core Zoom Developer Platform features, including Zoom Team Chat, chatbots, and Zoom Apps integration.
+The Task Manager Zoom App is a multi-featured sample application that showcases core Zoom Developer Platform features, including Zoom Team Chat, Zoom Team Chat Chatbots, Zoom Apps SDK integration, and Zoom client deeplinking.
 
 ---
 
-## Key features
+## Supported features
+- [x] **Supabase authentication**: Authenticate with Supabase.
+- [X] **Zoom Team Chat**: Send messages to Zoom Team Chat from your web application.
+- [X] **Zoom Team Chat Chatbot**: Install the Zoom Team Chat Chatbot and send notifications from your web application.
+- [X] **Zoom App SDK**: Surface your web application within meetings, the Zoom client, and Team Chat using the Zoom App SDK.
+- [X] **Zoom client deep linking**: Deep linking support from a browser to the Zoom App and the Zoom Team Chat Chatbot in the Zoom client.
 
-* Supabase authentication
-* Zoom Team Chat
-* Zoom Team Chatbot
-* Deep linking
-* Zoom App SDK
 
 ## Tech stack
-
 * Next.js
 * Supabase
 * Shadcn
 * Tailwind CSS
+* Redis - Upstash
 
 ## Prerequisites
 
@@ -57,6 +57,16 @@ cp .env.example .env.local
 
 Update `.env.local` with your credentials. For development, use the Client ID and Client Secret under "Development".
 
+
+### Start your local Supabase instance
+
+Run your local Supabase instance is running by executing
+
+```shell
+supabase start
+
+```
+
 ### Run the development server
 
 ```shell
@@ -88,3 +98,7 @@ If the command returns an exit code of `0`, it will print “Request successful.
 ## What do I do next?
 
 Start building your app! You can check out the [Zoom Apps developer docs](https://developers.zoom.us/docs/zoom-apps/) for more information on the JS SDK. You can also explore the [Zoom REST API](https://developers.zoom.us/docs/api/) or use the third party OAuth to call a different API.
+
+More of a viual learner? Check out the Task Manager Zoom App video series on our YouTube channel:
+
+* [Zoom Developers](https://www.youtube.com/@Zoomdeveloper)

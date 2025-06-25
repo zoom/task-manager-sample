@@ -61,9 +61,7 @@ export async function POST(req: NextRequest) {
       console.log(" 🏁 Bot Notification Received", body.payload);
 
       // Extract the slash command from the payload
-      // (Assuming the slash command is available as body.payload.command)
       const command = body.payload.cmd;
-
       if (command && commandHandlers[command]) {
         console.log(" Command Handler", command);
         const result = await commandHandlers[command](body.payload);

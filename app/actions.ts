@@ -24,7 +24,6 @@ export const signInWithZoom= async () => {
   const headerList = await headers();
   const origin = headerList.get("origin");
  
-  
   console.log("Origin:", origin, '\n');
   console.log('Headers:', headerList), '\n';
 
@@ -49,5 +48,6 @@ export const signInWithZoom= async () => {
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  
   return redirect("/");
 };

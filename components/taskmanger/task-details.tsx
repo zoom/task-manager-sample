@@ -49,13 +49,6 @@ const TaskDetails = ({ task }: TaskDetailsProps) => {
     }
   }, [state.success, router]);
 
-
-
-
- 
-
-
-
   return (
     <div className="max-w-screen-xl min-w-[850px] min-h-[650px] flex flex-col bg-white dark:bg-background md:flex-row gap-5 2xl:gap-10 shadow-lg p-10 overflow-y-auto">
       {/* LEFT */}

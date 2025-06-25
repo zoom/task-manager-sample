@@ -16,6 +16,7 @@ import {createClient} from "@/utils/supabase/server";
 import Link from "next/link";
 
 import {signOutAction} from "@/app/actions";
+import LogoutButton from "@/components/logoutbutton";
 
 const getInitials = (n: string) =>
     n.split(" ")
@@ -60,8 +61,10 @@ export async function UserNav() {
           </Link>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={signOutAction}>
-            <Link href="">Log out</Link>
+        {/* <DropdownMenuItem onClick={signOutAction}> */}
+        {/* <Link href="">Log out</Link> */}
+            <DropdownMenuItem asChild>
+             <LogoutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

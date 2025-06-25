@@ -52,8 +52,8 @@ function formatMessage(activity: string, text: string, subtasks: string[], locat
 function buildMessagePayload(text: string, location: string) {
     return {
       robot_jid: process.env.ZOOM_BOT_JID, // Bot's JID
-      to_jid: process.env.ZOOM_TEAMCHAT_JID, // Recipient's JID (User or Channel)
-      user_jid: process.env.ZOOM_TEAMCHAT_JID, // Sender's JID
+      to_jid: process.env.ZOOM_BOT_TO_JID, // Recipient's JID (User or Channel)
+      user_jid: process.env.ZOOM_USER_JID, // Sender's JID
       account_id: process.env.ZOOM_ACCOUNT_ID, // Ensure this is set in .env
       content: {
         head: {
@@ -75,13 +75,13 @@ function buildMessagePayload(text: string, location: string) {
                 action: "dialog", 
                 dialog: {
                   size: "M",
-                  link: "https://donte.ngrok.io/zoom-dashboard",
+                  link: "https://donte.ngrok.io/dashboard",
                   title: { text: "Zoom Dashboard" },
                 },
               },
               {
                 text: "View Task",
-                value: "button2",
+                value: "button3",
                 style: "Default",
                 action: "dialog", 
                 dialog: {
@@ -102,7 +102,7 @@ function buildMessagePayload(text: string, location: string) {
  */
 async function sendMessageToZoom(accessToken: string, payload: any): Promise<{ success?: boolean; error?: string }> {
     try {
-      console.log("📨 Sending Message to Zoom Chat:", JSON.stringify(payload, null, 2));
+      console.log("📨 Sending Message to Zoom Chat Chatbot:", JSON.stringify(payload, null, 2));
   
       const response = await fetch(`${ZOOM_API_BASE_URL}/im/chat/messages`, {
         method: "POST",
@@ -121,7 +121,7 @@ async function sendMessageToZoom(accessToken: string, payload: any): Promise<{ s
   
       return { success: true };
     } catch (error) {
-      console.error("🚨 Error sending message to Zoom Team Chat:", error);
+      console.error("🚨 Error sending message to Zoom Team Chat Chatbot:", error);
       return { error: "Failed to send message" };
     }
   }
@@ -142,6 +142,11 @@ export async function sendTeamChatBotMessage(prevState: any, formData: FormData)
       }
   
       const accessToken = await getTeamChatBotToken();
+      if (!accessToken) {
+        return { error: "❌ Failed to retrieve access token" };
+      }
+
+      console.log("🔑 Zoom Team Chat Chatbot Access Token:", accessToken, `\n`);
   
       // Format the message & build the payload
       const formattedMessage = formatMessage(activity, text, selectedSubtasks, location);

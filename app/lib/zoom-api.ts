@@ -145,6 +145,60 @@ export async function getZoomUser(uid: string, token: string): Promise<any> {
 }
 
 /**
+ * Obtain Zoom access token via custom helper
+ * @param zoomAuthorizationCode - authorization code from Zoom
+ * @param redirect_uri - redirect URI used in OAuth
+ * @param pkceVerifier - optional PKCE code verifier
+ */
+export async function getZoomAccessToken(
+  zoomAuthorizationCode: string,
+  redirect_uri: string = process.env.ZOOM_REDIRECT_URL!,
+  pkceVerifier?: string
+): Promise<any> {
+  const params = new URLSearchParams({
+    grant_type: "authorization_code",
+    code: zoomAuthorizationCode,
+    redirect_uri,
+  });
+  if (pkceVerifier) {
+    params.set("code_verifier", pkceVerifier);
+  }
+  return tokenRequest(params);
+}
+
+
+export async function getZoomAccessTokenRaw(
+  code: string,
+  pkceVerifier?: string
+): Promise<any> {
+  const redirectUri = process.env.ZOOM_REDIRECT_URL!;
+  if (!pkceVerifier) {
+    throw new Error("PKCE verifier is required for token exchange");
+  }
+
+  const params = new URLSearchParams({
+    grant_type: "authorization_code",
+    code,
+    redirect_uri: redirectUri,
+    code_verifier: pkceVerifier,
+  }).toString();
+
+  const url = `${ZOOM_HOST}/oauth/token?${params}`;
+  const clientId = process.env.ZOOM_CLIENT_ID!;
+  const clientSecret = process.env.ZOOM_CLIENT_SECRET!;
+
+  const response = await axios.request({
+    method: "POST",
+    url,
+    auth: { username: clientId, password: clientSecret },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    maxBodyLength: Infinity,
+  });
+
+  return response.data;
+}
+
+/**
  * Return the DeepLink for opening Zoom.
  * @param {string | null | undefined} token - Zoom App Access Token
  * @returns {Promise<string | undefined>}
@@ -166,13 +220,6 @@ export async function getDeeplink(
     
     // Zoom injects the act field into the decrypted x-zoom-app-context when the Zoom App is opened via the deeplink.
     const body = { action: data.action }; 
-
-    // If the action character limit is exceeded, Zoom client will freeze.
-    // if (body.action.length > 256) {
-    //   console.warn("⚠️  Action exceeds 256 characters, truncating...", '\n');
-    //   console.log("🚨 Possible bug with Zoom client freezing if action exceeds 256 characters and the act field is not truncated.", '\n');
-    //   body.action = body.action.substring(0, 256); // Possible bug with Zoom client freezing if action exceeds 256 characters and the act field is not truncated.
-    // }
 
     const response = await apiRequest("POST", "/zoomapp/deeplink", token, body);
     

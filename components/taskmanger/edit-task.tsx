@@ -27,7 +27,6 @@ import { AssigneeSelector } from "@/components/taskmanger/assignee-selector";
 import { sendZoomIMMessage, ZoomIMMessagePayload  } from "@/app/lib/teamchat";
 import { redirect } from "next/navigation";
 
-
 type Task = Tables<'tasks'>;
 
 const LISTS = ["todo", "in progress", "completed"];
@@ -79,7 +78,7 @@ const EditTask = ({
 
   const router = useRouter();
   const params = useParams();
-  const projectId = Number(params.projectId);
+  const projectId = Number(params?.projectId);
 
   // Pre-populate the form values based on the task data.
   useEffect(() => {
@@ -164,7 +163,6 @@ const EditTask = ({
         console.error("Error updating task:", updateError);
         return;
       }
-      console.log("Task updated:", updatedTask);
   
       // Insert an additional subtask if provided.
       if (data.additionalTask) {
@@ -220,6 +218,17 @@ const EditTask = ({
                     {
                       type: "actions",
                       items: [
+                        {
+                          text: "Comment",
+                          value: "button2",
+                          style: "Default",
+                          action: "dialog", 
+                          dialog: {
+                            size: "M",
+                            link: "https://donte.ngrok.io/zoomapp/zoom-card",
+                            title: { text: "Zoom Dashboard" },
+                          },
+                        },
                         { text: "View Task", value: "view", style: "Primary" },
                         { text: "Dismiss", value: "dismiss", style: "Default" },
                       ],

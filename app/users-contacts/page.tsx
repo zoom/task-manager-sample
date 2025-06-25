@@ -1,108 +1,169 @@
+// app/users-contacts/page.tsx
+"use client";
+
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 import { getuserContacts, getuserChannels } from "@/app/lib/teamchat";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-type User = {
-  id: string;
-  member_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-};
+import zoomSdk from "@zoom/appssdk";
 
-type Channels = {
-  id: number;
-  name: string;
-  type: string;
-};
+export default function UsersClientPage() {
+  const supabase = createClient();
+  const router = useRouter();
 
-export default async function UsersServer() {
-  // Optionally remove the delay if not needed
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<any[]>([]);
+  const [channels, setChannels] = useState<any[]>([]);
+  const [authNeeded, setAuthNeeded] = useState(false);
+  const [authStatus, setAuthStatus] = useState<"idle" | "loading" | "error">("idle");
 
-  // Get cookies and create the Supabase client
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll: () => cookieStore.getAll(),
-      },
+  // ref for cleanup of Zoom listener
+  const zoomHandlerRef = useRef<(event: any) => void>();
+
+  // Fetch contacts when we have a provider token
+  const fetchTeamChatData = async (providerToken: string) => {
+    try {
+      const contactsResp = await getuserContacts(providerToken);
+      const channelsResp = await getuserChannels(providerToken);
+      setUsers(contactsResp.contacts);
+      setChannels(channelsResp);
+    } catch (err) {
+      console.error("Failed to fetch team chat data:", err);
+    } finally {
+      setLoading(false);
     }
-  );
+  };
 
-  // Fetch the Supabase session securely
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError || !sessionData?.session) {
-    console.error("Session error:", sessionError);
-    redirect("/login");
-  }
+  // Initialize Zoom event listener once
+  useEffect(() => {
+    const handler = (event: any) => {
+      console.log("🎯 Zoom onAuthorized event:", event);
+      // exchange event.code and event.state for tokens via your API
+      (async () => {
+        setAuthStatus("loading");
+        try {
+          // POST to backend to exchange code for Zoom tokens and set Supabase session
+          const res = await fetch('/api/zoom/inclient-auth', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ code: event.code, state: event.state })
+          });
+          if (!res.ok) throw new Error('OAuth exchange failed');
+          const { providerToken } = await res.json();
 
-  const accessToken = sessionData.session.provider_token ?? "";
-  console.log("Access Token User Server", accessToken);
+          // now fetch the contacts
+          await fetchTeamChatData(providerToken);
+          setAuthStatus("idle");
+        } catch (e) {
+          console.error(e);
+          setAuthStatus("error");
+        }
+      })();
+    };
+    zoomHandlerRef.current = handler;
+    zoomSdk.addEventListener("onAuthorized", handler);
 
-  // Get the users list
-  const response = await getuserContacts(accessToken);
-  const users: User[] = response.contacts;
-  console.log("Users:", users);
+    return () => {
+      if (zoomHandlerRef.current) {
+        zoomSdk.removeEventListener("onAuthorized", zoomHandlerRef.current);
+      }
+    };
+  }, []);
 
-  // Upsert the Zoom user data into the zoom_users table
-  const { error: upsertError } = await supabase
-    .from("zoom_users")
-    .upsert(
-      users.map((user) => ({
-        id: user.id,
-        member_id: user.member_id,
-        email: user.email,
-        first_name: user.first_name,
-        last_name: user.last_name,
-      }))
+  // On mount, check Supabase session and provider_token
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error || !data.session) {
+        router.push('/login');
+        return;
+      }
+      const providerToken = data.session.provider_token;
+      if (providerToken) {
+        // we already have a Zoom token
+        fetchTeamChatData(providerToken);
+      } else {
+        // need to initialize Zoom OAuth in-client
+        setAuthNeeded(true);
+        await zoomSdk.config({
+          capabilities: [
+            "authorize",
+            "onAuthorized",
+            "promptAuthorize"
+          ],
+        });
+        setLoading(false);
+      }
+    })();
+  }, [supabase, router]);
+
+  const startZoomOAuth = async () => {
+    setAuthStatus("loading");
+    try {
+      // Manually set the code challenge and state for testing
+      // In production, these should be dynamically generated
+      // and securely stored in your backend or environment variables
+      // This is just a placeholder; replace with your actual code challenge logic
+      const code_challenge = "ZDdkZmFkYjE4MzZmZjYzOWJiZjg0NTY0ZDMxYjA4YmU2YWQ1NTAyOTBlMWQ5YThhOWU4MDMzMmRkYzI4YzdmOQ==";
+      const state = "TIA5UgoMte";
+      await zoomSdk.authorize({ state, codeChallenge: code_challenge });
+      setAuthStatus("idle");
+      setAuthNeeded(false);
+    } catch (e) {
+      console.error('Zoom authorize error', e);
+      setAuthStatus('error');
+    }
+  };
+
+  if (loading) return <p>Loading…</p>;
+
+  if (authNeeded) {
+    return (
+      <div className="flex flex-col items-center justify-center p-4">
+        <p className="mb-2">Connect your Zoom account to view contacts</p>
+        <Button onClick={startZoomOAuth} disabled={authStatus === 'loading'}>
+          {authStatus === 'loading' ? 'Authorizing…' : 'Authorize via Zoom'}
+        </Button>
+        {authStatus === 'error' && <p className="text-red-600 mt-2">Authorization failed</p>}
+      </div>
     );
-  if (upsertError) {
-    console.error("Upsert error:", upsertError);
   }
 
-  // Get the channels list
-  const channelResponse = await getuserChannels(accessToken);
-  const channels: Channels[] = channelResponse;
 
   return (
     <div className="flex">
-      {/* Left Column - Users */}
       <div className="w-1/2 border-r p-4">
         <h2 className="text-xl font-bold mb-4">Users</h2>
         <div className="space-y-4">
-          {users.map((user) => (
-            <Card key={user.id} className="shadow-md rounded-lg">
+          {users.map((u) => (
+            <Card key={u.id} className="shadow-md rounded-lg">
               <CardHeader>
                 <CardTitle>
-                  {user.first_name} {user.last_name}
+                  {u.first_name} {u.last_name}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p>Email: {user.email}</p>
-                <p>Phone: {user.phone}</p>
+                <p>Email: {u.email}</p>
+                <p>Phone: {u.phone}</p>
               </CardContent>
             </Card>
           ))}
         </div>
       </div>
 
-      {/* Right Column - Channels */}
       <div className="w-1/2 p-4">
         <h2 className="text-xl font-bold mb-4">User Channels</h2>
         <div className="space-y-4">
-          {channels.map((channel) => (
-            <Card key={channel.id} className="shadow-md rounded-lg">
+          {channels.map((c) => (
+            <Card key={c.id} className="shadow-md rounded-lg">
               <CardHeader>
-                <CardTitle>{channel.name}</CardTitle>
+                <CardTitle>{c.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>Type: {channel.type}</p>
+                <p>Type: {c.type}</p>
               </CardContent>
             </Card>
           ))}

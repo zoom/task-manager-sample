@@ -156,7 +156,7 @@ const AddActivity = ({
         .map((u) => `Special delivery for ${u.first_name} ${u.last_name} 📝!`)
         .join(", ");
       const at_items = selectedUsers.map((u) => ({
-        at_contact: 'max.test.zoom@gmail.com', // example static value or dynamic if needed
+        at_contact: 'example@gmail.com', // example static value or dynamic if needed
         at_type: 1,
         start_position: 15,
         end_position: 20,
@@ -200,6 +200,7 @@ const AddActivity = ({
                   {
                     type: "actions",
                     items: [
+                     
                       { text: "Open", value: "open", style: "Primary" },
                       { text: "Edit", value: "edit", style: "Default" },
                     ],

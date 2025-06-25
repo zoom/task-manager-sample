@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import type { Tables } from '@/lib/types';
 
+import ZoomChannelSetup from "@/components/zoom-support-channel";
+
 type Project = Tables<'projects'>;
 
 interface ProjectsClientProps {
@@ -39,6 +41,8 @@ export function ProjectsClient({ projects }: ProjectsClientProps) {
 
   return (
     <div className="w-full max-w-full px-4 md:px-6">
+       <ZoomChannelSetup/>
+       <br/>
       {/* Top bar with total project count and Add Project button */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-semibold">

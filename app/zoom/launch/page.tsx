@@ -41,8 +41,6 @@ export default function ZoomLaunchRedirectHandler() {
       const data = {
         action: JSON.stringify({ // MAX: 256
           // url: '/dashboard',
-          // role_name: 'Owner',
-          // role_id: 0,
           //refresh_token,
           //access_token  // Exceed character 256 limit
           state: state, // TODO: Make dynamic
@@ -65,7 +63,7 @@ export default function ZoomLaunchRedirectHandler() {
         console.log("🔄 <----- Sent query params to Home URL:-----> 🔄 ");
 
         const supaHashParams = new URLSearchParams(window.location.hash);
-        const res = await fetch(`/api/zoom/entry/?state=${state}&${supaHashParams}`, {
+        const res = await fetch(`/api/zoom/home/?state=${state}&${supaHashParams}`, {
           method: "GET",
           credentials: "include",
         });

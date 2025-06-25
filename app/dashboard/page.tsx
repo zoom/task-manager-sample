@@ -15,6 +15,7 @@ export default async function DashboardPage() {
 
     return (
         <div className="flex flex-row w-full max-w-full">
+           
             <ProjectsContainer/>
         </div>
     );
