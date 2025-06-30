@@ -1,5 +1,17 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# vscode
+.vscode
+
+# Zoom App Manifest, used to specify the configuration for Zoom Apps.
+zoom-app-manifest.json
+
+# demotime
+.demo
+
+# snaplet
+.snaplet
+
 # dependencies
 /node_modules
 /.pnp

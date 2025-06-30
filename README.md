@@ -1,30 +1,104 @@
-# Zoom Task Manager
-###### A showcase of our Zoom Developer Ecosystem and our Unified Build Flow
-___
+## Task Manager Zoom App sample
 
-## Get Started
+The Task Manager Zoom App is a multi-featured sample application that showcases core Zoom Developer Platform features, including Zoom Team Chat, Zoom Team Chat Chatbots, Zoom Apps SDK integration, and Zoom client deeplinking.
 
-Install Dependencies
+---
+
+## Supported features
+- [x] **Supabase authentication**: Authenticate with Supabase.
+- [X] **Zoom Team Chat**: Send messages to Zoom Team Chat from your web application.
+- [X] **Zoom Team Chat Chatbot**: Install the Zoom Team Chat Chatbot and send notifications from your web application.
+- [X] **Zoom App SDK**: Surface your web application within meetings, the Zoom client, and Team Chat using the Zoom App SDK.
+- [X] **Zoom client deep linking**: Deep linking support from a browser to the Zoom App and the Zoom Team Chat Chatbot in the Zoom client.
+
+
+## Tech stack
+* Next.js
+* Supabase
+* Shadcn
+* Tailwind CSS
+* Redis - Upstash
+
+## Prerequisites
+
+* Node.js
+* Next.js
+* Ngrok (or another reverse proxy)
+
+## Get started
+
+### Install dependencies
 
 ```shell
 npm i
 ```
 
-Start your ngrok endpoints
+### Start your Ngrok endpoints
+
+Zoom Apps must be served over HTTPS and do not support `localhost`. To develop locally, tunnel traffic via HTTPS using Ngrok, as the app runs in Docker containers serving traffic from `http://localhost`. Once Ngrok is installed, run:
 
 ```shell
 ngrok start nextjs supabase
 ```
 
-Copy .env.example to .env.local and fill out all the values
+Ngrok will output a tunnel origin (e.g., `https://9a20-38-99-100-7.ngrok.io`). Use this origin in your Zoom App configuration in the Zoom Marketplace web build flow. Also, set the `PUBLIC_URL` value in the `.env` file to this origin.
+
+> **Note:** The Ngrok URL changes on each restart unless using a custom Ngrok Pro domain. If restarted, update the `.env` file and the Marketplace build flow accordingly.
+
+![ngrok https origin](screenshots/ngrok-https-origin.png)
+
+### Set up the environment file
+
+Use the `.env.example` file to create your environment configuration:
 
 ```shell
 cp .env.example .env.local
 ```
 
-Run the development server
+Update `.env.local` with your credentials. For development, use the Client ID and Client Secret under "Development".
+
+
+### Start your local Supabase instance
+
+Run your local Supabase instance is running by executing
+
+```shell
+supabase start
+
+```
+
+### Run the development server
 
 ```shell
 npm run dev
 ```
 
+## Upload the manifest via terminal
+
+### Source the environment file
+
+To make `.env` variables available in your shell session:
+
+```shell
+source .env
+```
+
+### Upload the manifest
+
+```shell
+curl --request PUT \
+  --url https://api.zoom.us/v2/marketplace/apps/$ZOOM_APP_ID/manifest \
+  --header "Authorization: Bearer $TEMP_ZOOM_ACCESS_TOKEN" \
+  --header "Content-Type: application/json" \
+  --data @zoom-app-manifest.json && echo "Request successful" || echo "Request failed"
+```
+
+If the command returns an exit code of `0`, it will print “Request successful.” Otherwise, it will print “Request failed.”
+
+## What do I do next?
+
+Start building your app! You can check out the [Zoom Apps developer docs](https://developers.zoom.us/docs/zoom-apps/) for more information on the JS SDK. You can also explore the [Zoom REST API](https://developers.zoom.us/docs/api/) or use the third party OAuth to call a different API.
+
+More of a viual learner? Check out the Task Manager Zoom App video series on our YouTube channel:
+
+* [Zoom Developers](https://www.youtube.com/@Zoomdeveloper)

@@ -74,7 +74,15 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  variants: {
+    extend: {
+      display: ['empty'],
+    },
+  },
+  plugins: [ function ({ addVariant }: { addVariant: (name: string, generator: string) => void }) {
+    addVariant('empty', '&:empty');
+  },
+    require("tailwindcss-animate")],
 } satisfies Config;
 
 export default config;
